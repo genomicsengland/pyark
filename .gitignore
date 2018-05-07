@@ -2,3 +2,5 @@
 *.pyc
 build
 dist
+.idea
+pyark.egg-info/
