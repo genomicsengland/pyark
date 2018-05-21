@@ -23,7 +23,8 @@ class ReportEventsClient(cva_client.CvaClient):
                 params[cva_client.CvaClient.MARKER_PARAM] = next_page_params[cva_client.CvaClient.MARKER_PARAM]
             else:
                 more_results = False
-            yield report_events
+            for report_event in report_events:
+                yield report_event
 
     class OutputEntities(Enum):
         variants = 'variants'

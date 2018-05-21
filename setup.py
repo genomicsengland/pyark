@@ -14,7 +14,7 @@ setup(
     install_requires=[
         'requests',
         'furl==1.0.1',
-        'gelreportmodels==6.1.0',
+        'gelreportmodels>=6.1,<6.2',
         'enum34'
     ]
 )
