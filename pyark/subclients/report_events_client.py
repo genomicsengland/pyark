@@ -11,7 +11,6 @@ class ReportEventsClient(cva_client.CvaClient):
     def get_report_events(self, params={}):
         """
 
-        :param params:
         :return:
         """
         more_results = True
@@ -34,6 +33,10 @@ class ReportEventsClient(cva_client.CvaClient):
     @staticmethod
     def _by_program_and_type(program, report_event_type):
         return "report-events/programs/{program}/types/{type}".format(program=program, type=report_event_type)
+
+    @staticmethod
+    def _by_type(report_event_type):
+        return "report-events/types/{type}".format(type=report_event_type)
 
     @staticmethod
     def _by_gene_id(assembly, gene_id):
@@ -60,17 +63,11 @@ class ReportEventsClient(cva_client.CvaClient):
                                 include_aggregations=False, params={}):
         """
 
-        :param program:
         :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param assembly:
         :type assembly: Assembly
-        :param gene_id:
         :type gene_id: str
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
@@ -83,17 +80,11 @@ class ReportEventsClient(cva_client.CvaClient):
                                       include_aggregations=False, params={}):
         """
 
-        :param program:
         :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param assembly:
         :type assembly: Assembly
-        :param transcript_id:
         :type transcript_id: str
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
@@ -106,17 +97,11 @@ class ReportEventsClient(cva_client.CvaClient):
                                     include_aggregations=False, params={}):
         """
 
-        :param program:
         :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param assembly:
         :type assembly: Assembly
-        :param gene_symbol:
         :type gene_symbol: str
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
@@ -125,25 +110,18 @@ class ReportEventsClient(cva_client.CvaClient):
                 self.OutputEntities.variants.value]
         return self.get_aggregation_query(path, include_aggregations, params)
 
-    def get_variants_by_panel(self, program, report_event_type, panel_name, panel_version,
+    def get_variants_by_panel(self, report_event_type, panel_name, panel_version,
                               include_aggregations=False, params={}):
         """
 
-        :param program:
-        :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param panel_name:
         :type panel_name: str
-        :param panel_version:
         :type panel_version: str
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [ReportEventsClient._by_type(report_event_type),
                 ReportEventsClient._by_panel(panel_name),
                 self.OutputEntities.variants.value]
         if params is None:
@@ -156,21 +134,13 @@ class ReportEventsClient(cva_client.CvaClient):
                                        include_aggregations=False, params={}):
         """
 
-        :param program:
         :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param assembly:
         :type assembly: Assembly
-        :param chromosome:
         :type chromosome: str
-        :param start:
         :type start: int
-        :param end:
         :type end: int
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
@@ -183,17 +153,11 @@ class ReportEventsClient(cva_client.CvaClient):
                                   include_aggregations=False, params={}):
         """
 
-        :param program:
         :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param assembly:
         :type assembly: Assembly
-        :param gene_id:
         :type gene_id: str
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
@@ -206,17 +170,11 @@ class ReportEventsClient(cva_client.CvaClient):
                                         include_aggregations=False, params={}):
         """
 
-        :param program:
         :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param assembly:
         :type assembly: Assembly
-        :param transcript_id:
         :type transcript_id: str
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
@@ -229,17 +187,11 @@ class ReportEventsClient(cva_client.CvaClient):
                                       include_aggregations=False, params={}):
         """
 
-        :param program:
         :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param assembly:
         :type assembly: Assembly
-        :param gene_symbol:
         :type gene_symbol: str
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
@@ -248,25 +200,18 @@ class ReportEventsClient(cva_client.CvaClient):
                 self.OutputEntities.phenotypes.value]
         return self.get_aggregation_query(path, include_aggregations, params)
 
-    def get_phenotypes_by_panel(self, program, report_event_type, panel_name, panel_version,
+    def get_phenotypes_by_panel(self, report_event_type, panel_name, panel_version,
                                 include_aggregations=False, params={}):
         """
 
-        :param program:
-        :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param panel_name:
         :type panel_name: str
-        :param panel_version:
         :type panel_version: str
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [ReportEventsClient._by_type(report_event_type),
                 ReportEventsClient._by_panel(panel_name),
                 self.OutputEntities.phenotypes.value]
         if params is None:
@@ -279,21 +224,13 @@ class ReportEventsClient(cva_client.CvaClient):
                                          include_aggregations=False, params={}):
         """
 
-        :param program:
         :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param assembly:
         :type assembly: Assembly
-        :param chromosome:
         :type chromosome: str
-        :param start:
         :type start: int
-        :param end:
         :type end: int
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
@@ -302,25 +239,18 @@ class ReportEventsClient(cva_client.CvaClient):
                 self.OutputEntities.phenotypes.value]
         return self.get_aggregation_query(path, include_aggregations, params)
 
-    def get_genes_by_panel(self, program, report_event_type, panel_name, panel_version,
+    def get_genes_by_panel(self, report_event_type, panel_name, panel_version,
                            include_aggregations=False, params={}):
         """
 
-        :param program:
-        :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param panel_name:
         :type panel_name: str
-        :param panel_version:
         :type panel_version: str
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [ReportEventsClient._by_type(report_event_type),
                 ReportEventsClient._by_panel(panel_name),
                 self.OutputEntities.genes.value]
         if params is None:
@@ -333,21 +263,13 @@ class ReportEventsClient(cva_client.CvaClient):
                                     include_aggregations=False, params={}):
         """
 
-        :param program:
         :type program: Program
-        :param report_event_type:
         :type report_event_type: ReportEventType
-        :param assembly:
         :type assembly: Assembly
-        :param chromosome:
         :type chromosome: str
-        :param start:
         :type start: int
-        :param end:
         :type end: int
-        :param include_aggregations:
         :type include_aggregations: bool
-        :param params:
         :type params: dict
         :return:
         """

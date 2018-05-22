@@ -146,40 +146,34 @@ class TestPyArk (TestCase):
 
         # gets variants
         results = self.report_events.get_variants_by_panel(
-            Program.rare_disease, ReportEventType.tiered,
-            panel_name, None, include_aggregations=False)
+            ReportEventType.tiered, panel_name, None, include_aggregations=False)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, list))
 
         results = self.report_events.get_variants_by_panel(
-            Program.rare_disease, ReportEventType.tiered,
-            panel_name, None, include_aggregations=True)
+            ReportEventType.tiered, panel_name, None, include_aggregations=True)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
 
         # gets phenotypes
         results = self.report_events.get_phenotypes_by_panel(
-            Program.rare_disease, ReportEventType.tiered,
-            panel_name, None, include_aggregations=False)
+            ReportEventType.tiered, panel_name, None, include_aggregations=False)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, list))
 
         results = self.report_events.get_phenotypes_by_panel(
-            Program.rare_disease, ReportEventType.tiered,
-            panel_name, None, include_aggregations=True)
+            ReportEventType.tiered, panel_name, None, include_aggregations=True)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
 
         # gets genes
         results = self.report_events.get_genes_by_panel(
-            Program.rare_disease, ReportEventType.tiered,
-            panel_name, None, include_aggregations=False)
+            ReportEventType.tiered, panel_name, None, include_aggregations=False)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, list))
 
         results = self.report_events.get_genes_by_panel(
-            Program.rare_disease, ReportEventType.tiered,
-            panel_name, None, include_aggregations=True)
+            ReportEventType.tiered, panel_name, None, include_aggregations=True)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
 
@@ -344,41 +338,29 @@ class TestPyArk (TestCase):
         panel_name = "cakut"
 
         # gets variants
-        results = self.cases.get_variants_by_panel(
-            Program.rare_disease,
-            panel_name, None, include_aggregations=False)
+        results = self.cases.get_variants_by_panel(panel_name, None, include_aggregations=False)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, list))
 
-        results = self.cases.get_variants_by_panel(
-            Program.rare_disease,
-            panel_name, None, include_aggregations=True)
+        results = self.cases.get_variants_by_panel(panel_name, None, include_aggregations=True)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
 
         # gets phenotypes
-        results = self.cases.get_phenotypes_by_panel(
-            Program.rare_disease,
-            panel_name, None, include_aggregations=False)
+        results = self.cases.get_phenotypes_by_panel(panel_name, None, include_aggregations=False)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, list))
 
-        results = self.cases.get_phenotypes_by_panel(
-            Program.rare_disease,
-            panel_name, None, include_aggregations=True)
+        results = self.cases.get_phenotypes_by_panel(panel_name, None, include_aggregations=True)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
 
         # gets genes
-        results = self.cases.get_genes_by_panel(
-            Program.rare_disease,
-            panel_name, None, include_aggregations=False)
+        results = self.cases.get_genes_by_panel(panel_name, None, include_aggregations=False)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, list))
 
-        results = self.cases.get_genes_by_panel(
-            Program.rare_disease,
-            panel_name, None, include_aggregations=True)
+        results = self.cases.get_genes_by_panel(panel_name, None, include_aggregations=True)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
 
