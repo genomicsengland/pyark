@@ -110,7 +110,6 @@ class CasesClient(cva_client.CvaClient):
     def get_variants_by_gene_symbol(self, program, assembly, gene_symbol,
                                     include_aggregations=False, params={}):
         """
-
         :type program: Program
         :type assembly: Assembly
         :type gene_symbol: str
@@ -123,22 +122,25 @@ class CasesClient(cva_client.CvaClient):
                 self.OutputEntities.variants.value]
         return self.get_aggregation_query(path, include_aggregations, params)
 
-    def get_variants_by_panel(self, panel_name, panel_version,
+    def get_variants_by_panel(self, program, panel_name, panel_version,
                               include_aggregations=False, params={}):
         """
-
+        :type program: Program
         :type panel_name: str
         :type panel_version: str
         :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [CasesClient._by_panel(panel_name), self.OutputEntities.variants.value]
+        path = [CasesClient._by_program(program),
+                CasesClient._by_panel(panel_name), self.OutputEntities.variants.value]
         if params is None:
             params = {}
         if panel_version:
             params['panel_version'] = panel_version
-        return self.get_aggregation_query(path, include_aggregations, params)
+        params['include_aggregations'] = include_aggregations
+        results, _ = self.get("/".join(path), params=params)
+        return results
 
     def get_variants_by_genomic_region(self, program, assembly, chromosome, start, end,
                                        include_aggregations=False, params={}):

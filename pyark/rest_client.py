@@ -51,10 +51,10 @@ class RestClient(object):
         if endpoint is None or payload is None:
             raise ValueError("Must define payload and endpoint before post")
         url = self.build_url(endpoint)
-        logging.debug("{date} {method} {url}".format(
+        logging.info("{date} {method} {url}".format(
             date=datetime.datetime.now(),
             method="POST",
-            url="{}?{}".format(url, "&".join(["{}={}".format(k, v) for k, v in params.iteritems()]))
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
         ))
         if session:
             response = self.session.post(url, json=payload, params=params, headers=self.headers)
@@ -67,10 +67,10 @@ class RestClient(object):
         if endpoint is None:
             raise ValueError("Must define endpoint before get")
         url = self.build_url(endpoint)
-        logging.debug("{date} {method} {url}".format(
+        logging.info("{date} {method} {url}".format(
             date=datetime.datetime.now(),
             method="GET",
-            url="{}?{}".format(url, "&".join(["{}={}".format(k, v) for k, v in params.iteritems()]))
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
         ))
         if session:
             response = self.session.get(url, params=params, headers=self.headers)
@@ -83,14 +83,24 @@ class RestClient(object):
         if endpoint is None:
             raise ValueError("Must define endpoint before get")
         url = self.build_url(endpoint)
-        logging.debug("{date} {method} {url}".format(
+        logging.info("{date} {method} {url}".format(
             date=datetime.datetime.now(),
             method="DELETE",
-            url="{}?{}".format(url, "&".join(["{}={}".format(k, v) for k, v in params.iteritems()]))
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
         ))
         response = self.session.delete(url, params=params)
         self._verify_response(response)
         return json.loads(response.content), dict(response.headers)
+
+    @staticmethod
+    def _build_parameters(params):
+        parsed_params = []
+        for k, v in params.iteritems():
+            if isinstance(v, list):
+                parsed_params.extend(["{}={}".format(k, e) for e in v])
+            else:
+                parsed_params.append("{}={}".format(k, v))
+        return parsed_params
 
     def _verify_response(self, response):
         logging.debug("{date} response status code {status}".format(
