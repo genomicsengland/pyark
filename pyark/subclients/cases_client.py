@@ -1,6 +1,7 @@
 import pyark.cva_client as cva_client
 from enum import Enum
 from protocols.cva_1_0_0 import ReportEventEntry, Program, ReportEventType, Assembly
+import logging
 
 
 class CasesClient(cva_client.CvaClient):
@@ -37,6 +38,42 @@ class CasesClient(cva_client.CvaClient):
     def _by_genomic_coordinates(assembly, chromosome, start, end):
         return "genomic-regions/{assembly}/{chromosome}/{start}/{end}".format(
             assembly=assembly, chromosome=chromosome, start=start, end=end)
+
+    def get_summary(self, params={}):
+        """
+
+        :type params: dict
+        :return:
+        """
+        results, _ = self.get("cases/summary", params)
+        if not results:
+            logging.warning("No summary found")
+            return None
+        assert len(results) == 1, "Unexpected number of summaries"
+        return results[0]
+
+    def get_case(self, identifier, version):
+        """
+
+        :type identifier: str
+        :type version: str
+        :return:
+        """
+        results, _ = self.get("cases/{identifier}/{version}".format(identifier=identifier, version=version))
+        if not results:
+            logging.warning("No case found with id-version {}-{}".format(identifier, version))
+            return None
+        assert len(results) == 1, "Unexpected number of cases returned when searching by identifier"
+        return results[0]
+
+    def get_cases(self, params):
+        """
+
+        :param params:
+        :return:
+        """
+        # TODO: implement!
+        raise NotImplemented
 
     def get_variants_by_gene_id(self, program, assembly, gene_id,
                                 include_aggregations=False, params={}):
@@ -96,8 +133,7 @@ class CasesClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [CasesClient._by_panel(panel_name),
-                self.OutputEntities.variants.value]
+        path = [CasesClient._by_panel(panel_name), self.OutputEntities.variants.value]
         if params is None:
             params = {}
         if panel_version:
@@ -181,13 +217,14 @@ class CasesClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [CasesClient._by_panel(panel_name),
-                self.OutputEntities.phenotypes.value]
-        if params is None:
-            params = {}
-        if panel_version:
-            params['panel_version'] = panel_version
-        return self.get_aggregation_query(path, include_aggregations, params)
+        # path = [CasesClient._by_panel(panel_name),
+        #         self.OutputEntities.phenotypes.value]
+        # if params is None:
+        #     params = {}
+        # if panel_version:
+        #     params['panel_version'] = panel_version
+        # return self.get_aggregation_query(path, include_aggregations, params)
+        raise NotImplemented
 
     def get_phenotypes_by_genomic_region(self, program, assembly, chromosome, start, end,
                                          include_aggregations=False, params={}):
@@ -217,13 +254,14 @@ class CasesClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [CasesClient._by_panel(panel_name),
-                self.OutputEntities.genes.value]
-        if params is None:
-            params = {}
-        if panel_version:
-            params['panel_version'] = panel_version
-        return self.get_aggregation_query(path, include_aggregations, params)
+        # path = [CasesClient._by_panel(panel_name),
+        #         self.OutputEntities.genes.value]
+        # if params is None:
+        #     params = {}
+        # if panel_version:
+        #     params['panel_version'] = panel_version
+        # return self.get_aggregation_query(path, include_aggregations, params)
+        raise NotImplemented
 
     def get_genes_by_genomic_region(self, program, assembly, chromosome, start, end,
                                     include_aggregations=False, params={}):

@@ -6,26 +6,21 @@ class PanelsClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
-    def get_panels_summary(self, program):
+    def get_panels_summary(self, use_versions=True):
         """
 
-        :param program:
-        :type program: Program
+        :type use_versions: bool
         :return:
-        :rtype: tuple
+        :rtype: list
         """
-        params = {'program': program}
+        params = {'use_versions': use_versions}
         results, _ = self.get("panels/summary", params=params)
-        return dict(map(lambda x: (frozenset(x['_id'].items()), {key: x[key] for key in x if key != '_id'}), results))
+        return results
 
-    def get_all_panels(self, include_versions=False, params={}):
+    def get_all_panels(self):
         """
-
-        :param include_versions:
-        :param params:
         :return:
-        :rtype: tuple
+        :rtype: list
         """
-        params['include_versions'] = include_versions
-        results, _ = self.get("panels", params=params)
-        return cva_client.CvaClient.results2list(results)
+        results = self.get_panels_summary(use_versions=False)
+        return [x['panel']['name'] for x in results]
