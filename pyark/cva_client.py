@@ -1,5 +1,6 @@
 import re
 import logging
+from pandas.io.json import json_normalize
 from pyark.rest_client import RestClient
 
 
@@ -201,4 +202,13 @@ class CvaClient(RestClient):
         else:
             return CvaClient.results2list(results)
 
+    def render_single_result(self, results, as_data_frame=True):
+        first = results[0]
+        return self.render(first, as_data_frame)
 
+    @staticmethod
+    def render(results, as_data_frame=True):
+        if as_data_frame:
+            return json_normalize(results)
+        else:
+            return results
