@@ -1,6 +1,6 @@
 import pyark.cva_client as cva_client
 from enum import Enum
-from protocols.cva_1_0_0 import ReportEventEntry, Program, ReportEventType, Assembly
+from protocols.cva_1_0_0 import Program, Assembly
 import logging
 
 
@@ -39,9 +39,9 @@ class CasesClient(cva_client.CvaClient):
         return "genomic-regions/{assembly}/{chromosome}/{start}/{end}".format(
             assembly=assembly, chromosome=chromosome, start=start, end=end)
 
-    def get_summary(self, params={}):
+    def get_summary(self, params={}, as_data_frame=False):
         """
-
+        :param as_data_frame: bool
         :type params: dict
         :return:
         """
@@ -50,11 +50,11 @@ class CasesClient(cva_client.CvaClient):
             logging.warning("No summary found")
             return None
         assert len(results) == 1, "Unexpected number of summaries"
-        return results[0]
+        return self.render_single_result(results, as_data_frame=as_data_frame)
 
-    def get_case(self, identifier, version):
+    def get_case(self, identifier, version, as_data_frame=False):
         """
-
+        :param as_data_frame: bool
         :type identifier: str
         :type version: str
         :return:
@@ -64,21 +64,12 @@ class CasesClient(cva_client.CvaClient):
             logging.warning("No case found with id-version {}-{}".format(identifier, version))
             return None
         assert len(results) == 1, "Unexpected number of cases returned when searching by identifier"
-        return results[0]
-
-    def get_cases(self, params):
-        """
-
-        :param params:
-        :return:
-        """
-        # TODO: implement!
-        raise NotImplemented
+        return self.render_single_result(results, as_data_frame=as_data_frame)
 
     def get_variants_by_gene_id(self, program, assembly, gene_id,
                                 include_aggregations=False, params={}):
         """
-
+        :param as_data_frame: bool
         :type program: Program
         :type assembly: Assembly
         :type gene_id: str
