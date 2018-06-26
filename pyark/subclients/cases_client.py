@@ -9,6 +9,23 @@ class CasesClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
+    def get_cases(self, params={}):
+        """
+
+        :return:
+        """
+        more_results = True
+        while more_results:
+            results, next_page_params = self.get("cases", params=params)
+            cases = list(results)
+            if next_page_params:
+                params[cva_client.CvaClient.LIMIT_PARAM] = next_page_params[cva_client.CvaClient.LIMIT_PARAM]
+                params[cva_client.CvaClient.MARKER_PARAM] = next_page_params[cva_client.CvaClient.MARKER_PARAM]
+            else:
+                more_results = False
+            for case in cases:
+                yield case
+
     class OutputEntities(Enum):
         variants = 'variants'
         phenotypes = 'phenotypes'

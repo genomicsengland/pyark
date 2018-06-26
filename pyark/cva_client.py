@@ -58,6 +58,7 @@ class CvaClient(RestClient):
         self.panels_client = None
         self.cases_client = None
         self.variants_client = None
+        self.lift_overs_client = None
 
     def get_token(self):
         results, _ = self.post(self.AUTHENTICATION, payload={
@@ -132,6 +133,20 @@ class CvaClient(RestClient):
             self.variants_client = pyark.subclients.variants_client.VariantsClient(
                 self.url_base, self.token)
         return self.variants_client
+
+    def lift_overs(self):
+        """
+
+        :return:
+        :rtype: LiftOverClient
+        """
+        # NOTE: this import needs to be here due to circular imports
+        import pyark.subclients.lift_over_client
+        if self.lift_overs_client is None:
+            # initialise subclients
+            self.lift_overs_client = pyark.subclients.lift_over_client.LiftOverClient(
+                self.url_base, self.token)
+        return self.lift_overs_client
 
     @staticmethod
     def build_next_page_params(headers):
