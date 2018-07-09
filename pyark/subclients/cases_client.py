@@ -1,7 +1,9 @@
 import pyark.cva_client as cva_client
-from enum import Enum
 from protocols.cva_1_0_0 import Program, Assembly
 import logging
+from enum import Enum
+
+SIMILARITY_METRICS = ["RESNIK", "JACCARD", "PHENODIGM"]
 
 
 class CasesClient(cva_client.CvaClient):
@@ -293,3 +295,45 @@ class CasesClient(cva_client.CvaClient):
                 CasesClient._by_genomic_coordinates(assembly, chromosome, start, end),
                 self.OutputEntities.genes.value]
         return self.get_aggregation_query(path, include_aggregations, params)
+
+    def get_similar_cases_by_case(self, case_id, case_version, similarity_metric, limit=50, params={}):
+        """
+        :type case_id: str
+        :type case_version: int
+        :type similarity_metric: str
+        :type limit: int
+        :type params: dict
+        :return:
+        """
+        assert similarity_metric in SIMILARITY_METRICS, \
+            "Invalid similarity metric provided '{}'. Valid values: {}".format(similarity_metric, SIMILARITY_METRICS)
+
+        params['similarity_metric'] = similarity_metric
+        params['limit'] = limit
+        results, _ = self.get("cases/{case_id}/{case_version}/similar-cases"
+                              .format(case_id=case_id, case_version=case_version), params)
+        if not results:
+            logging.warning("No similar cases found")
+            return None
+        return results
+
+    def get_similar_cases_by_phenotypes(self, phenotypes, similarity_metric, limit=50, params={}):
+        """
+        :type phenotypes: list
+        :type similarity_metric: str
+        :type limit: int
+        :type params: dict
+        :return:
+        """
+        assert similarity_metric in SIMILARITY_METRICS, \
+            "Invalid similarty metric provided '{}'. Valid values: {}".format(similarity_metric, SIMILARITY_METRICS)
+        assert len(phenotypes) > 0, "At least one phenotype must be provided"
+        params['similarity_metric'] = similarity_metric
+        params['limit'] = limit
+        params['hpo_ids'] = phenotypes
+        results, _ = self.get(
+            "cases/phenotypes/similar-cases".format(metric=similarity_metric, limit=limit), params)
+        if not results:
+            logging.warning("No similar cases found")
+            return None
+        return results
