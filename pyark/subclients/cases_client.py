@@ -10,10 +10,13 @@ class CasesClient(cva_client.CvaClient):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
     def get_cases(self, params={}):
-        """
+        if params.get('count', False):
+            results, next_page_params = self.get("cases", params=params)
+            return results[0]
+        else:
+            return self.paginate_cases(params)
 
-        :return:
-        """
+    def paginate_cases(self, params):
         more_results = True
         while more_results:
             results, next_page_params = self.get("cases", params=params)
