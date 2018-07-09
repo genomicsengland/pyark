@@ -1,10 +1,9 @@
 from distutils.core import setup
-from setuptools import find_packages
 
 setup(
     name='pyark',
     version='0.3.0',
-    packages=find_packages(),
+    packages=['pyark'],
     scripts=[],
     url='',
     license='',
