@@ -1,7 +1,7 @@
 from pyark import cva_client
 
 
-class DataInjestClient(cva_client.CvaClient):
+class DataIntakeClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
