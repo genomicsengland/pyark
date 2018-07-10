@@ -17,6 +17,9 @@ class DataIntakeClient(cva_client.CvaClient):
     def post_candidate_variant(self, candidate_variant, params={}):
         return self.post(self.CANDIDATE_VARIANT_RD_POST, candidate_variant.toJsonDict(), params)
 
+    def post_exit_questionaire(self, exit_questionaire, params={}):
+        return self.post(self.EXIT_QUESTIONAIRES_RD_POST, exit_questionaire.toJsonDict(), params)
+
     def post_reported_variant(self, reported_variant, params={}):
         return self.post(self.REPORTED_VARIANT_RD_POST, reported_variant.toJsonDict(), params)
 
@@ -25,6 +28,9 @@ class DataIntakeClient(cva_client.CvaClient):
 
     def post_candidate_variant_cancer(self, candidate_variant, params={}):
         return self.post(self.CANDIDATE_VARIANT_CANCER_POST, candidate_variant.toJsonDict(), params)
+
+    def post_exit_questionaire_cancer(self, exit_questionaire, params={}):
+        return self.post(self.EXIT_QUESTIONAIRES_CANCER_POST, exit_questionaire.toJsonDict(), params)
 
     def post_reported_variant_cancer(self, reported_variant, params={}):
         return self.post(self.REPORTED_VARIANT_CANCER_POST, reported_variant.toJsonDict(), params)
