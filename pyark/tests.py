@@ -30,7 +30,7 @@ class TestPyArk (TestCase):
         self.panels = self.cva.panels()
         self.cases = self.cva.cases()
         self.variants = self.cva.variants()
-        self.data_injest = self.cva.data_injest()
+        self.data_intake = self.cva.data_intake()
 
     def test_get_report_events(self):
 
@@ -371,10 +371,10 @@ class TestPyArk (TestCase):
         self.assertFalse(variant)
 
     def test_post_pedigree(self):
-        self._test_post(PedigreeInjectRD, self.data_injest.post_pedigree)
+        self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
 
     def test_post_participant(self):
-        self._test_post(ParticipantInjectCancer, self.data_injest.post_participant)
+        self._test_post(ParticipantInjectCancer, self.data_intake.post_participant)
 
     def _test_post(self, clazz, post_function):
         model = GenericFactoryAvro.get_factory_avro(
