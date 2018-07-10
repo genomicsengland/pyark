@@ -26,9 +26,11 @@ class CvaClient(RestClient):
     TIERED_VARIANT_RD_POST = "tiered-variants/rd"
     CANDIDATE_VARIANT_RD_POST = "candidate-variants/rd"
     REPORTED_VARIANT_RD_POST = "reported-variants/rd"
+    EXIT_QUESTIONAIRES_RD_POST = "exit-questionnaires/rd"
     TIERED_VARIANT_CANCER_POST = "tiered-variants/cancer"
     CANDIDATE_VARIANT_CANCER_POST = "candidate-variants/cancer"
     REPORTED_VARIANT_CANCER_POST = "reported-variants/cancer"
+    EXIT_QUESTIONAIRES_CANCER_POST = "exit-questionnaires/cancer"
     # post other entities
     PEDIGREE_POST = "pedigrees"
     PARTICIPANT_POST = "participants"
@@ -62,7 +64,7 @@ class CvaClient(RestClient):
         self.cases_client = None
         self.variants_client = None
         self.lift_overs_client = None
-        self.data_injest_client = None
+        self.data_intake_client = None
 
     def get_token(self):
         results, _ = self.post(self.AUTHENTICATION, payload={
@@ -152,19 +154,19 @@ class CvaClient(RestClient):
                 self.url_base, self.token)
         return self.lift_overs_client
 
-    def data_injest(self):
+    def data_intake(self):
         """
 
         :return:
-        :rtype: DataInjestClient
+        :rtype: DataIntakeClient
         """
         # NOTE: this import needs to be here due to circular imports
-        import pyark.subclients.data_injest_client
-        if self.data_injest_client is None:
+        import pyark.subclients.data_intake_client
+        if self.data_intake_client is None:
             # initialise subclients
-            self.data_injest_client = pyark.subclients.data_injest_client.DataInjestClient(
+            self.data_intake_client = pyark.subclients.data_intake_client.DataIntakeClient(
                 self.url_base, self.token)
-        return self.data_injest_client
+        return self.data_intake_client
 
     @staticmethod
     def build_next_page_params(headers):
