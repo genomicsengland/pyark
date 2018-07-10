@@ -1,8 +1,11 @@
 import os
 import logging
+import types
 from unittest import TestCase
-from protocols.reports_5_0_0 import Program
-from protocols.cva_1_0_0 import ReportEventType, Assembly, Variant, PedigreeInjectRD, ParticipantInjectCancer
+from protocols.reports_5_0_0 import Program, InterpretedGenomeRD
+from protocols.cva_1_0_0 import ReportEventType, Assembly, Variant, PedigreeInjectRD, ParticipantInjectCancer, \
+    TieredVariantInjectRD, CandidateVariantInjectRD, ReportedVariantInjectRD, CandidateVariantInjectCancer, \
+    ReportedVariantInjectCancer, TieredVariantInjectCancer
 from protocols.util.factories.avro_factory import GenericFactoryAvro
 from protocols.util import dependency_manager
 
@@ -368,23 +371,18 @@ class TestPyArk (TestCase):
         self.assertFalse(variant)
 
     def test_post_pedigree(self):
-        pedigree = GenericFactoryAvro.get_factory_avro(
-            clazz=PedigreeInjectRD,
-            version=dependency_manager.VERSION_70,
-            fill_nullables=True,
-        ).create()
-
-        response = self.data_injest.post_pedigree(pedigree)
-        # this is stronger than it looks because post checks for errors
-        self.assertTrue(response is not None)
+        self._test_post(PedigreeInjectRD, self.data_injest.post_pedigree)
 
     def test_post_participant(self):
-        participant = GenericFactoryAvro.get_factory_avro(
-            clazz=ParticipantInjectCancer,
-            version=dependency_manager.VERSION_70,
-            fill_nullables=True,
+        self._test_post(ParticipantInjectCancer, self.data_injest.post_participant)
+
+    def _test_post(self, clazz, post_function):
+        model = GenericFactoryAvro.get_factory_avro(
+            clazz=clazz,
+            version=dependency_manager.VERSION_61,
+            fill_nullables=False,
         ).create()
 
-        response = self.data_injest.post_participant(participant)
+        response = post_function(model)
         # this is stronger than it looks because post checks for errors
         self.assertTrue(response is not None)
