@@ -379,7 +379,7 @@ class TestPyArk (TestCase):
     def _test_post(self, clazz, post_function):
         model = GenericFactoryAvro.get_factory_avro(
             clazz=clazz,
-            version=dependency_manager.VERSION_61,
+            version=dependency_manager.VERSION_70,
             fill_nullables=False,
         ).create()
 
