@@ -51,10 +51,6 @@ class ReportEventsClient(cva_client.CvaClient):
         return "gene-symbols/{assembly}/{gene_symbol}".format(assembly=assembly, gene_symbol=gene_symbol)
 
     @staticmethod
-    def _by_panel(panel_name):
-        return "panels/{panel_name}".format(panel_name=panel_name)
-
-    @staticmethod
     def _by_genomic_coordinates(assembly, chromosome, start, end):
         return "genomic-regions/{assembly}/{chromosome}/{start}/{end}".format(
             assembly=assembly, chromosome=chromosome, start=start, end=end)
@@ -108,26 +104,6 @@ class ReportEventsClient(cva_client.CvaClient):
         path = [ReportEventsClient._by_program_and_type(program, report_event_type),
                 ReportEventsClient._by_gene_symbol(assembly, gene_symbol),
                 self.OutputEntities.variants.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
-
-    def get_variants_by_panel(self, report_event_type, panel_name, panel_version,
-                              include_aggregations=False, params={}):
-        """
-
-        :type report_event_type: ReportEventType
-        :type panel_name: str
-        :type panel_version: str
-        :type include_aggregations: bool
-        :type params: dict
-        :return:
-        """
-        path = [ReportEventsClient._by_type(report_event_type),
-                ReportEventsClient._by_panel(panel_name),
-                self.OutputEntities.variants.value]
-        if params is None:
-            params = {}
-        if panel_version:
-            params['panel_version'] = panel_version
         return self.get_aggregation_query(path, include_aggregations, params)
 
     def get_variants_by_genomic_region(self, program, report_event_type, assembly, chromosome, start, end,
@@ -200,26 +176,6 @@ class ReportEventsClient(cva_client.CvaClient):
                 self.OutputEntities.phenotypes.value]
         return self.get_aggregation_query(path, include_aggregations, params)
 
-    def get_phenotypes_by_panel(self, report_event_type, panel_name, panel_version,
-                                include_aggregations=False, params={}):
-        """
-
-        :type report_event_type: ReportEventType
-        :type panel_name: str
-        :type panel_version: str
-        :type include_aggregations: bool
-        :type params: dict
-        :return:
-        """
-        path = [ReportEventsClient._by_type(report_event_type),
-                ReportEventsClient._by_panel(panel_name),
-                self.OutputEntities.phenotypes.value]
-        if params is None:
-            params = {}
-        if panel_version:
-            params['panel_version'] = panel_version
-        return self.get_aggregation_query(path, include_aggregations, params)
-
     def get_phenotypes_by_genomic_region(self, program, report_event_type, assembly, chromosome, start, end,
                                          include_aggregations=False, params={}):
         """
@@ -237,26 +193,6 @@ class ReportEventsClient(cva_client.CvaClient):
         path = [ReportEventsClient._by_program_and_type(program, report_event_type),
                 ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
                 self.OutputEntities.phenotypes.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
-
-    def get_genes_by_panel(self, report_event_type, panel_name, panel_version,
-                           include_aggregations=False, params={}):
-        """
-
-        :type report_event_type: ReportEventType
-        :type panel_name: str
-        :type panel_version: str
-        :type include_aggregations: bool
-        :type params: dict
-        :return:
-        """
-        path = [ReportEventsClient._by_type(report_event_type),
-                ReportEventsClient._by_panel(panel_name),
-                self.OutputEntities.genes.value]
-        if params is None:
-            params = {}
-        if panel_version:
-            params['panel_version'] = panel_version
         return self.get_aggregation_query(path, include_aggregations, params)
 
     def get_genes_by_genomic_region(self, program, report_event_type, assembly, chromosome, start, end,
