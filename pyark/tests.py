@@ -2,7 +2,9 @@ import os
 import logging
 from unittest import TestCase
 from protocols.reports_5_0_0 import Program
-from protocols.cva_1_0_0 import ReportEventType, Assembly, Variant
+from protocols.cva_1_0_0 import ReportEventType, Assembly, Variant, PedigreeInjectRD, ParticipantInjectCancer
+from protocols.util.factories.avro_factory import GenericFactoryAvro
+from protocols.util import dependency_manager
 
 from pyark.cva_client import CvaClient
 
@@ -25,6 +27,7 @@ class TestPyArk (TestCase):
         self.panels = self.cva.panels()
         self.cases = self.cva.cases()
         self.variants = self.cva.variants()
+        self.data_injest = self.cva.data_injest()
 
     def test_get_report_events(self):
 
@@ -140,43 +143,6 @@ class TestPyArk (TestCase):
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
 
-    def test_get_variants_by_panel(self):
-
-        panel_name = "cakut"
-
-        # gets variants
-        results = self.report_events.get_variants_by_panel(
-            ReportEventType.tiered, panel_name, None, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
-
-        results = self.report_events.get_variants_by_panel(
-            ReportEventType.tiered, panel_name, None, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
-
-        # gets phenotypes
-        results = self.report_events.get_phenotypes_by_panel(
-            ReportEventType.tiered, panel_name, None, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
-
-        results = self.report_events.get_phenotypes_by_panel(
-            ReportEventType.tiered, panel_name, None, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
-
-        # gets genes
-        results = self.report_events.get_genes_by_panel(
-            ReportEventType.tiered, panel_name, None, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
-
-        results = self.report_events.get_genes_by_panel(
-            ReportEventType.tiered, panel_name, None, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
-
     def test_get_variants_by_genomic_region(self):
 
         assembly = Assembly.GRCh38
@@ -229,19 +195,15 @@ class TestPyArk (TestCase):
         self.assertTrue(panels is not None)
         self.assertTrue(isinstance(panels, list))
 
-        panels = self.panels.get_all_panels(include_versions=True)
-        self.assertTrue(panels is not None)
-        self.assertTrue(isinstance(panels, list))
-
     def test_get_panel_summary(self):
 
         panels = self.panels.get_panels_summary(Program.rare_disease)
         self.assertTrue(panels is not None)
-        self.assertTrue(isinstance(panels, dict))
+        self.assertTrue(isinstance(panels, list))
 
         panels = self.panels.get_panels_summary(Program.cancer)
         self.assertTrue(panels is not None)
-        self.assertTrue(isinstance(panels, dict))
+        self.assertTrue(isinstance(panels, list))
 
     def test_cases_get_by_gene_id(self):
 
@@ -338,31 +300,13 @@ class TestPyArk (TestCase):
         panel_name = "cakut"
 
         # gets variants
-        results = self.cases.get_variants_by_panel(panel_name, None, include_aggregations=False)
+        results = self.cases.get_variants_by_panel(Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=False)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, list))
 
-        results = self.cases.get_variants_by_panel(panel_name, None, include_aggregations=True)
+        results = self.cases.get_variants_by_panel(Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=True)
         self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
-
-        # gets phenotypes
-        results = self.cases.get_phenotypes_by_panel(panel_name, None, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
-
-        results = self.cases.get_phenotypes_by_panel(panel_name, None, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
-
-        # gets genes
-        results = self.cases.get_genes_by_panel(panel_name, None, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
-
-        results = self.cases.get_genes_by_panel(panel_name, None, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertTrue(isinstance(results[0], dict))
 
     def test_get_cases_variants_by_genomic_region(self):
 
@@ -420,8 +364,27 @@ class TestPyArk (TestCase):
         self.assertTrue(isinstance(variant, Variant))
 
         # non existing variant
-        try:
-            variant = self.variants.get_variant_by_id(identifier='whatever')
-            self.assertTrue(False)
-        except ValueError:
-            self.assertTrue(True)
+        variant = self.variants.get_variant_by_id(identifier='whatever')
+        self.assertFalse(variant)
+
+    def test_post_pedigree(self):
+        pedigree = GenericFactoryAvro.get_factory_avro(
+            clazz=PedigreeInjectRD,
+            version=dependency_manager.VERSION_70,
+            fill_nullables=True,
+        ).create()
+
+        response = self.data_injest.post_pedigree(pedigree)
+        # this is stronger than it looks because post checks for errors
+        self.assertTrue(response is not None)
+
+    def test_post_participant(self):
+        participant = GenericFactoryAvro.get_factory_avro(
+            clazz=ParticipantInjectCancer,
+            version=dependency_manager.VERSION_70,
+            fill_nullables=True,
+        ).create()
+
+        response = self.data_injest.post_participant(participant)
+        # this is stronger than it looks because post checks for errors
+        self.assertTrue(response is not None)

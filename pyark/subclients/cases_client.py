@@ -216,26 +216,6 @@ class CasesClient(cva_client.CvaClient):
                 self.OutputEntities.phenotypes.value]
         return self.get_aggregation_query(path, include_aggregations, params)
 
-    def get_phenotypes_by_panel(self, panel_name, panel_version,
-                                include_aggregations=False, params={}):
-        """
-
-        :type program: Program
-        :type panel_name: str
-        :type panel_version: str
-        :type include_aggregations: bool
-        :type params: dict
-        :return:
-        """
-        # path = [CasesClient._by_panel(panel_name),
-        #         self.OutputEntities.phenotypes.value]
-        # if params is None:
-        #     params = {}
-        # if panel_version:
-        #     params['panel_version'] = panel_version
-        # return self.get_aggregation_query(path, include_aggregations, params)
-        raise NotImplemented
-
     def get_phenotypes_by_genomic_region(self, program, assembly, chromosome, start, end,
                                          include_aggregations=False, params={}):
         """
@@ -253,25 +233,6 @@ class CasesClient(cva_client.CvaClient):
                 CasesClient._by_genomic_coordinates(assembly, chromosome, start, end),
                 self.OutputEntities.phenotypes.value]
         return self.get_aggregation_query(path, include_aggregations, params)
-
-    def get_genes_by_panel(self, panel_name, panel_version,
-                           include_aggregations=False, params={}):
-        """
-
-        :type panel_name: str
-        :type panel_version: str
-        :type include_aggregations: bool
-        :type params: dict
-        :return:
-        """
-        # path = [CasesClient._by_panel(panel_name),
-        #         self.OutputEntities.genes.value]
-        # if params is None:
-        #     params = {}
-        # if panel_version:
-        #     params['panel_version'] = panel_version
-        # return self.get_aggregation_query(path, include_aggregations, params)
-        raise NotImplemented
 
     def get_genes_by_genomic_region(self, program, assembly, chromosome, start, end,
                                     include_aggregations=False, params={}):
