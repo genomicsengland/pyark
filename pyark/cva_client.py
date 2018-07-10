@@ -26,9 +26,11 @@ class CvaClient(RestClient):
     TIERED_VARIANT_RD_POST = "tiered-variants/rd"
     CANDIDATE_VARIANT_RD_POST = "candidate-variants/rd"
     REPORTED_VARIANT_RD_POST = "reported-variants/rd"
+    EXIT_QUESTIONAIRES_RD_POST = "exit-questionnaires/rd"
     TIERED_VARIANT_CANCER_POST = "tiered-variants/cancer"
     CANDIDATE_VARIANT_CANCER_POST = "candidate-variants/cancer"
     REPORTED_VARIANT_CANCER_POST = "reported-variants/cancer"
+    EXIT_QUESTIONAIRES_CANCER_POST = "exit-questionnaires/cancer"
     # post other entities
     PEDIGREE_POST = "pedigrees"
     PARTICIPANT_POST = "participants"
