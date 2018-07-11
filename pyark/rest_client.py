@@ -12,7 +12,6 @@ class RestClient(object):
     session = requests.Session()
 
     def __init__(self, url_base, endpoint_base=None, retries=5):
-        logging.basicConfig(level=logging.INFO)
         self.url_base = url_base
         self.endpoint_base = endpoint_base
         self.headers = {
