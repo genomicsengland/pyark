@@ -62,7 +62,8 @@ class CvaClient(RestClient):
         self.cases_client = None
         self.variants_client = None
         self.lift_overs_client = None
-        self.data_injest_client = None
+        self.data_intake_client = None
+        self.transactions_client = None
 
     def get_token(self):
         results, _ = self.post(self.AUTHENTICATION, payload={
@@ -137,6 +138,20 @@ class CvaClient(RestClient):
             self.variants_client = pyark.subclients.variants_client.VariantsClient(
                 self.url_base, self.token)
         return self.variants_client
+
+    def transactions(self):
+        """
+
+        :return:
+        :rtype: VariantsClient
+        """
+        # NOTE: this import needs to be here due to circular imports
+        import pyark.subclients.transactions_client
+        if self.transactions_client is None:
+            # initialise subclients
+            self.transactions_client = pyark.subclients.transactions_client.TransactionsClient(
+                self.url_base, self.token)
+        return self.transactions_client
 
     def lift_overs(self):
         """
