@@ -386,3 +386,14 @@ class TestPyArk (TestCase):
         response = post_function(model)
         # this is stronger than it looks because post checks for errors
         self.assertTrue(response is not None)
+
+    def test_get_transactions(self):
+        client = self.cva.transactions()
+        id_of_a_transaction = client.get_transactions(params={'limit': 1})[0][0]['id']
+        self.assertTrue(client.get_transaction(id_of_a_transaction))
+        try:
+            self.assertTrue(client.retry_transaction(id_of_a_transaction))
+        except ValueError as e:
+            # this should be a Done transaction so you can't retry it
+            self.assertTrue("cannot be retried" in e.message)
+
