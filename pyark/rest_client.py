@@ -79,6 +79,22 @@ class RestClient(object):
         self._verify_response(response)
         return json.loads(response.content), dict(response.headers)
 
+    def patch(self, endpoint, params={}, session=True):
+        if endpoint is None:
+            raise ValueError("Must define endpoint before patch")
+        url = self.build_url(endpoint)
+        logging.info("{date} {method} {url}".format(
+            date=datetime.datetime.now(),
+            method="PATCH",
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
+        ))
+        if session:
+            response = self.session.patch(url, params=params, headers=self.headers)
+        else:
+            response = requests.patch(url, params=params, headers=self.headers)
+        self._verify_response(response)
+        return json.loads(response.content), dict(response.headers)
+
     def delete(self, endpoint, params={}):
         if endpoint is None:
             raise ValueError("Must define endpoint before get")
