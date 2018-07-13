@@ -203,11 +203,10 @@ class CvaClient(RestClient):
         warning = response.get('warning', None)
         if warning:
             logging.warning(warning)
-        assert 'response' in response, "Missing response"
-        assert len(response['response']) > 0, "Empty response"
-        logging.info("Number of results : {}".format(response['response'][0].get('numResults', None)))
-        assert 'result' in response['response'][0], "Missing results"
-        return response['response'][0]['result']
+        if 'response' in response and len(response['response']) > 0 and 'result' in response['response'][0]:
+            return response['response'][0]['result']
+        else:
+            return []
 
     @staticmethod
     def results2dict(results):
