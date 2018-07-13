@@ -15,4 +15,4 @@ ENV PYTHONUNBUFFERED 1
 ENV CIPAPI_SWAGGER_FORCE_HTTPS False
 ADD . /cip_api_tests
 
-RUN pip install --upgrade pip==9.0.3 && pip install . --index-url=https://xxxxxxxxxxx/genomics/dev
+RUN pip install --upgrade pip==9.0.3 && pip install .[test] --index-url=https://xxxxxxxxxxx/genomics/dev

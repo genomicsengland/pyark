@@ -5,6 +5,7 @@ import json
 import abc
 from furl import furl
 import pyark.backoff_retrier as backoff_retrier
+from pyark.errors import CvaServerError, CvaClientError
 
 
 class RestClient(object):
@@ -60,7 +61,7 @@ class RestClient(object):
         else:
             response = requests.post(url, json=payload, params=params, headers=self.headers)
         self._verify_response(response)
-        return json.loads(response.content), dict(response.headers)
+        return response.json(), dict(response.headers)
 
     def get(self, endpoint, params={}, session=True):
         if endpoint is None:
@@ -76,7 +77,7 @@ class RestClient(object):
         else:
             response = requests.get(url, params=params, headers=self.headers)
         self._verify_response(response)
-        return json.loads(response.content), dict(response.headers)
+        return response.json(), dict(response.headers)
 
     def patch(self, endpoint, params={}, session=True):
         if endpoint is None:
@@ -92,7 +93,7 @@ class RestClient(object):
         else:
             response = requests.patch(url, params=params, headers=self.headers)
         self._verify_response(response)
-        return json.loads(response.content), dict(response.headers)
+        return response.json(), dict(response.headers)
 
     def delete(self, endpoint, params={}):
         if endpoint is None:
@@ -105,7 +106,7 @@ class RestClient(object):
         ))
         response = self.session.delete(url, params=params)
         self._verify_response(response)
-        return json.loads(response.content), dict(response.headers)
+        return response.json(), dict(response.headers)
 
     @staticmethod
     def _build_parameters(params):
@@ -132,7 +133,12 @@ class RestClient(object):
                 # RequestException will trigger a retry and with the renewed token it may work
                 raise requests.exceptions.RequestException(response=response)
             # ValueError will not
-            raise ValueError("{}:{}".format(response.status_code, response.text))
+            if 500 <= response.status_code < 600:
+                raise CvaServerError("{}:{}".format(response.status_code, response.text))
+            elif 400 <= response.status_code < 500:
+                raise CvaClientError("{}:{}".format(response.status_code, response.text))
+            else:
+                raise ValueError("{}:{}".format(response.status_code, response.text))
         else:
             # once a 200 response token is not anymore just renewed, it can be renewed again if a 403 arrives
             self.renewed_token = False
