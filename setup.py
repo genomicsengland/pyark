@@ -1,6 +1,8 @@
 from distutils.core import setup
 from setuptools import find_packages
 
+test_deps = ['mock']
+
 setup(
     name='pyark',
     version='0.6.0',
@@ -17,5 +19,7 @@ setup(
         'gelreportmodels==7.0.4',
         'enum34',
         'pandas'
-    ]
+    ],
+    tests_require=test_deps,
+    extras_require={'test': test_deps},
 )
