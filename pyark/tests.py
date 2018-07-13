@@ -1,15 +1,16 @@
-import os
 import logging
-import types
+import os
 from unittest import TestCase
-from protocols.reports_5_0_0 import Program, InterpretedGenomeRD
-from protocols.cva_1_0_0 import ReportEventType, Assembly, Variant, PedigreeInjectRD, ParticipantInjectCancer, \
-    TieredVariantInjectRD, CandidateVariantInjectRD, ReportedVariantInjectRD, CandidateVariantInjectCancer, \
-    ReportedVariantInjectCancer, TieredVariantInjectCancer
-from protocols.util.factories.avro_factory import GenericFactoryAvro
+
+from mock import patch
+from protocols.cva_1_0_0 import ReportEventType, Assembly, Variant, PedigreeInjectRD, ParticipantInjectCancer
+from protocols.reports_5_0_0 import Program
 from protocols.util import dependency_manager
+from protocols.util.factories.avro_factory import GenericFactoryAvro
+from requests import ConnectionError
 
 from pyark.cva_client import CvaClient
+from pyark.errors import CvaClientError, CvaServerError
 
 
 class TestPyArk (TestCase):
@@ -376,6 +377,54 @@ class TestPyArk (TestCase):
     def test_post_participant(self):
         self._test_post(ParticipantInjectCancer, self.data_intake.post_participant)
 
+    def test_get_transactions(self):
+        client = self.cva.transactions()
+        id_of_a_transaction = client.get_transactions(params={'limit': 1})[0][0]['id']
+        self.assertTrue(client.get_transaction(id_of_a_transaction))
+        try:
+            self.assertTrue(client.retry_transaction(id_of_a_transaction))
+        except CvaServerError as e:
+            # this should be a Done transaction so you can't retry it
+            self.assertTrue("cannot be retried" in e.message)
+
+    def test_errors_if_cva_down(self):
+        self.assertRaises(
+            ConnectionError,
+            lambda: CvaClient("https://nowhere.invalid", user='u', password='p').panels().get_all_panels()
+        )
+
+    @patch('requests.sessions.Session.get')
+    @patch('requests.sessions.Session.post')
+    def test_errors_if_4xx(self, post, get):
+        self._mock_panels_to_return(get, post, 400)
+        self.assertRaises(
+            CvaClientError,
+            lambda: CvaClient("https://nowhere.invalid", user='u', password='p').panels().get_all_panels()
+        )
+
+    @patch('requests.sessions.Session.get')
+    @patch('requests.sessions.Session.post')
+    def test_errors_if_5xx(self, post, get):
+        self._mock_panels_to_return(get, post, 500)
+        self.assertRaises(
+            CvaServerError,
+            lambda: CvaClient("https://nowhere.invalid", user='u', password='p').panels().get_all_panels()
+        )
+
+    @patch('requests.sessions.Session.get')
+    @patch('requests.sessions.Session.post')
+    def test_returns_empty_if_no_results(self, post, get):
+        self._mock_panels_to_return(get, post, 200)
+        self.assertEqual([],
+                         CvaClient("https://nowhere.invalid", user='u', password='p').panels().get_all_panels())
+
+    @staticmethod
+    def _mock_panels_to_return(get, post, status_code):
+        auth_response = MockResponse(status_code, {'response': [{'result': [{'token': 'xyz'}]}]})
+        post.return_value = auth_response
+        response = MockResponse(status_code, {})
+        get.return_value = response
+
     def _test_post(self, clazz, post_function):
         model = GenericFactoryAvro.get_factory_avro(
             clazz=clazz,
@@ -387,13 +436,18 @@ class TestPyArk (TestCase):
         # this is stronger than it looks because post checks for errors
         self.assertTrue(response is not None)
 
-    def test_get_transactions(self):
-        client = self.cva.transactions()
-        id_of_a_transaction = client.get_transactions(params={'limit': 1})[0][0]['id']
-        self.assertTrue(client.get_transaction(id_of_a_transaction))
-        try:
-            self.assertTrue(client.retry_transaction(id_of_a_transaction))
-        except ValueError as e:
-            # this should be a Done transaction so you can't retry it
-            self.assertTrue("cannot be retried" in e.message)
 
+class MockResponse:
+    def __init__(self, status_code, json_dict):
+        self.status_code = status_code
+        self.json_dict = json_dict
+        self.content = str(json_dict)
+        self.text = str(json_dict)
+        self.headers = {}
+
+    @staticmethod
+    def get(key, default):
+        return None
+
+    def json(self):
+        return self.json_dict
