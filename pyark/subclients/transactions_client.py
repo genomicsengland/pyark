@@ -8,26 +8,29 @@ class TransactionsClient(cva_client.CvaClient):
 
     def get_transaction(self, transaction_id, just_return_status=False):
         results = self.get("transactions/{identifier}".format(identifier=transaction_id))
-        if just_return_status:
-            return self._first_or_raise([r['status'] for s in results for r in s], transaction_id)
-        else:
-            return results
+
+        def status_transform(x):
+            return x[0][0]['status']
+
+        return self._format_results(results, status_transform, transaction_id, just_return_status)
 
     def retry_transaction(self, transaction_id, just_return_status=False):
         results = self.patch("transactions/{identifier}".format(identifier=transaction_id))
-        if just_return_status:
-            return self._first_or_raise(
-                [t['status'] for r in results for s in r['response'] for t in s['result']],
-                transaction_id
-            )
-        return results
+
+        def status_transform(x):
+            return x[0]['response'][0]['result'][0]['status']
+
+        self._format_results(results, status_transform, transaction_id, just_return_status)
 
     def get_transactions(self, params={}):
         return self.get("transactions", params=params)
 
     @staticmethod
-    def _first_or_raise(items, id):
-        if items:
-            return items[0]
-        else:
-            raise CvaClientError("no transaction for {}".format(id))
+    def _format_results(items, transform, transaction_id, just_return_status):
+        try:
+            if just_return_status:
+                return transform(items)
+            else:
+                return items
+        except (KeyError, IndexError):
+            raise CvaClientError("no transaction for {}".format(transaction_id))
