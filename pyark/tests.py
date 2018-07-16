@@ -387,6 +387,18 @@ class TestPyArk (TestCase):
             # this should be a Done transaction so you can't retry it
             self.assertTrue("cannot be retried" in e.message)
 
+    def test_get_transaction_status_only(self):
+        client = self.cva.transactions()
+        id_of_a_transaction = client.get_transactions(params={'limit': 1})[0][0]['id']
+        self.assertEqual(client.get_transaction(id_of_a_transaction, just_return_status=True), 'DONE')
+
+    def test_get_transaction_status_only_fails_if_no_results(self):
+        client = self.cva.transactions()
+        self.assertRaises(
+            CvaClientError,
+            lambda: client.get_transaction("notreal", just_return_status=True)
+        )
+
     def test_errors_if_cva_down(self):
         self.assertRaises(
             ConnectionError,
