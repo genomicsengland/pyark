@@ -15,32 +15,8 @@ class CvaClient(RestClient):
     _LIMIT_HEADER = 'X-Pagination-Limit'
     _MARKER_HEADER = 'X-Pagination-Marker'
 
-    # mocked data endpoints
-    _TIERED_VARIANTS_INJECT_RD = "mocked-data/rd/tiered-variant-inject"
-    _CANDIDATE_VARIANTS_INJECT_RD = "mocked-data/rd/candidate-variant-inject"
-    _REPORTED_VARIANTS_INJECT_RD = "mocked-data/rd/reported-variant-inject"
-    _TIERED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/tiered-variant-inject"
-    _CANDIDATE_VARIANTS_INJECT_CANCER = "mocked-data/cancer/candidate-variant-inject"
-    _REPORTED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/reported-variant-inject"
-    # post report events endpoints
-    _TIERED_VARIANT_RD_POST = "tiered-variants/rd"
-    _CANDIDATE_VARIANT_RD_POST = "candidate-variants/rd"
-    _REPORTED_VARIANT_RD_POST = "reported-variants/rd"
-    _EXIT_QUESTIONAIRES_RD_POST = "exit-questionnaires/rd"
-    _TIERED_VARIANT_CANCER_POST = "tiered-variants/cancer"
-    _CANDIDATE_VARIANT_CANCER_POST = "candidate-variants/cancer"
-    _REPORTED_VARIANT_CANCER_POST = "reported-variants/cancer"
-    _EXIT_QUESTIONAIRES_CANCER_POST = "exit-questionnaires/cancer"
-    # post other entities
-    _PEDIGREE_POST = "pedigrees"
-    _PARTICIPANT_POST = "participants"
-    # other entities
-    _TRANSACTIONS = "transactions"
-    _REPORT_EVENTS = "report-events"
-    _VARIANTS = "variants"
-    _EVIDENCES = "evidences"
     # authentication endpoint
-    _AUTHENTICATION = "authentication"
+    _AUTHENTICATION_ENDPOINT = "authentication"
 
     def __init__(self, url_base, token=None, user=None, password=None,
                  disable_validation=True, disable_annotation=False):
@@ -68,7 +44,7 @@ class CvaClient(RestClient):
         self._transactions_client = None
 
     def _get_token(self):
-        results, _ = self._post(self._AUTHENTICATION, payload={
+        results, _ = self._post(self._AUTHENTICATION_ENDPOINT, payload={
             'username': self._user,
             'password': self._password
         })

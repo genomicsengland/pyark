@@ -6,6 +6,26 @@ from protocols.cva_1_0_0 import PedigreeInjectRD, ParticipantInjectCancer, Tiere
 
 
 class DataIntakeClient(cva_client.CvaClient):
+
+    _TIERED_VARIANT_RD_POST = "tiered-variants/rd"
+    _CANDIDATE_VARIANT_RD_POST = "candidate-variants/rd"
+    _REPORTED_VARIANT_RD_POST = "reported-variants/rd"
+    _EXIT_QUESTIONAIRES_RD_POST = "exit-questionnaires/rd"
+    _TIERED_VARIANT_CANCER_POST = "tiered-variants/cancer"
+    _CANDIDATE_VARIANT_CANCER_POST = "candidate-variants/cancer"
+    _REPORTED_VARIANT_CANCER_POST = "reported-variants/cancer"
+    _EXIT_QUESTIONAIRES_CANCER_POST = "exit-questionnaires/cancer"
+    _PEDIGREE_POST = "pedigrees"
+    _PARTICIPANT_POST = "participants"
+
+    # mocked data endpoints
+    # _TIERED_VARIANTS_INJECT_RD = "mocked-data/rd/tiered-variant-inject"
+    # _CANDIDATE_VARIANTS_INJECT_RD = "mocked-data/rd/candidate-variant-inject"
+    # _REPORTED_VARIANTS_INJECT_RD = "mocked-data/rd/reported-variant-inject"
+    # _TIERED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/tiered-variant-inject"
+    # _CANDIDATE_VARIANTS_INJECT_CANCER = "mocked-data/cancer/candidate-variant-inject"
+    # _REPORTED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/reported-variant-inject"
+
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 

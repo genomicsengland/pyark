@@ -3,6 +3,8 @@ import pyark.cva_client as cva_client
 
 class PanelsClient(cva_client.CvaClient):
 
+    _BASE_ENDPOINT = "panels"
+
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
@@ -14,7 +16,7 @@ class PanelsClient(cva_client.CvaClient):
         :rtype: list
         """
         params = {'use_versions': use_versions}
-        results, _ = self._get("panels/summary", params=params)
+        results, _ = self._get("{endpoint}/summary".format(endpoint=self._BASE_ENDPOINT), params=params)
         return self._render(results, as_data_frame)
 
     def get_all_panels(self):

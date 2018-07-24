@@ -5,6 +5,8 @@ from protocols.cva_1_0_0 import ReportEventEntry, Program, ReportEventType, Asse
 
 class ReportEventsClient(cva_client.CvaClient):
 
+    _BASE_ENDPOINT = "report-events"
+
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
@@ -18,7 +20,7 @@ class ReportEventsClient(cva_client.CvaClient):
     def _paginate_report_events(self, params):
         more_results = True
         while more_results:
-            results, next_page_params = self._get("report-events", params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
             report_events = list(map(lambda x: ReportEventEntry.fromJsonDict(x), results))
             if next_page_params:
                 params[cva_client.CvaClient._LIMIT_PARAM] = next_page_params[cva_client.CvaClient._LIMIT_PARAM]
@@ -32,8 +34,6 @@ class ReportEventsClient(cva_client.CvaClient):
         variants = 'variants'
         phenotypes = 'phenotypes'
         genes = 'genes'
-
-    _BASE_ENDPOINT = "report-events"
 
     @staticmethod
     def _by_gene_id(assembly, gene_id):
