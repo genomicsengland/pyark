@@ -33,13 +33,7 @@ class ReportEventsClient(cva_client.CvaClient):
         phenotypes = 'phenotypes'
         genes = 'genes'
 
-    @staticmethod
-    def _by_program_and_type(program, report_event_type):
-        return "report-events/programs/{program}/types/{type}".format(program=program, type=report_event_type)
-
-    @staticmethod
-    def _by_type(report_event_type):
-        return "report-events/types/{type}".format(type=report_event_type)
+    BASE_ENDPOINT = "report-events"
 
     @staticmethod
     def _by_gene_id(assembly, gene_id):
@@ -58,6 +52,15 @@ class ReportEventsClient(cva_client.CvaClient):
         return "genomic-regions/{assembly}/{chromosome}/{start}/{end}".format(
             assembly=assembly, chromosome=chromosome, start=start, end=end)
 
+    def _get_report_events_aggregation_query(self, path, program, report_event_type, include_aggregations, params):
+        if params is None:
+            params = {}
+        if program:
+            params['program'] = program
+        if report_event_type:
+            params['type'] = report_event_type
+        return self.get_aggregation_query(path, include_aggregations, params)
+
     def get_variants_by_gene_id(self, program, report_event_type, assembly, gene_id,
                                 include_aggregations=False, params={}):
         """
@@ -70,10 +73,11 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [self.BASE_ENDPOINT,
                 ReportEventsClient._by_gene_id(assembly, gene_id),
                 self.OutputEntities.variants.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_report_events_aggregation_query(
+            path, program, report_event_type, include_aggregations, params)
 
     def get_variants_by_transcript_id(self, program, report_event_type, assembly, transcript_id,
                                       include_aggregations=False, params={}):
@@ -87,10 +91,11 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [self.BASE_ENDPOINT,
                 ReportEventsClient._by_transcript_id(assembly, transcript_id),
                 self.OutputEntities.variants.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_report_events_aggregation_query(
+            path, program, report_event_type, include_aggregations, params)
 
     def get_variants_by_gene_symbol(self, program, report_event_type, assembly, gene_symbol,
                                     include_aggregations=False, params={}):
@@ -104,10 +109,11 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [self.BASE_ENDPOINT,
                 ReportEventsClient._by_gene_symbol(assembly, gene_symbol),
                 self.OutputEntities.variants.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_report_events_aggregation_query(
+            path, program, report_event_type, include_aggregations, params)
 
     def get_variants_by_genomic_region(self, program, report_event_type, assembly, chromosome, start, end,
                                        include_aggregations=False, params={}):
@@ -123,10 +129,11 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [self.BASE_ENDPOINT,
                 ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
                 self.OutputEntities.variants.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_report_events_aggregation_query(
+            path, program, report_event_type, include_aggregations, params)
 
     def get_phenotypes_by_gene_id(self, program, report_event_type, assembly, gene_id,
                                   include_aggregations=False, params={}):
@@ -140,10 +147,11 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [self.BASE_ENDPOINT,
                 ReportEventsClient._by_gene_id(assembly, gene_id),
                 self.OutputEntities.phenotypes.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_report_events_aggregation_query(
+            path, program, report_event_type, include_aggregations, params)
 
     def get_phenotypes_by_transcript_id(self, program, report_event_type, assembly, transcript_id,
                                         include_aggregations=False, params={}):
@@ -157,10 +165,11 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [self.BASE_ENDPOINT,
                 ReportEventsClient._by_transcript_id(assembly, transcript_id),
                 self.OutputEntities.phenotypes.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_report_events_aggregation_query(
+            path, program, report_event_type, include_aggregations, params)
 
     def get_phenotypes_by_gene_symbol(self, program, report_event_type, assembly, gene_symbol,
                                       include_aggregations=False, params={}):
@@ -174,10 +183,11 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [self.BASE_ENDPOINT,
                 ReportEventsClient._by_gene_symbol(assembly, gene_symbol),
                 self.OutputEntities.phenotypes.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_report_events_aggregation_query(
+            path, program, report_event_type, include_aggregations, params)
 
     def get_phenotypes_by_genomic_region(self, program, report_event_type, assembly, chromosome, start, end,
                                          include_aggregations=False, params={}):
@@ -193,10 +203,11 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [self.BASE_ENDPOINT,
                 ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
                 self.OutputEntities.phenotypes.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_report_events_aggregation_query(
+            path, program, report_event_type, include_aggregations, params)
 
     def get_genes_by_genomic_region(self, program, report_event_type, assembly, chromosome, start, end,
                                     include_aggregations=False, params={}):
@@ -212,7 +223,8 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [ReportEventsClient._by_program_and_type(program, report_event_type),
+        path = [self.BASE_ENDPOINT,
                 ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
                 self.OutputEntities.genes.value]
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_report_events_aggregation_query(
+            path, program, report_event_type, include_aggregations, params)
