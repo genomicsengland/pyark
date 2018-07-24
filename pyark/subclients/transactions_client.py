@@ -7,7 +7,7 @@ class TransactionsClient(cva_client.CvaClient):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
     def get_transaction(self, transaction_id, just_return_status=False):
-        results = self.get("transactions/{identifier}".format(identifier=transaction_id))
+        results = self._get("transactions/{identifier}".format(identifier=transaction_id))
 
         def status_transform(x):
             return x[0][0]['status']
@@ -23,7 +23,7 @@ class TransactionsClient(cva_client.CvaClient):
         self._format_results(results, status_transform, transaction_id, just_return_status)
 
     def get_transactions(self, params={}):
-        return self.get("transactions", params=params)
+        return self._get("transactions", params=params)
 
     @staticmethod
     def _format_results(items, transform, transaction_id, just_return_status):

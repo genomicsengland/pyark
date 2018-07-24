@@ -6,41 +6,41 @@ from pyark.rest_client import RestClient
 
 class CvaClient(RestClient):
 
-    regx = re.compile("^test_", re.IGNORECASE)
+    _regx = re.compile("^test_", re.IGNORECASE)
 
-    ENDPOINT_BASE = "cva/api/0"
+    _ENDPOINT_BASE = "cva/api/0"
 
-    LIMIT_PARAM = 'limit'
-    MARKER_PARAM = 'marker'
-    LIMIT_HEADER = 'X-Pagination-Limit'
-    MARKER_HEADER = 'X-Pagination-Marker'
+    _LIMIT_PARAM = 'limit'
+    _MARKER_PARAM = 'marker'
+    _LIMIT_HEADER = 'X-Pagination-Limit'
+    _MARKER_HEADER = 'X-Pagination-Marker'
 
     # mocked data endpoints
-    TIERED_VARIANTS_INJECT_RD = "mocked-data/rd/tiered-variant-inject"
-    CANDIDATE_VARIANTS_INJECT_RD = "mocked-data/rd/candidate-variant-inject"
-    REPORTED_VARIANTS_INJECT_RD = "mocked-data/rd/reported-variant-inject"
-    TIERED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/tiered-variant-inject"
-    CANDIDATE_VARIANTS_INJECT_CANCER = "mocked-data/cancer/candidate-variant-inject"
-    REPORTED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/reported-variant-inject"
+    _TIERED_VARIANTS_INJECT_RD = "mocked-data/rd/tiered-variant-inject"
+    _CANDIDATE_VARIANTS_INJECT_RD = "mocked-data/rd/candidate-variant-inject"
+    _REPORTED_VARIANTS_INJECT_RD = "mocked-data/rd/reported-variant-inject"
+    _TIERED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/tiered-variant-inject"
+    _CANDIDATE_VARIANTS_INJECT_CANCER = "mocked-data/cancer/candidate-variant-inject"
+    _REPORTED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/reported-variant-inject"
     # post report events endpoints
-    TIERED_VARIANT_RD_POST = "tiered-variants/rd"
-    CANDIDATE_VARIANT_RD_POST = "candidate-variants/rd"
-    REPORTED_VARIANT_RD_POST = "reported-variants/rd"
-    EXIT_QUESTIONAIRES_RD_POST = "exit-questionnaires/rd"
-    TIERED_VARIANT_CANCER_POST = "tiered-variants/cancer"
-    CANDIDATE_VARIANT_CANCER_POST = "candidate-variants/cancer"
-    REPORTED_VARIANT_CANCER_POST = "reported-variants/cancer"
-    EXIT_QUESTIONAIRES_CANCER_POST = "exit-questionnaires/cancer"
+    _TIERED_VARIANT_RD_POST = "tiered-variants/rd"
+    _CANDIDATE_VARIANT_RD_POST = "candidate-variants/rd"
+    _REPORTED_VARIANT_RD_POST = "reported-variants/rd"
+    _EXIT_QUESTIONAIRES_RD_POST = "exit-questionnaires/rd"
+    _TIERED_VARIANT_CANCER_POST = "tiered-variants/cancer"
+    _CANDIDATE_VARIANT_CANCER_POST = "candidate-variants/cancer"
+    _REPORTED_VARIANT_CANCER_POST = "reported-variants/cancer"
+    _EXIT_QUESTIONAIRES_CANCER_POST = "exit-questionnaires/cancer"
     # post other entities
-    PEDIGREE_POST = "pedigrees"
-    PARTICIPANT_POST = "participants"
+    _PEDIGREE_POST = "pedigrees"
+    _PARTICIPANT_POST = "participants"
     # other entities
-    TRANSACTIONS = "transactions"
-    REPORT_EVENTS = "report-events"
-    VARIANTS = "variants"
-    EVIDENCES = "evidences"
+    _TRANSACTIONS = "transactions"
+    _REPORT_EVENTS = "report-events"
+    _VARIANTS = "variants"
+    _EVIDENCES = "evidences"
     # authentication endpoint
-    AUTHENTICATION = "authentication"
+    _AUTHENTICATION = "authentication"
 
     def __init__(self, url_base, token=None, user=None, password=None,
                  disable_validation=True, disable_annotation=False):
@@ -48,43 +48,43 @@ class CvaClient(RestClient):
         if not (token or (user and password is not None)):
             logging.error("Credentials are required. Either token or user/password.")
             raise ValueError("Missing credentials")
-        RestClient.__init__(self, url_base, self.ENDPOINT_BASE)
-        self.disable_validation = disable_validation
-        self.disable_annotation = disable_annotation
-        self.push_data_params = {'disable_validation': self.disable_validation,
-                                 'disable_annotation': self.disable_annotation}
-        self.token = "Bearer {}".format(token.replace("Bearer ", "")) if token else None
-        self.user = user
-        self.password = password
-        if self.token or (self.user is not None and self.password is not None):
-            self.set_authenticated_header()
+        RestClient.__init__(self, url_base, self._ENDPOINT_BASE)
+        self._disable_validation = disable_validation
+        self._disable_annotation = disable_annotation
+        self._push_data_params = {'disable_validation': self._disable_validation,
+                                 'disable_annotation': self._disable_annotation}
+        self._token = "Bearer {}".format(token.replace("Bearer ", "")) if token else None
+        self._user = user
+        self._password = password
+        if self._token or (self._user is not None and self._password is not None):
+            self._set_authenticated_header()
         # initialise subclients
-        self.report_events_client = None
-        self.panels_client = None
-        self.cases_client = None
-        self.variants_client = None
-        self.lift_overs_client = None
-        self.data_intake_client = None
-        self.transactions_client = None
+        self._report_events_client = None
+        self._panels_client = None
+        self._cases_client = None
+        self._variants_client = None
+        self._lift_overs_client = None
+        self._data_intake_client = None
+        self._transactions_client = None
 
-    def get_token(self):
-        results, _ = self.post(self.AUTHENTICATION, payload={
-            'username': self.user,
-            'password': self.password
+    def _get_token(self):
+        results, _ = self._post(self._AUTHENTICATION, payload={
+            'username': self._user,
+            'password': self._password
         })
         return "Bearer {}".format(results[0]['token'])
 
-    def post(self, endpoint, payload, params={}, session=True):
-        response, headers = super(CvaClient, self).post(endpoint, payload, params, session)
-        return CvaClient.parse_result(response), CvaClient.build_next_page_params(headers)
+    def _post(self, endpoint, payload, params={}, session=True):
+        response, headers = super(CvaClient, self)._post(endpoint, payload, params, session)
+        return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
-    def get(self, endpoint, params={}, session=True):
-        response, headers = super(CvaClient, self).get(endpoint, params, session)
-        return CvaClient.parse_result(response), CvaClient.build_next_page_params(headers)
+    def _get(self, endpoint, params={}, session=True):
+        response, headers = super(CvaClient, self)._get(endpoint, params, session)
+        return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
-    def delete(self, endpoint, params={}):
-        response, headers = super(CvaClient, self).delete(endpoint, params)
-        return CvaClient.parse_result(response), CvaClient.build_next_page_params(headers)
+    def _delete(self, endpoint, params={}):
+        response, headers = super(CvaClient, self)._delete(endpoint, params)
+        return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
     def report_events(self):
         """
@@ -94,11 +94,11 @@ class CvaClient(RestClient):
         """
         # NOTE: this import needs to be here due to circular imports
         import pyark.subclients.report_events_client
-        if self.report_events_client is None:
+        if self._report_events_client is None:
             # initialise subclients
-            self.report_events_client = pyark.subclients.report_events_client.ReportEventsClient(
-                self.url_base, self.token)
-        return self.report_events_client
+            self._report_events_client = pyark.subclients.report_events_client.ReportEventsClient(
+                self._url_base, self._token)
+        return self._report_events_client
 
     def panels(self):
         """
@@ -108,10 +108,10 @@ class CvaClient(RestClient):
         """
         # NOTE: this import needs to be here due to circular imports
         import pyark.subclients.panels_client
-        if self.panels_client is None:
+        if self._panels_client is None:
             # initialise subclients
-            self.panels_client = pyark.subclients.panels_client.PanelsClient(self.url_base, self.token)
-        return self.panels_client
+            self._panels_client = pyark.subclients.panels_client.PanelsClient(self._url_base, self._token)
+        return self._panels_client
 
     def cases(self):
         """
@@ -121,11 +121,11 @@ class CvaClient(RestClient):
         """
         # NOTE: this import needs to be here due to circular imports
         import pyark.subclients.cases_client
-        if self.cases_client is None:
+        if self._cases_client is None:
             # initialise subclients
-            self.cases_client = pyark.subclients.cases_client.CasesClient(
-                self.url_base, self.token)
-        return self.cases_client
+            self._cases_client = pyark.subclients.cases_client.CasesClient(
+                self._url_base, self._token)
+        return self._cases_client
 
     def variants(self):
         """
@@ -135,11 +135,11 @@ class CvaClient(RestClient):
         """
         # NOTE: this import needs to be here due to circular imports
         import pyark.subclients.variants_client
-        if self.variants_client is None:
+        if self._variants_client is None:
             # initialise subclients
-            self.variants_client = pyark.subclients.variants_client.VariantsClient(
-                self.url_base, self.token)
-        return self.variants_client
+            self._variants_client = pyark.subclients.variants_client.VariantsClient(
+                self._url_base, self._token)
+        return self._variants_client
 
     def transactions(self):
         """
@@ -149,11 +149,11 @@ class CvaClient(RestClient):
         """
         # NOTE: this import needs to be here due to circular imports
         import pyark.subclients.transactions_client
-        if self.transactions_client is None:
+        if self._transactions_client is None:
             # initialise subclients
-            self.transactions_client = pyark.subclients.transactions_client.TransactionsClient(
-                self.url_base, self.token)
-        return self.transactions_client
+            self._transactions_client = pyark.subclients.transactions_client.TransactionsClient(
+                self._url_base, self._token)
+        return self._transactions_client
 
     def lift_overs(self):
         """
@@ -163,11 +163,11 @@ class CvaClient(RestClient):
         """
         # NOTE: this import needs to be here due to circular imports
         import pyark.subclients.lift_over_client
-        if self.lift_overs_client is None:
+        if self._lift_overs_client is None:
             # initialise subclients
-            self.lift_overs_client = pyark.subclients.lift_over_client.LiftOverClient(
-                self.url_base, self.token)
-        return self.lift_overs_client
+            self._lift_overs_client = pyark.subclients.lift_over_client.LiftOverClient(
+                self._url_base, self._token)
+        return self._lift_overs_client
 
     def data_intake(self):
         """
@@ -177,24 +177,24 @@ class CvaClient(RestClient):
         """
         # NOTE: this import needs to be here due to circular imports
         import pyark.subclients.data_intake_client
-        if self.data_intake_client is None:
+        if self._data_intake_client is None:
             # initialise subclients
-            self.data_intake_client = pyark.subclients.data_intake_client.DataIntakeClient(
-                self.url_base, self.token)
-        return self.data_intake_client
+            self._data_intake_client = pyark.subclients.data_intake_client.DataIntakeClient(
+                self._url_base, self._token)
+        return self._data_intake_client
 
     @staticmethod
-    def build_next_page_params(headers):
+    def _build_next_page_params(headers):
         next_page_params = {}
-        limit = headers.get(CvaClient.LIMIT_HEADER, None)
-        marker = headers.get(CvaClient.MARKER_HEADER, None)
+        limit = headers.get(CvaClient._LIMIT_HEADER, None)
+        marker = headers.get(CvaClient._MARKER_HEADER, None)
         if marker:
-            next_page_params[CvaClient.LIMIT_PARAM] = limit
-            next_page_params[CvaClient.MARKER_PARAM] = marker
+            next_page_params[CvaClient._LIMIT_PARAM] = limit
+            next_page_params[CvaClient._MARKER_PARAM] = marker
         return next_page_params
 
     @staticmethod
-    def parse_result(response):
+    def _parse_result(response):
         logging.info("Response time : {} ms".format(response.get('time', None)))
         error = response.get('error', None)
         if error:
@@ -209,7 +209,7 @@ class CvaClient(RestClient):
             return []
 
     @staticmethod
-    def results2dict(results):
+    def _results2dict(results):
         """
         Flattens results dictionary making the value in '_id' the key and the rest the value
         :param results:
@@ -220,7 +220,7 @@ class CvaClient(RestClient):
         return dict(map(lambda x: (x['_id'], {key: x[key] for key in x if key != '_id'}), results))
 
     @staticmethod
-    def results2list(results):
+    def _results2list(results):
         """
         Flattens results dictionary into a list of those elements in the key '_id'
         :param results:
@@ -230,7 +230,7 @@ class CvaClient(RestClient):
         """
         return list(map(lambda x: x['_id'], results))
 
-    def get_aggregation_query(self, path, include_aggregations=False, params={}):
+    def _get_aggregation_query(self, path, include_aggregations=False, params={}):
         """
 
         :param path:
@@ -245,18 +245,18 @@ class CvaClient(RestClient):
         if not params:
             params = {}
         params['include_aggregations'] = include_aggregations
-        results, _ = self.get("/".join(path), params=params)
+        results, _ = self._get("/".join(path), params=params)
         if include_aggregations:
-            return CvaClient.results2dict(results)
+            return CvaClient._results2dict(results)
         else:
-            return CvaClient.results2list(results)
+            return CvaClient._results2list(results)
 
-    def render_single_result(self, results, as_data_frame=True):
+    def _render_single_result(self, results, as_data_frame=True):
         first = results[0]
-        return self.render(first, as_data_frame)
+        return self._render(first, as_data_frame)
 
     @staticmethod
-    def render(results, as_data_frame=True):
+    def _render(results, as_data_frame=True):
         if as_data_frame:
             return json_normalize(results)
         else:

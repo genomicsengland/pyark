@@ -16,7 +16,7 @@ class VariantsClient(cva_client.CvaClient):
         :return:
         :rtype: Variant
         """
-        results, _ = self.get("variants/{identifier}".format(identifier=identifier))
+        results, _ = self._get("variants/{identifier}".format(identifier=identifier))
         if not results:
             logging.warning("No variant found with id {}".format(identifier))
             return None

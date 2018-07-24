@@ -14,8 +14,8 @@ class PanelsClient(cva_client.CvaClient):
         :rtype: list
         """
         params = {'use_versions': use_versions}
-        results, _ = self.get("panels/summary", params=params)
-        return self.render(results, as_data_frame)
+        results, _ = self._get("panels/summary", params=params)
+        return self._render(results, as_data_frame)
 
     def get_all_panels(self):
         """
