@@ -8,12 +8,14 @@ SIMILARITY_METRICS = ["RESNIK", "JACCARD", "PHENODIGM"]
 
 class CasesClient(cva_client.CvaClient):
 
+    _BASE_ENDPOINT = "cases"
+
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
     def get_cases(self, params={}):
         if params.get('count', False):
-            results, next_page_params = self._get("cases", params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
             return results[0]
         else:
             return self._paginate_cases(params)
@@ -21,7 +23,7 @@ class CasesClient(cva_client.CvaClient):
     def _paginate_cases(self, params):
         more_results = True
         while more_results:
-            results, next_page_params = self._get("cases", params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
             cases = list(results)
             if next_page_params:
                 params[cva_client.CvaClient._LIMIT_PARAM] = next_page_params[cva_client.CvaClient._LIMIT_PARAM]
@@ -35,8 +37,6 @@ class CasesClient(cva_client.CvaClient):
         variants = 'variants'
         phenotypes = 'phenotypes'
         genes = 'genes'
-
-    _BASE_ENDPOINT = "cases"
 
     @staticmethod
     def _by_gene_id(assembly, gene_id):
@@ -65,7 +65,7 @@ class CasesClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        results, _ = self._get("cases/summary", params)
+        results, _ = self._get("{endpoint}/summary".format(endpoint=self._BASE_ENDPOINT), params)
         if not results:
             logging.warning("No summary found")
             return None
@@ -79,7 +79,8 @@ class CasesClient(cva_client.CvaClient):
         :type version: str
         :return:
         """
-        results, _ = self._get("cases/{identifier}/{version}".format(identifier=identifier, version=version))
+        results, _ = self._get("{endpoint}/{identifier}/{version}".format(
+            endpoint=self._BASE_ENDPOINT, identifier=identifier, version=version))
         if not results:
             logging.warning("No case found with id-version {}-{}".format(identifier, version))
             return None
@@ -272,10 +273,12 @@ class CasesClient(cva_client.CvaClient):
         assert similarity_metric in SIMILARITY_METRICS, \
             "Invalid similarity metric provided '{}'. Valid values: {}".format(similarity_metric, SIMILARITY_METRICS)
 
+        if params is None:
+            params = {}
         params['similarity_metric'] = similarity_metric
         params['limit'] = limit
-        results, _ = self._get("cases/{case_id}/{case_version}/similar-cases"
-                              .format(case_id=case_id, case_version=case_version), params)
+        results, _ = self._get("{endpoint}/{case_id}/{case_version}/similar-cases".format(
+            endpoint=self._BASE_ENDPOINT, case_id=case_id, case_version=case_version), params)
         if not results:
             logging.warning("No similar cases found")
             return None
@@ -292,11 +295,13 @@ class CasesClient(cva_client.CvaClient):
         assert similarity_metric in SIMILARITY_METRICS, \
             "Invalid similarty metric provided '{}'. Valid values: {}".format(similarity_metric, SIMILARITY_METRICS)
         assert len(phenotypes) > 0, "At least one phenotype must be provided"
+        if params is None:
+            params = {}
         params['similarity_metric'] = similarity_metric
         params['limit'] = limit
         params['hpo_ids'] = phenotypes
         results, _ = self._get(
-            "cases/phenotypes/similar-cases".format(metric=similarity_metric, limit=limit), params)
+            "{endpoint}/phenotypes/similar-cases".format(endpoint=self._BASE_ENDPOINT), params)
         if not results:
             logging.warning("No similar cases found")
             return None
