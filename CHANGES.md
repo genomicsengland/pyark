@@ -1,3 +1,9 @@
+v0.9.0
+======
+
+* Changed endpoints for report events and cases
+
+
 v0.5.0
 ======
 
