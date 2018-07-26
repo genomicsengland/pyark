@@ -159,6 +159,25 @@ class CasesClient(cva_client.CvaClient):
             params['panel_version'] = panel_version
         return self._get_cases_aggregation_query(path, program, include_aggregations, params)
 
+    def get_genes_by_panel(self, program, panel_name, panel_version,
+                              include_aggregations=False, params={}):
+        """
+        :type program: Program
+        :type panel_name: str
+        :type panel_version: str
+        :type include_aggregations: bool
+        :type params: dict
+        :return:
+        """
+        path = [self._BASE_ENDPOINT,
+                CasesClient._by_panel(panel_name),
+                self._OutputEntities.genes.value]
+        if params is None:
+            params = {}
+        if panel_version:
+            params['panel_version'] = panel_version
+        return self._get_cases_aggregation_query(path, program, include_aggregations, params)
+
     def get_variants_by_genomic_region(self, program, assembly, chromosome, start, end,
                                        include_aggregations=False, params={}):
         """
