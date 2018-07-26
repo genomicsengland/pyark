@@ -18,14 +18,6 @@ class DataIntakeClient(cva_client.CvaClient):
     _PEDIGREE_POST = "pedigrees"
     _PARTICIPANT_POST = "participants"
 
-    # mocked data endpoints
-    # _TIERED_VARIANTS_INJECT_RD = "mocked-data/rd/tiered-variant-inject"
-    # _CANDIDATE_VARIANTS_INJECT_RD = "mocked-data/rd/candidate-variant-inject"
-    # _REPORTED_VARIANTS_INJECT_RD = "mocked-data/rd/reported-variant-inject"
-    # _TIERED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/tiered-variant-inject"
-    # _CANDIDATE_VARIANTS_INJECT_CANCER = "mocked-data/cancer/candidate-variant-inject"
-    # _REPORTED_VARIANTS_INJECT_CANCER = "mocked-data/cancer/reported-variant-inject"
-
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
