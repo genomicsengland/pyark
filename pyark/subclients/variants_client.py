@@ -5,6 +5,8 @@ import logging
 
 class VariantsClient(cva_client.CvaClient):
 
+    _BASE_ENDPOINT = "variants"
+
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
@@ -16,7 +18,8 @@ class VariantsClient(cva_client.CvaClient):
         :return:
         :rtype: Variant
         """
-        results, _ = self.get("variants/{identifier}".format(identifier=identifier))
+        results, _ = self._get("{endpoint}/{identifier}".format(
+            endpoint=self._BASE_ENDPOINT, identifier=identifier))
         if not results:
             logging.warning("No variant found with id {}".format(identifier))
             return None
