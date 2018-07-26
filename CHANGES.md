@@ -2,7 +2,7 @@ v0.9.0
 ======
 
 * Changed endpoints for report events and cases
-
+* Hidden some fields and methods to end user
 
 v0.5.0
 ======

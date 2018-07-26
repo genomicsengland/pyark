@@ -5,35 +5,35 @@ from protocols.cva_1_0_0 import ReportEventEntry, Program, ReportEventType, Asse
 
 class ReportEventsClient(cva_client.CvaClient):
 
+    _BASE_ENDPOINT = "report-events"
+
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
     def get_report_events(self, params={}):
         if params.get('count', False):
-            results, next_page_params = self.get("cases", params=params)
+            results, next_page_params = self._get("cases", params=params)
             return results[0]
         else:
-            return self.paginate_report_events(params)
+            return self._paginate_report_events(params)
 
-    def paginate_report_events(self, params):
+    def _paginate_report_events(self, params):
         more_results = True
         while more_results:
-            results, next_page_params = self.get("report-events", params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
             report_events = list(map(lambda x: ReportEventEntry.fromJsonDict(x), results))
             if next_page_params:
-                params[cva_client.CvaClient.LIMIT_PARAM] = next_page_params[cva_client.CvaClient.LIMIT_PARAM]
-                params[cva_client.CvaClient.MARKER_PARAM] = next_page_params[cva_client.CvaClient.MARKER_PARAM]
+                params[cva_client.CvaClient._LIMIT_PARAM] = next_page_params[cva_client.CvaClient._LIMIT_PARAM]
+                params[cva_client.CvaClient._MARKER_PARAM] = next_page_params[cva_client.CvaClient._MARKER_PARAM]
             else:
                 more_results = False
             for report_event in report_events:
                 yield report_event
 
-    class OutputEntities(Enum):
+    class _OutputEntities(Enum):
         variants = 'variants'
         phenotypes = 'phenotypes'
         genes = 'genes'
-
-    BASE_ENDPOINT = "report-events"
 
     @staticmethod
     def _by_gene_id(assembly, gene_id):
@@ -59,7 +59,7 @@ class ReportEventsClient(cva_client.CvaClient):
             params['program'] = program
         if report_event_type:
             params['type'] = report_event_type
-        return self.get_aggregation_query(path, include_aggregations, params)
+        return self._get_aggregation_query(path, include_aggregations, params)
 
     def get_variants_by_gene_id(self, program, report_event_type, assembly, gene_id,
                                 include_aggregations=False, params={}):
@@ -73,9 +73,9 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self.BASE_ENDPOINT,
+        path = [self._BASE_ENDPOINT,
                 ReportEventsClient._by_gene_id(assembly, gene_id),
-                self.OutputEntities.variants.value]
+                self._OutputEntities.variants.value]
         return self._get_report_events_aggregation_query(
             path, program, report_event_type, include_aggregations, params)
 
@@ -91,9 +91,9 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self.BASE_ENDPOINT,
+        path = [self._BASE_ENDPOINT,
                 ReportEventsClient._by_transcript_id(assembly, transcript_id),
-                self.OutputEntities.variants.value]
+                self._OutputEntities.variants.value]
         return self._get_report_events_aggregation_query(
             path, program, report_event_type, include_aggregations, params)
 
@@ -109,9 +109,9 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self.BASE_ENDPOINT,
+        path = [self._BASE_ENDPOINT,
                 ReportEventsClient._by_gene_symbol(assembly, gene_symbol),
-                self.OutputEntities.variants.value]
+                self._OutputEntities.variants.value]
         return self._get_report_events_aggregation_query(
             path, program, report_event_type, include_aggregations, params)
 
@@ -129,9 +129,9 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self.BASE_ENDPOINT,
+        path = [self._BASE_ENDPOINT,
                 ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
-                self.OutputEntities.variants.value]
+                self._OutputEntities.variants.value]
         return self._get_report_events_aggregation_query(
             path, program, report_event_type, include_aggregations, params)
 
@@ -147,9 +147,9 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self.BASE_ENDPOINT,
+        path = [self._BASE_ENDPOINT,
                 ReportEventsClient._by_gene_id(assembly, gene_id),
-                self.OutputEntities.phenotypes.value]
+                self._OutputEntities.phenotypes.value]
         return self._get_report_events_aggregation_query(
             path, program, report_event_type, include_aggregations, params)
 
@@ -165,9 +165,9 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self.BASE_ENDPOINT,
+        path = [self._BASE_ENDPOINT,
                 ReportEventsClient._by_transcript_id(assembly, transcript_id),
-                self.OutputEntities.phenotypes.value]
+                self._OutputEntities.phenotypes.value]
         return self._get_report_events_aggregation_query(
             path, program, report_event_type, include_aggregations, params)
 
@@ -183,9 +183,9 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self.BASE_ENDPOINT,
+        path = [self._BASE_ENDPOINT,
                 ReportEventsClient._by_gene_symbol(assembly, gene_symbol),
-                self.OutputEntities.phenotypes.value]
+                self._OutputEntities.phenotypes.value]
         return self._get_report_events_aggregation_query(
             path, program, report_event_type, include_aggregations, params)
 
@@ -203,9 +203,9 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self.BASE_ENDPOINT,
+        path = [self._BASE_ENDPOINT,
                 ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
-                self.OutputEntities.phenotypes.value]
+                self._OutputEntities.phenotypes.value]
         return self._get_report_events_aggregation_query(
             path, program, report_event_type, include_aggregations, params)
 
@@ -223,8 +223,8 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self.BASE_ENDPOINT,
+        path = [self._BASE_ENDPOINT,
                 ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
-                self.OutputEntities.genes.value]
+                self._OutputEntities.genes.value]
         return self._get_report_events_aggregation_query(
             path, program, report_event_type, include_aggregations, params)
