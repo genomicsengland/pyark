@@ -12,7 +12,7 @@ class ReportEventsClient(cva_client.CvaClient):
 
     def get_report_events(self, params={}):
         if params.get('count', False):
-            results, next_page_params = self._get("cases", params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
             return results[0]
         else:
             return self._paginate_report_events(params)
