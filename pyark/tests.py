@@ -304,11 +304,28 @@ class TestPyArk (TestCase):
         panel_name = "cakut"
 
         # gets variants
-        results = self.cases.get_variants_by_panel(Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=False)
+        results = self.cases.get_variants_by_panel(
+            Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=False)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, list))
 
-        results = self.cases.get_variants_by_panel(Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=True)
+        results = self.cases.get_variants_by_panel(
+            Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=True)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results[0], dict))
+
+    def test_get_cases_genes_by_panel(self):
+
+        panel_name = "cakut"
+
+        # gets variants
+        results = self.cases.get_genes_by_panel(
+            Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=False)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+        results = self.cases.get_genes_by_panel(
+            Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=True)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results[0], dict))
 
@@ -357,6 +374,66 @@ class TestPyArk (TestCase):
             assembly, chromosome, start, end, include_aggregations=True)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
+
+    def test_get_similar_cases_by_case(self):
+
+        case_id = "1000"
+        case_version = 1
+
+        results = self.cases.get_similar_cases_by_case(case_id, case_version, "PHENODIGM")
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+        results = self.cases.get_similar_cases_by_case(case_id, case_version, "PHENODIGM", limit=5)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+        self.assertTrue(len(results) == 5)
+
+        results = self.cases.get_similar_cases_by_case(case_id, case_version, "RESNIK")
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+        results = self.cases.get_similar_cases_by_case(case_id, case_version, "JACCARD")
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+    def test_get_similar_cases_by_phenotypes(self):
+
+        phenotypes = ["HP:0000006", "HP:0003186", "HP:0002365"]
+
+        results = self.cases.get_similar_cases_by_phenotypes(phenotypes, "PHENODIGM")
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+        results = self.cases.get_similar_cases_by_phenotypes(phenotypes, "PHENODIGM", limit=5)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+        self.assertTrue(len(results) == 5)
+
+        results = self.cases.get_similar_cases_by_phenotypes(phenotypes, "RESNIK")
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+        results = self.cases.get_similar_cases_by_phenotypes(phenotypes, "JACCARD")
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+    def test_get_shared_variants_cases(self):
+
+        case_id = "1000"
+        case_version = 1
+
+        results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.tiered)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+        results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.reported)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+        results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.questionnaire)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
 
     def test_get_variant_by_id(self):
 
