@@ -3,6 +3,14 @@ from protocols.cva_1_0_0 import Variant
 import logging
 
 
+_singleton_instance = None
+
+
+# NOTE: this method needs to be out of any class as it needs to be pickled (ie: serialised) by multiprocessing library
+def _get_variant_by_id(identifier):
+    return identifier, _singleton_instance.get_variant_by_id(identifier)
+
+
 class VariantsClient(cva_client.CvaClient):
 
     _BASE_ENDPOINT = "variants"
@@ -12,10 +20,7 @@ class VariantsClient(cva_client.CvaClient):
 
     def get_variant_by_id(self, identifier):
         """
-
-        :param identifier:
         :type identifier: str
-        :return:
         :rtype: Variant
         """
         results, _ = self._get("{endpoint}/{identifier}".format(
@@ -26,3 +31,15 @@ class VariantsClient(cva_client.CvaClient):
         assert len(results) == 1, "Unexpected number of variants returned when searching by identifier"
         variant = Variant.fromJsonDict(results[0])
         return variant
+
+    def get_variants_by_id(self, identifiers):
+        """
+        :type identifiers: list
+        :rtype: dict
+        """
+        self._set_singleton()
+        return VariantsClient.run_parallel_requests(_get_variant_by_id, identifiers)
+
+    def _set_singleton(self):
+        global _singleton_instance
+        _singleton_instance = self

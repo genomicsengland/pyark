@@ -2,6 +2,7 @@ import re
 import logging
 from pandas.io.json import json_normalize
 from pyark.rest_client import RestClient
+import multiprocessing
 
 
 class CvaClient(RestClient):
@@ -61,6 +62,19 @@ class CvaClient(RestClient):
     def _delete(self, endpoint, params={}):
         response, headers = super(CvaClient, self)._delete(endpoint, params)
         return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
+
+    @staticmethod
+    def run_parallel_requests(method, parameters):
+        """
+        :type method: function
+        :type parameters: list
+        :rtype: object
+        """
+        pool = multiprocessing.Pool(processes=10)
+        results = dict(pool.map(method, parameters))
+        pool.close()
+        pool.join()
+        return results
 
     def report_events(self):
         """
