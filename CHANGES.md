@@ -1,8 +1,15 @@
+v0.10.0
+======
+
+* Added endpoint to get cases having shared variants
+* Refactored endpoints that fetch gene summaries
+
 v0.9.0
 ======
 
 * Changed endpoints for report events and cases
 * Hidden some fields and methods to end user
+* Added endpoint to fetch genes by panel
 
 v0.5.0
 ======
