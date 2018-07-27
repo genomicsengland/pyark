@@ -1,9 +1,11 @@
 import pyark.cva_client as cva_client
-from protocols.cva_1_0_0 import Program, Assembly
+from protocols.cva_1_0_0 import Program, Assembly, ReportEventType
 import logging
 from enum import Enum
 
 SIMILARITY_METRICS = ["RESNIK", "JACCARD", "PHENODIGM"]
+REPORT_EVENT_TYPES = [ReportEventType.tiered, ReportEventType.candidate, ReportEventType.reported,
+                      ReportEventType.questionnaire]
 
 
 class CasesClient(cva_client.CvaClient):
@@ -323,5 +325,27 @@ class CasesClient(cva_client.CvaClient):
             "{endpoint}/phenotypes/similar-cases".format(endpoint=self._BASE_ENDPOINT), params)
         if not results:
             logging.warning("No similar cases found")
+            return None
+        return results
+
+    def get_shared_variants_cases_by_case(self, case_id, case_version, report_event_type, limit=10, params={}):
+        """
+        :type case_id: str
+        :type case_version: int
+        :type report_event_type: ReportEventType
+        :type limit: int
+        :type params: dict
+        :return:
+        """
+        assert report_event_type in REPORT_EVENT_TYPES, \
+            "Invalid report event type provided '{}'. Valid values: {}".format(report_event_type, REPORT_EVENT_TYPES)
+        if params is None:
+            params = {}
+        params['type'] = report_event_type
+        params['limit'] = limit
+        results, _ = self._get("{endpoint}/{case_id}/{case_version}/shared-variants".format(
+            endpoint=self._BASE_ENDPOINT, case_id=case_id, case_version=case_version), params)
+        if not results:
+            logging.warning("No cases sharing {} variants  found".format(report_event_type))
             return None
         return results

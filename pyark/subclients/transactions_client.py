@@ -19,7 +19,7 @@ class TransactionsClient(cva_client.CvaClient):
         return self._format_results(results, status_transform, transaction_id, just_return_status)
 
     def retry_transaction(self, transaction_id, just_return_status=False):
-        results = self.patch("{endpoint}/{identifier}".format(
+        results = self._patch("{endpoint}/{identifier}".format(
             endpoint=self._BASE_ENDPOINT, identifier=transaction_id))
 
         def status_transform(x):
