@@ -5,6 +5,8 @@ import pyark.models_mapping
 
 class LiftOverClient(cva_client.CvaClient):
 
+    _BASE_ENDPOINT = "lift-overs"
+
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
@@ -25,7 +27,7 @@ class LiftOverClient(cva_client.CvaClient):
         variants_coordinates = VariantsCoordinates()
         variants_coordinates.variants = variant_coordinates_list
 
-        results, _ = self._post("lift-overs", payload=variants_coordinates.toJsonDict(),
+        results, _ = self._post(self._BASE_ENDPOINT, payload=variants_coordinates.toJsonDict(),
                                 params={'variant_format': variant_format, 'force_symmetric': force_symmetric})
         assert len(results) == len(variant_identifiers), "Some variants failed to lift over"
 
@@ -45,7 +47,7 @@ class LiftOverClient(cva_client.CvaClient):
         variants_coordinates = VariantsCoordinates()
         variants_coordinates.variants = variant_coordinates_list
 
-        results, _ = self._post("lift-overs", payload=variants_coordinates.toJsonDict(),
+        results, _ = self._post(self._BASE_ENDPOINT, payload=variants_coordinates.toJsonDict(),
                                 params={'variant_format': variant_format, 'force_symmetric': force_symmetric})
         assert len(results) == len(variant_coordinates_list), "Some variants failed to lift over"
 
