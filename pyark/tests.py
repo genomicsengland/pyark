@@ -371,6 +371,30 @@ class TestPyArk (TestCase):
         variant = self.variants.get_variant_by_id(identifier='whatever')
         self.assertFalse(variant)
 
+    def test_get_variants_by_id(self):
+
+        identifiers = ["GRCh38: 9: 110303682:C:G", "GRCh38: 4:  56810156:G:A", "GRCh38:12:  51346624:A:C"]
+        variants = self.variants.get_variants_by_id(identifiers=identifiers)
+        self.assertTrue(variants is not None)
+        self.assertTrue(isinstance(variants, dict))
+        self.assertTrue(len(variants) == len(identifiers))
+        [self.assertTrue(variants[v] is not None) for v in identifiers]
+
+        non_existing_identifiers = ['whatever', 'this', 'that']
+        variants = self.variants.get_variants_by_id(identifiers=non_existing_identifiers)
+        self.assertTrue(variants is not None)
+        self.assertTrue(isinstance(variants, dict))
+        self.assertTrue(len(variants) == len(non_existing_identifiers))
+        [self.assertTrue(variants[v] is None) for v in non_existing_identifiers]
+
+        mixed_identifiers = ['whatever', "GRCh38: 9: 110303682:C:G"]
+        variants = self.variants.get_variants_by_id(identifiers=mixed_identifiers)
+        self.assertTrue(variants is not None)
+        self.assertTrue(isinstance(variants, dict))
+        self.assertTrue(len(variants) == len(mixed_identifiers))
+        self.assertTrue(variants[mixed_identifiers[0]] is None)
+        self.assertTrue(variants[mixed_identifiers[1]] is not None)
+
     def test_post_pedigree(self):
         self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
 
