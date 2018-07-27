@@ -54,7 +54,8 @@ class RestClient(object):
             date=datetime.datetime.now(),
             method="POST",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems())
+            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems()
+                              if name != "Authorization")
         ))
         if session:
             response = self._session.post(url, json=payload, params=params, headers=self._headers)
@@ -71,7 +72,8 @@ class RestClient(object):
             date=datetime.datetime.now(),
             method="GET",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems())
+            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems()
+                              if name != "Authorization")
         ))
         if session:
             response = self._session.get(url, params=params, headers=self._headers)
@@ -88,7 +90,8 @@ class RestClient(object):
             date=datetime.datetime.now(),
             method="PATCH",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems())
+            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems()
+                              if name != "Authorization")
         ))
         if session:
             response = self._session.patch(url, params=params, headers=self._headers)
@@ -105,7 +108,8 @@ class RestClient(object):
             date=datetime.datetime.now(),
             method="DELETE",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems())
+            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems()
+                              if name != "Authorization")
         ))
         response = self._session.delete(url, params=params)
         self._verify_response(response)

@@ -35,27 +35,19 @@ class TestPyArk (TestCase):
 
     def test_get_report_events(self):
 
-        # all_report_events = self.report_events.get_report_events()
-        # page_count = 0
-        # for batch_report_events in all_report_events:
-        #     self.assertTrue(batch_report_events is not None)
-        #     # self.assertEqual(len(batch_report_events), 200)
-        #     # logging.info("Returned {} report events".format(len(batch_report_events)))
-        #     page_count += 1
-        #     if page_count == 5:
-        #         break
-        # self.assertEqual(page_count, 5)
-
-        all_report_events = self.report_events.get_report_events({'limit': 10})
-        page_count = 0
+        all_report_events = self.report_events.get_report_events({'limit': 2})
+        re_count = 0
         for batch_report_events in all_report_events:
             self.assertTrue(batch_report_events is not None)
-            # self.assertEqual(len(batch_report_events), 10)
-            # logging.info("Returned {} report events".format(len(batch_report_events)))
-            page_count += 1
-            if page_count == 5:
+            re_count += 1
+            if re_count == 5:
                 break
-        self.assertEqual(page_count, 5)
+        self.assertEqual(re_count, 5)
+
+    def test_count_report_events(self):
+
+        count = self.report_events.count_report_events()
+        self.assertTrue(type(count) == int)
 
     def test_get_by_gene_id(self):
 
@@ -238,6 +230,24 @@ class TestPyArk (TestCase):
             gene_id, include_aggregations=True)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, dict))
+
+    def test_get_cases(self):
+
+        all_cases = self.cases.get_cases({'limit': 2})
+        case_count = 0
+        for batch_cases in all_cases:
+            self.assertTrue(batch_cases is not None)
+            # self.assertEqual(len(batch_report_events), 10)
+            # logging.info("Returned {} report events".format(len(batch_report_events)))
+            case_count += 1
+            if case_count == 5:
+                break
+        self.assertEqual(case_count, 5)
+
+    def test_count_cases(self):
+
+        count = self.cases.count_cases()
+        self.assertTrue(type(count) == int)
 
     def test_get_cases_variants_by_transcript_id(self):
 
@@ -480,18 +490,23 @@ class TestPyArk (TestCase):
 
     def test_get_transactions(self):
         client = self.cva.transactions()
-        id_of_a_transaction = client.get_transactions(params={'limit': 1})[0][0]['id']
-        self.assertTrue(client.get_transaction(id_of_a_transaction))
+        tx = client.get_transactions(params={'limit': 1}).next()
+        self.assertTrue(client.get_transaction(tx.id))
         try:
-            self.assertTrue(client.retry_transaction(id_of_a_transaction))
+            self.assertTrue(client.retry_transaction(tx.id))
         except CvaServerError as e:
             # this should be a Done transaction so you can't retry it
             self.assertTrue("cannot be retried" in e.message)
 
+    def test_count_transactions(self):
+
+        count = self.cva.transactions().count_transactions()
+        self.assertTrue(type(count) == int)
+
     def test_get_transaction_status_only(self):
         client = self.cva.transactions()
-        id_of_a_transaction = client.get_transactions(params={'limit': 1})[0][0]['id']
-        self.assertEqual(client.get_transaction(id_of_a_transaction, just_return_status=True), 'DONE')
+        tx = client.get_transactions(params={'limit': 1}).next()
+        self.assertEqual(client.get_transaction(tx.id, just_return_status=True), 'DONE')
 
     def test_get_transaction_status_only_fails_if_no_results(self):
         client = self.cva.transactions()
