@@ -39,6 +39,7 @@ class CvaClient(RestClient):
         self._report_events_client = None
         self._panels_client = None
         self._cases_client = None
+        self._pedigrees_client = None
         self._variants_client = None
         self._lift_overs_client = None
         self._data_intake_client = None
@@ -116,6 +117,20 @@ class CvaClient(RestClient):
             self._cases_client = pyark.subclients.cases_client.CasesClient(
                 self._url_base, self._token)
         return self._cases_client
+
+    def pedigrees(self):
+        """
+
+        :return:
+        :rtype: CasesClient
+        """
+        # NOTE: this import needs to be here due to circular imports
+        import pyark.subclients.cases_client
+        if self._pedigrees_client is None:
+            # initialise subclients
+            self._pedigrees_client = pyark.subclients.pedigrees_client.PedigreesClient(
+                self._url_base, self._token)
+        return self._pedigrees_client
 
     def variants(self):
         """
