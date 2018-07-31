@@ -1,6 +1,7 @@
 import logging
 import os
 from unittest import TestCase
+import pandas as pd
 
 from mock import patch
 from protocols.cva_1_0_0 import ReportEventType, Assembly, Variant, PedigreeInjectRD, ParticipantInjectCancer
@@ -30,8 +31,39 @@ class TestPyArk (TestCase):
         self.report_events = self.cva.report_events()
         self.panels = self.cva.panels()
         self.cases = self.cva.cases()
+        self.pedigrees = self.cva.pedigrees()
         self.variants = self.cva.variants()
         self.data_intake = self.cva.data_intake()
+
+    def test_get_case(self):
+
+        case_id = "1000"
+        case_version = 1
+
+        # gets case
+        result = self.cases.get_case(case_id, case_version)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, dict))
+
+        # gets pedigree
+        result = self.cases.get_case(case_id, case_version, as_data_frame=True)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, pd.DataFrame))
+
+    def test_get_pedigree(self):
+
+        case_id = "1000"
+        case_version = 1
+
+        # gets pedigree
+        result = self.pedigrees.get_pedigree(case_id, case_version)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, dict))
+
+        # gets pedigree
+        result = self.pedigrees.get_pedigree(case_id, case_version, as_data_frame=True)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, pd.DataFrame))
 
     def test_get_report_events(self):
 
