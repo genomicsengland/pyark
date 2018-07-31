@@ -49,6 +49,11 @@ class TestPyArk (TestCase):
         count = self.report_events.count_report_events()
         self.assertTrue(type(count) == int)
 
+    def test_count_variants(self):
+
+        count = self.variants.count_variants()
+        self.assertTrue(type(count) == int)
+
     def test_get_by_gene_id(self):
 
         gene_id = "ENSG00000130826"
