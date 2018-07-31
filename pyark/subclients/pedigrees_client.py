@@ -10,7 +10,7 @@ class PedigreesClient(cva_client.CvaClient):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
     def get_pedigree(self, identifier, version, as_data_frame=False):
-        results,  = self._get("{endpoint}/{identifier}/{version}".format(
+        results, _ = self._get("{endpoint}/{identifier}/{version}".format(
             endpoint=self._BASE_ENDPOINT, identifier=identifier, version=version))
         if not results:
             logging.warning("No pedigree found with id-version {}-{}".format(identifier, version))
