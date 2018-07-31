@@ -50,10 +50,12 @@ class RestClient(object):
         if endpoint is None or payload is None:
             raise ValueError("Must define payload and endpoint before post")
         url = self._build_url(endpoint)
-        logging.info("{date} {method} {url}".format(
+        logging.info("{date} {method} {url} {headers}".format(
             date=datetime.datetime.now(),
             method="POST",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
+            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems()
+                              if name != "Authorization")
         ))
         if session:
             response = self._session.post(url, json=payload, params=params, headers=self._headers)
@@ -66,10 +68,12 @@ class RestClient(object):
         if endpoint is None:
             raise ValueError("Must define endpoint before get")
         url = self._build_url(endpoint)
-        logging.info("{date} {method} {url}".format(
+        logging.info("{date} {method} {url} {headers}".format(
             date=datetime.datetime.now(),
             method="GET",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
+            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems()
+                              if name != "Authorization")
         ))
         if session:
             response = self._session.get(url, params=params, headers=self._headers)
@@ -82,10 +86,12 @@ class RestClient(object):
         if endpoint is None:
             raise ValueError("Must define endpoint before patch")
         url = self._build_url(endpoint)
-        logging.info("{date} {method} {url}".format(
+        logging.info("{date} {method} {url} {headers}".format(
             date=datetime.datetime.now(),
             method="PATCH",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
+            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems()
+                              if name != "Authorization")
         ))
         if session:
             response = self._session.patch(url, params=params, headers=self._headers)
@@ -98,10 +104,12 @@ class RestClient(object):
         if endpoint is None:
             raise ValueError("Must define endpoint before get")
         url = self._build_url(endpoint)
-        logging.info("{date} {method} {url}".format(
+        logging.info("{date} {method} {url} {headers}".format(
             date=datetime.datetime.now(),
             method="DELETE",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
+            headers=", ".join("{}={}".format(name, value) for name, value in self._headers.iteritems()
+                              if name != "Authorization")
         ))
         response = self._session.delete(url, params=params)
         self._verify_response(response)
