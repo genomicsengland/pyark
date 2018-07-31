@@ -125,7 +125,7 @@ class CvaClient(RestClient):
         :rtype: CasesClient
         """
         # NOTE: this import needs to be here due to circular imports
-        import pyark.subclients.cases_client
+        import pyark.subclients.pedigrees_client
         if self._pedigrees_client is None:
             # initialise subclients
             self._pedigrees_client = pyark.subclients.pedigrees_client.PedigreesClient(
