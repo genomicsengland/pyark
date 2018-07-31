@@ -18,6 +18,13 @@ class VariantsClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
+    def count_variants(self):
+        """
+        :rtype: int
+        """
+        results, _ = self._get("{endpoint}".format(endpoint=self._BASE_ENDPOINT), params={'count':True})
+        return results[0]
+
     def get_variant_by_id(self, identifier):
         """
         :type identifier: str

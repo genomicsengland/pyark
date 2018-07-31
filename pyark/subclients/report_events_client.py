@@ -10,6 +10,12 @@ class ReportEventsClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
+    def count_report_events(self, params={}):
+        if not params:
+            params = {}
+        params['count'] = True
+        return self.get_report_events(params)
+
     def get_report_events(self, params={}):
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)

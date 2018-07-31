@@ -15,6 +15,12 @@ class CasesClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
+    def count_cases(self, params={}):
+        if not params:
+            params = {}
+        params['count'] = True
+        return self.get_cases(params)
+
     def get_cases(self, params={}):
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
