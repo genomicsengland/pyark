@@ -435,7 +435,7 @@ class TestPyArk (TestCase):
 
     def test_get_shared_variants_cases(self):
 
-        case_id = "1000"
+        case_id = "132"
         case_version = 1
 
         results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.tiered)
@@ -447,6 +447,23 @@ class TestPyArk (TestCase):
         self.assertTrue(isinstance(results, list))
 
         results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.questionnaire)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+    def test_get_shared_variants_cases(self):
+
+        case_id = "132"
+        case_version = 1
+
+        results = self.cases.get_shared_genes_cases_by_case(case_id, case_version, ReportEventType.tiered)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+        results = self.cases.get_shared_genes_cases_by_case(case_id, case_version, ReportEventType.reported)
+        self.assertTrue(results is not None)
+        self.assertTrue(isinstance(results, list))
+
+        results = self.cases.get_shared_genes_cases_by_case(case_id, case_version, ReportEventType.questionnaire)
         self.assertTrue(results is not None)
         self.assertTrue(isinstance(results, list))
 
