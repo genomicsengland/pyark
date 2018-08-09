@@ -38,7 +38,7 @@ class TestPyArk (TestCase):
         all_report_events = self.report_events.get_report_events({'limit': 2})
         re_count = 0
         for batch_report_events in all_report_events:
-            self.assertTrue(batch_report_events is not None)
+            self.assertIsNotNone(batch_report_events)
             re_count += 1
             if re_count == 5:
                 break
@@ -47,12 +47,12 @@ class TestPyArk (TestCase):
     def test_count_report_events(self):
 
         count = self.report_events.count_report_events()
-        self.assertTrue(type(count) == int)
+        self.assertIsInstance(count, int)
 
     def test_count_variants(self):
 
         count = self.variants.count_variants()
-        self.assertTrue(type(count) == int)
+        self.assertIsInstance(count, int)
 
     def test_get_by_gene_id(self):
 
@@ -62,27 +62,27 @@ class TestPyArk (TestCase):
         results = self.report_events.get_variants_by_gene_id(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             gene_id, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_gene_id(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             gene_id, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.report_events.get_phenotypes_by_gene_id(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             gene_id, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.report_events.get_phenotypes_by_gene_id(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             gene_id, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
     def test_get_variants_by_transcript_id(self):
 
@@ -92,27 +92,27 @@ class TestPyArk (TestCase):
         results = self.report_events.get_variants_by_transcript_id(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             tx_id, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_transcript_id(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             tx_id, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.report_events.get_phenotypes_by_transcript_id(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             tx_id, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.report_events.get_phenotypes_by_transcript_id(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             tx_id, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
     def test_get_variants_by_gene_symbol(self):
 
@@ -122,27 +122,27 @@ class TestPyArk (TestCase):
         results = self.report_events.get_variants_by_gene_symbol(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             gene_symbol, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_gene_symbol(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             gene_symbol, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.report_events.get_phenotypes_by_gene_symbol(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             gene_symbol, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.report_events.get_phenotypes_by_gene_symbol(
             Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
             gene_symbol, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
     def test_get_variants_by_genomic_region(self):
 
@@ -155,56 +155,56 @@ class TestPyArk (TestCase):
         results = self.report_events.get_variants_by_genomic_region(
             Program.rare_disease, ReportEventType.tiered,
             assembly, chromosome, start, end, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_genomic_region(
             Program.rare_disease, ReportEventType.tiered,
             assembly, chromosome, start, end, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.report_events.get_phenotypes_by_genomic_region(
             Program.rare_disease, ReportEventType.tiered,
             assembly, chromosome, start, end, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.report_events.get_phenotypes_by_genomic_region(
             Program.rare_disease, ReportEventType.tiered,
             assembly, chromosome, start, end, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets genes
         results = self.report_events.get_genes_by_genomic_region(
             Program.rare_disease, ReportEventType.tiered,
             assembly, chromosome, start, end, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.report_events.get_genes_by_genomic_region(
             Program.rare_disease, ReportEventType.tiered,
             assembly, chromosome, start, end, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
     def test_get_all_panels(self):
 
         panels = self.panels.get_all_panels()
-        self.assertTrue(panels is not None)
-        self.assertTrue(isinstance(panels, list))
+        self.assertIsNotNone(panels)
+        self.assertIsInstance(panels, list)
 
     def test_get_panel_summary(self):
 
         panels = self.panels.get_panels_summary(Program.rare_disease)
-        self.assertTrue(panels is not None)
-        self.assertTrue(isinstance(panels, list))
+        self.assertIsNotNone(panels)
+        self.assertIsInstance(panels, list)
 
         panels = self.panels.get_panels_summary(Program.cancer)
-        self.assertTrue(panels is not None)
-        self.assertTrue(isinstance(panels, list))
+        self.assertIsNotNone(panels)
+        self.assertIsInstance(panels, list)
 
     def test_cases_get_by_gene_id(self):
 
@@ -214,34 +214,34 @@ class TestPyArk (TestCase):
         results = self.cases.get_variants_by_gene_id(
             Program.rare_disease, Assembly.GRCh38,
             gene_id, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_variants_by_gene_id(
             Program.rare_disease, Assembly.GRCh38,
             gene_id, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.cases.get_phenotypes_by_gene_id(
             Program.rare_disease, Assembly.GRCh38,
             gene_id, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_phenotypes_by_gene_id(
             Program.rare_disease, Assembly.GRCh38,
             gene_id, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
     def test_get_cases(self):
 
         all_cases = self.cases.get_cases({'limit': 2})
         case_count = 0
         for batch_cases in all_cases:
-            self.assertTrue(batch_cases is not None)
+            self.assertIsNotNone(batch_cases)
             # self.assertEqual(len(batch_report_events), 10)
             # logging.info("Returned {} report events".format(len(batch_report_events)))
             case_count += 1
@@ -252,7 +252,7 @@ class TestPyArk (TestCase):
     def test_count_cases(self):
 
         count = self.cases.count_cases()
-        self.assertTrue(type(count) == int)
+        self.assertIsInstance(count, int)
 
     def test_get_cases_variants_by_transcript_id(self):
 
@@ -262,27 +262,27 @@ class TestPyArk (TestCase):
         results = self.cases.get_variants_by_transcript_id(
             Program.rare_disease, Assembly.GRCh38,
             tx_id, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_variants_by_transcript_id(
             Program.rare_disease, Assembly.GRCh38,
             tx_id, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.cases.get_phenotypes_by_transcript_id(
             Program.rare_disease, Assembly.GRCh38,
             tx_id, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_phenotypes_by_transcript_id(
             Program.rare_disease, Assembly.GRCh38,
             tx_id, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
     def test_get_cases_variants_by_gene_symbol(self):
 
@@ -292,27 +292,27 @@ class TestPyArk (TestCase):
         results = self.cases.get_variants_by_gene_symbol(
             Program.rare_disease, Assembly.GRCh38,
             gene_symbol, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_variants_by_gene_symbol(
             Program.rare_disease, Assembly.GRCh38,
             gene_symbol, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.cases.get_phenotypes_by_gene_symbol(
             Program.rare_disease, Assembly.GRCh38,
             gene_symbol, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_phenotypes_by_gene_symbol(
             Program.rare_disease, Assembly.GRCh38,
             gene_symbol, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
     def test_get_cases_variants_by_panel(self):
 
@@ -321,13 +321,13 @@ class TestPyArk (TestCase):
         # gets variants
         results = self.cases.get_variants_by_panel(
             Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_variants_by_panel(
             Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results[0], dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results[0], dict)
 
     def test_get_cases_genes_by_panel(self):
 
@@ -336,13 +336,13 @@ class TestPyArk (TestCase):
         # gets variants
         results = self.cases.get_genes_by_panel(
             Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_genes_by_panel(
             Program.rare_disease, panel_name, None, params={'has_reported': True}, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results[0], dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results[0], dict)
 
     def test_get_cases_variants_by_genomic_region(self):
 
@@ -355,40 +355,40 @@ class TestPyArk (TestCase):
         results = self.cases.get_variants_by_genomic_region(
             Program.rare_disease,
             assembly, chromosome, start, end, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_variants_by_genomic_region(
             Program.rare_disease,
             assembly, chromosome, start, end, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.cases.get_phenotypes_by_genomic_region(
             Program.rare_disease,
             assembly, chromosome, start, end, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_phenotypes_by_genomic_region(
             Program.rare_disease,
             assembly, chromosome, start, end, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
         # gets genes
         results = self.cases.get_genes_by_genomic_region(
             Program.rare_disease,
             assembly, chromosome, start, end, include_aggregations=False)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_genes_by_genomic_region(
             Program.rare_disease,
             assembly, chromosome, start, end, include_aggregations=True)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, dict))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, dict)
 
     def test_get_similar_cases_by_case(self):
 
@@ -396,59 +396,76 @@ class TestPyArk (TestCase):
         case_version = 1
 
         results = self.cases.get_similar_cases_by_case(case_id, case_version, "PHENODIGM")
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_similar_cases_by_case(case_id, case_version, "PHENODIGM", limit=5)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
         self.assertTrue(len(results) == 5)
 
         results = self.cases.get_similar_cases_by_case(case_id, case_version, "RESNIK")
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_similar_cases_by_case(case_id, case_version, "JACCARD")
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
     def test_get_similar_cases_by_phenotypes(self):
 
         phenotypes = ["HP:0000006", "HP:0003186", "HP:0002365"]
 
         results = self.cases.get_similar_cases_by_phenotypes(phenotypes, "PHENODIGM")
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_similar_cases_by_phenotypes(phenotypes, "PHENODIGM", limit=5)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
         self.assertTrue(len(results) == 5)
 
         results = self.cases.get_similar_cases_by_phenotypes(phenotypes, "RESNIK")
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_similar_cases_by_phenotypes(phenotypes, "JACCARD")
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
     def test_get_shared_variants_cases(self):
 
-        case_id = "1000"
+        case_id = "132"
         case_version = 1
 
         results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.tiered)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.reported)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
         results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.questionnaire)
-        self.assertTrue(results is not None)
-        self.assertTrue(isinstance(results, list))
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
+
+    def test_get_shared_variants_cases(self):
+
+        case_id = "132"
+        case_version = 1
+
+        results = self.cases.get_shared_genes_cases_by_case(case_id, case_version, ReportEventType.tiered)
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
+
+        results = self.cases.get_shared_genes_cases_by_case(case_id, case_version, ReportEventType.reported)
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
+
+        results = self.cases.get_shared_genes_cases_by_case(case_id, case_version, ReportEventType.questionnaire)
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
 
     def test_get_variant_by_id(self):
 
@@ -456,8 +473,8 @@ class TestPyArk (TestCase):
 
         # gets variant
         variant = self.variants.get_variant_by_id(identifier=identifier)
-        self.assertTrue(variant is not None)
-        self.assertTrue(isinstance(variant, Variant))
+        self.assertIsNotNone(variant)
+        self.assertIsInstance(variant, Variant)
 
         # non existing variant
         variant = self.variants.get_variant_by_id(identifier='whatever')
@@ -467,25 +484,25 @@ class TestPyArk (TestCase):
 
         identifiers = ["GRCh38: 9: 110303682:C:G", "GRCh38: 4:  56810156:G:A", "GRCh38:12:  51346624:A:C"]
         variants = self.variants.get_variants_by_id(identifiers=identifiers)
-        self.assertTrue(variants is not None)
-        self.assertTrue(isinstance(variants, dict))
+        self.assertIsNotNone(variants)
+        self.assertIsInstance(variants, dict)
         self.assertTrue(len(variants) == len(identifiers))
-        [self.assertTrue(variants[v] is not None) for v in identifiers]
+        [self.assertIsNotNone(variants[v]) for v in identifiers]
 
         non_existing_identifiers = ['whatever', 'this', 'that']
         variants = self.variants.get_variants_by_id(identifiers=non_existing_identifiers)
-        self.assertTrue(variants is not None)
-        self.assertTrue(isinstance(variants, dict))
+        self.assertIsNotNone(variants)
+        self.assertIsInstance(variants, dict)
         self.assertTrue(len(variants) == len(non_existing_identifiers))
         [self.assertTrue(variants[v] is None) for v in non_existing_identifiers]
 
         mixed_identifiers = ['whatever', "GRCh38: 9: 110303682:C:G"]
         variants = self.variants.get_variants_by_id(identifiers=mixed_identifiers)
-        self.assertTrue(variants is not None)
-        self.assertTrue(isinstance(variants, dict))
+        self.assertIsNotNone(variants)
+        self.assertIsInstance(variants, dict)
         self.assertTrue(len(variants) == len(mixed_identifiers))
         self.assertTrue(variants[mixed_identifiers[0]] is None)
-        self.assertTrue(variants[mixed_identifiers[1]] is not None)
+        self.assertIsNotNone(variants[mixed_identifiers[1]])
 
     def test_post_pedigree(self):
         self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
@@ -506,7 +523,7 @@ class TestPyArk (TestCase):
     def test_count_transactions(self):
 
         count = self.cva.transactions().count_transactions()
-        self.assertTrue(type(count) == int)
+        self.assertIsInstance(count, int)
 
     def test_get_transaction_status_only(self):
         client = self.cva.transactions()
@@ -567,7 +584,7 @@ class TestPyArk (TestCase):
 
         response = post_function(model)
         # this is stronger than it looks because post checks for errors
-        self.assertTrue(response is not None)
+        self.assertIsNotNone(response)
 
 
 class MockResponse:
