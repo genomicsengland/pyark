@@ -352,6 +352,28 @@ class CasesClient(cva_client.CvaClient):
         results, _ = self._get("{endpoint}/{case_id}/{case_version}/shared-variants".format(
             endpoint=self._BASE_ENDPOINT, case_id=case_id, case_version=case_version), params)
         if not results:
-            logging.warning("No cases sharing {} variants  found".format(report_event_type))
+            logging.warning("No cases sharing {} variants found".format(report_event_type))
+            return None
+        return results
+
+    def get_shared_genes_cases_by_case(self, case_id, case_version, report_event_type, limit=10, params={}):
+        """
+        :type case_id: str
+        :type case_version: int
+        :type report_event_type: ReportEventType
+        :type limit: int
+        :type params: dict
+        :return:
+        """
+        assert report_event_type in REPORT_EVENT_TYPES, \
+            "Invalid report event type provided '{}'. Valid values: {}".format(report_event_type, REPORT_EVENT_TYPES)
+        if params is None:
+            params = {}
+        params['type'] = report_event_type
+        params['limit'] = limit
+        results, _ = self._get("{endpoint}/{case_id}/{case_version}/shared-genes".format(
+            endpoint=self._BASE_ENDPOINT, case_id=case_id, case_version=case_version), params)
+        if not results:
+            logging.warning("No cases sharing {} genes found".format(report_event_type))
             return None
         return results
