@@ -482,7 +482,7 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-    def test_get_shared_variants_cases(self):
+    def test_get_shared_gene_cases(self):
 
         case_id = "132"
         case_version = 1
