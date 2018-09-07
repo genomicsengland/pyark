@@ -1,6 +1,6 @@
 import pyark.cva_client as cva_client
 from enum import Enum
-from protocols.cva_1_0_0 import ReportEventEntry, Program, ReportEventType, Assembly
+from protocols.protocol_7_0.cva import ReportEventEntry, Program, ReportEventType, Assembly
 
 
 class ReportEventsClient(cva_client.CvaClient):
@@ -10,9 +10,15 @@ class ReportEventsClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
+    def count_report_events(self, params={}):
+        if not params:
+            params = {}
+        params['count'] = True
+        return self.get_report_events(params)
+
     def get_report_events(self, params={}):
         if params.get('count', False):
-            results, next_page_params = self._get("cases", params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
             return results[0]
         else:
             return self._paginate_report_events(params)
