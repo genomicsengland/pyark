@@ -3,6 +3,7 @@ v0.10.0
 
 * Added endpoint to get cases having shared variants
 * Refactored endpoints that fetch gene summaries
+* Updated to latest gel report models
 
 v0.9.0
 ======
