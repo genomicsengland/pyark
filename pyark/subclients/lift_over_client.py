@@ -1,5 +1,5 @@
 import pyark.cva_client as cva_client
-from protocols.cva_1_0_0 import VariantsCoordinates, VariantCoordinates
+from protocols.protocol_7_0.cva import VariantsCoordinates, VariantCoordinates
 import pyark.models_mapping
 
 
