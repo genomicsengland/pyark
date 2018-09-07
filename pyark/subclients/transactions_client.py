@@ -1,6 +1,6 @@
 from pyark import cva_client
 from pyark.errors import CvaClientError
-from protocols.cva_1_0_0 import Transaction
+from protocols.protocol_7_0.cva import Transaction
 
 
 class TransactionsClient(cva_client.CvaClient):

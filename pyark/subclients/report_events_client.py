@@ -1,6 +1,6 @@
 import pyark.cva_client as cva_client
 from enum import Enum
-from protocols.cva_1_0_0 import ReportEventEntry, Program, ReportEventType, Assembly
+from protocols.protocol_7_0.cva import ReportEventEntry, Program, ReportEventType, Assembly
 
 
 class ReportEventsClient(cva_client.CvaClient):

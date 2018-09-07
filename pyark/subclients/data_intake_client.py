@@ -1,5 +1,5 @@
 from pyark import cva_client
-from protocols.cva_1_1_0 import (
+from protocols.protocol_7_0.cva import (
     PedigreeInjectRD,
     CancerParticipantInject,
     InterpretedGenomeInject,
