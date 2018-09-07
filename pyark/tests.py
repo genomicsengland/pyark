@@ -4,8 +4,8 @@ from unittest import TestCase
 import pandas as pd
 
 from mock import patch
-from protocols.cva_1_0_0 import ReportEventType, Assembly, Variant, PedigreeInjectRD, ParticipantInjectCancer
-from protocols.reports_5_0_0 import Program
+from protocols.protocol_7_0.cva import ReportEventType, Assembly, Variant, PedigreeInjectRD, CancerParticipantInject
+from protocols.protocol_7_0.reports import Program
 from protocols.util import dependency_manager
 from protocols.util.factories.avro_factory import GenericFactoryAvro
 from requests import ConnectionError
@@ -482,7 +482,7 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-    def test_get_shared_variants_cases(self):
+    def test_get_shared_gene_cases(self):
 
         case_id = "132"
         case_version = 1
@@ -540,7 +540,7 @@ class TestPyArk (TestCase):
         self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
 
     def test_post_participant(self):
-        self._test_post(ParticipantInjectCancer, self.data_intake.post_participant)
+        self._test_post(CancerParticipantInject, self.data_intake.post_participant)
 
     def test_get_transactions(self):
         client = self.cva.transactions()
