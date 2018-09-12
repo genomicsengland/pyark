@@ -5,7 +5,7 @@ test_deps = ['mock']
 
 setup(
     name='pyark',
-    version='0.10.0',
+    version='2.0.0',
     packages=find_packages(),
     scripts=[],
     url='',
