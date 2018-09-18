@@ -5,7 +5,7 @@ test_deps = ['mock']
 
 setup(
     name='pyark',
-    version='2.0.0',
+    version='2.0.1',
     packages=find_packages(),
     scripts=[],
     url='',
@@ -16,7 +16,7 @@ setup(
     install_requires=[
         'requests',
         'furl==1.0.1',
-        'gelreportmodels==7.1.7',
+        'gelreportmodels==7.1.12',
         'enum34',
         'pandas',
         'mock'
