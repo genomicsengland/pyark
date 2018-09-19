@@ -4,7 +4,7 @@ import logging
 from enum import Enum
 
 SIMILARITY_METRICS = ["RESNIK", "JACCARD", "PHENODIGM"]
-REPORT_EVENT_TYPES = [ReportEventType.tiered, ReportEventType.candidate, ReportEventType.reported,
+REPORT_EVENT_TYPES = [ReportEventType.genomics_england_tiering, ReportEventType.candidate, ReportEventType.reported,
                       ReportEventType.questionnaire]
 
 

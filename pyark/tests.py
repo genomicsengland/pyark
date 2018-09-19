@@ -92,26 +92,26 @@ class TestPyArk (TestCase):
 
         # gets variants
         results = self.report_events.get_variants_by_gene_id(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             gene_id, include_aggregations=False)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_gene_id(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             gene_id, include_aggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.report_events.get_phenotypes_by_gene_id(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             gene_id, include_aggregations=False)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_phenotypes_by_gene_id(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             gene_id, include_aggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
@@ -122,26 +122,26 @@ class TestPyArk (TestCase):
 
         # gets variants
         results = self.report_events.get_variants_by_transcript_id(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             tx_id, include_aggregations=False)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_transcript_id(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             tx_id, include_aggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.report_events.get_phenotypes_by_transcript_id(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             tx_id, include_aggregations=False)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_phenotypes_by_transcript_id(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             tx_id, include_aggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
@@ -152,26 +152,26 @@ class TestPyArk (TestCase):
 
         # gets variants
         results = self.report_events.get_variants_by_gene_symbol(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             gene_symbol, include_aggregations=False)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_gene_symbol(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             gene_symbol, include_aggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.report_events.get_phenotypes_by_gene_symbol(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             gene_symbol, include_aggregations=False)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_phenotypes_by_gene_symbol(
-            Program.rare_disease, ReportEventType.tiered, Assembly.GRCh38,
+            Program.rare_disease, ReportEventType.genomics_england_tiering, Assembly.GRCh38,
             gene_symbol, include_aggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
@@ -185,39 +185,39 @@ class TestPyArk (TestCase):
 
         # gets variants
         results = self.report_events.get_variants_by_genomic_region(
-            Program.rare_disease, ReportEventType.tiered,
+            Program.rare_disease, ReportEventType.genomics_england_tiering,
             assembly, chromosome, start, end, include_aggregations=False)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_genomic_region(
-            Program.rare_disease, ReportEventType.tiered,
+            Program.rare_disease, ReportEventType.genomics_england_tiering,
             assembly, chromosome, start, end, include_aggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
 
         # gets phenotypes
         results = self.report_events.get_phenotypes_by_genomic_region(
-            Program.rare_disease, ReportEventType.tiered,
+            Program.rare_disease, ReportEventType.genomics_england_tiering,
             assembly, chromosome, start, end, include_aggregations=False)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_phenotypes_by_genomic_region(
-            Program.rare_disease, ReportEventType.tiered,
+            Program.rare_disease, ReportEventType.genomics_england_tiering,
             assembly, chromosome, start, end, include_aggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
 
         # gets genes
         results = self.report_events.get_genes_by_genomic_region(
-            Program.rare_disease, ReportEventType.tiered,
+            Program.rare_disease, ReportEventType.genomics_england_tiering,
             assembly, chromosome, start, end, include_aggregations=False)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_genes_by_genomic_region(
-            Program.rare_disease, ReportEventType.tiered,
+            Program.rare_disease, ReportEventType.genomics_england_tiering,
             assembly, chromosome, start, end, include_aggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
@@ -470,7 +470,7 @@ class TestPyArk (TestCase):
         case_id = "132"
         case_version = 1
 
-        results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.tiered)
+        results = self.cases.get_shared_variants_cases_by_case(case_id, case_version, ReportEventType.genomics_england_tiering)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
@@ -487,7 +487,7 @@ class TestPyArk (TestCase):
         case_id = "132"
         case_version = 1
 
-        results = self.cases.get_shared_genes_cases_by_case(case_id, case_version, ReportEventType.tiered)
+        results = self.cases.get_shared_genes_cases_by_case(case_id, case_version, ReportEventType.genomics_england_tiering)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
