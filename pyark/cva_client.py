@@ -1,5 +1,6 @@
 import re
 import logging
+import pandas as pd
 from pandas.io.json import json_normalize
 from pyark.rest_client import RestClient
 import multiprocessing
@@ -37,7 +38,7 @@ class CvaClient(RestClient):
             self._set_authenticated_header()
         # initialise subclients
         self._report_events_client = None
-        self._panels_client = None
+        self._entities_client = None
         self._cases_client = None
         self._pedigrees_client = None
         self._variants_client = None
@@ -91,18 +92,18 @@ class CvaClient(RestClient):
                 self._url_base, self._token)
         return self._report_events_client
 
-    def panels(self):
+    def entities(self):
         """
 
         :return:
         :rtype: PanelsClient
         """
         # NOTE: this import needs to be here due to circular imports
-        import pyark.subclients.panels_client
-        if self._panels_client is None:
+        import pyark.subclients.entities_client
+        if self._entities_client is None:
             # initialise subclients
-            self._panels_client = pyark.subclients.panels_client.PanelsClient(self._url_base, self._token)
-        return self._panels_client
+            self._entities_client = pyark.subclients.entities_client.EntitiesClient(self._url_base, self._token)
+        return self._entities_client
 
     def cases(self):
         """
@@ -263,6 +264,9 @@ class CvaClient(RestClient):
     @staticmethod
     def _render(results, as_data_frame=True):
         if as_data_frame:
-            return json_normalize(results)
+            if results:
+                return json_normalize(results)
+            else:
+                return pd.DataFrame()
         else:
             return results
