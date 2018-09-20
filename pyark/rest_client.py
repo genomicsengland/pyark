@@ -58,7 +58,7 @@ class RestClient(object):
             date=datetime.datetime.now(),
             method="POST",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.iteritems()
+            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.items()
                                if name != "Authorization"])
         ))
         self._verify_response(response)
@@ -76,7 +76,7 @@ class RestClient(object):
             date=datetime.datetime.now(),
             method="GET",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.iteritems()
+            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.items()
                                if name != "Authorization"])
         ))
         self._verify_response(response)
@@ -94,7 +94,7 @@ class RestClient(object):
             date=datetime.datetime.now(),
             method="PATCH",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.iteritems()
+            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.items()
                                if name != "Authorization"])
         ))
         self._verify_response(response)
@@ -109,7 +109,7 @@ class RestClient(object):
             date=datetime.datetime.now(),
             method="DELETE",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.iteritems()
+            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.items()
                                if name != "Authorization"])
         ))
         self._verify_response(response)
@@ -118,7 +118,7 @@ class RestClient(object):
     @staticmethod
     def _build_parameters(params):
         parsed_params = []
-        for k, v in params.iteritems():
+        for k, v in params.items():
             if isinstance(v, list):
                 parsed_params.extend(["{}={}".format(k, e) for e in v])
             else:
