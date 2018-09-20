@@ -1,18 +1,20 @@
 import requests
-import urllib2
 import logging
 import time
 import random
+from future.standard_library import install_aliases
+install_aliases()
+import urllib.error
 
 
 def wrapper(func, retries):
     """
     This wrapper implements a truncated binary exponential backoff algorithm between retries.
     (https://en.wikipedia.org/wiki/Exponential_backoff#Binary_exponential_backoff)
-    It only captures exceptions raised by the packages requests and urllib2:
+    It only captures exceptions raised by the packages requests and urllib:
     * requests.exceptions.RequestException
     * requests.exceptions.ConnectionError
-    * urllib2.URLError
+    * urllib.error.URLError
     Other exceptions will override any retries.
 
     :param func:       the wrapped function
@@ -31,7 +33,7 @@ def wrapper(func, retries):
             try:
                 results = func(*args, **kwargs)
                 success = True
-            except (requests.exceptions.RequestException, requests.exceptions.ConnectionError, urllib2.URLError), ex:
+            except (requests.exceptions.RequestException, requests.exceptions.ConnectionError, urllib.error.URLError) as ex:
                 logging.error(str(ex))
                 # retries a fixed number of times
                 if retries != -1 and retries_count >= retries:
