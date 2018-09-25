@@ -68,8 +68,6 @@ class RestClient(object):
         if endpoint is None:
             raise ValueError("Must define endpoint before get")
         url = self._build_url(endpoint)
-        print url
-        print params
         if session:
             response = self._session.get(url, params=params, headers=self._headers)
         else:
