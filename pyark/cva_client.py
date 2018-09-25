@@ -214,28 +214,6 @@ class CvaClient(RestClient):
         else:
             return []
 
-    @staticmethod
-    def _results2dict(results):
-        """
-        Flattens results dictionary making the value in '_id' the key and the rest the value
-        :param results:
-        :type results: dict
-        :return:
-        :rtype: dict
-        """
-        return dict(map(lambda x: (x['_id'], {key: x[key] for key in x if key != '_id'}), results))
-
-    @staticmethod
-    def _results2list(results):
-        """
-        Flattens results dictionary into a list of those elements in the key '_id'
-        :param results:
-        :type results: dict
-        :return:
-        :rtype: list
-        """
-        return list(map(lambda x: x['_id'], results))
-
     def _get_aggregation_query(self, path, include_aggregations=False, params={}):
         """
 
@@ -252,10 +230,7 @@ class CvaClient(RestClient):
             params = {}
         params['include_aggregations'] = include_aggregations
         results, _ = self._get("/".join(path), params=params)
-        if include_aggregations:
-            return CvaClient._results2dict(results)
-        else:
-            return CvaClient._results2list(results)
+        return results
 
     def _render_single_result(self, results, as_data_frame=True):
         first = results[0]
