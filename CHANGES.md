@@ -1,3 +1,8 @@
+v2.0.3
+======
+
+* Avoid flattening results as it introduces a dependency on the format of the output
+
 v2.0.2
 ======
 
