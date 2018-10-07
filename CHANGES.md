@@ -1,3 +1,26 @@
+v2.0.3
+======
+
+* Avoid flattening results as it introduces a dependency on the format of the output
+
+v2.0.2
+======
+
+* Added endpoint to get disorders
+* Panels client renamed to entities client as it has a wider scope now
+* Support for Python3 and Python 2
+
+v2.0.1
+======
+
+* Update to models version 7.1.12
+* Change of `ReportEventType.genomics_england_tiering`
+
+v2.0.0
+======
+
+* Alignemnt of versioning (only major and minor versions) to backend
+
 v0.10.0
 ======
 
