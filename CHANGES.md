@@ -1,3 +1,12 @@
+v2.0.4
+======
+
+* Support for versioning of entities (ie: panels and disorders)
+* Integration of pandas series instead of lists for entities results
+* Better integration of Pandas data frames:
+    - MultiIndex created for each dataframe depending on the query performed to obtain the data
+    - Multiple queries supported in one go and data frame concatenation is provided out of the box
+
 v2.0.3
 ======
 
