@@ -228,7 +228,7 @@ class CvaClient(RestClient):
         """
         if not params:
             params = {}
-        params['include_aggregations'] = include_aggregations
+        params['includeAggregations'] = include_aggregations
         results, _ = self._get("/".join(path), params=params)
         return results
 

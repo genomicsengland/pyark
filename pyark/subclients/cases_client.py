@@ -325,7 +325,7 @@ class CasesClient(cva_client.CvaClient):
 
         if params is None:
             params = {}
-        params['similarity_metric'] = similarity_metric
+        params['phenotypeSimilarityMetric'] = similarity_metric
         params['limit'] = limit
         results, _ = self._get("{endpoint}/{case_id}/{case_version}/similar-cases".format(
             endpoint=self._BASE_ENDPOINT, case_id=case_id, case_version=case_version), params)
@@ -347,9 +347,9 @@ class CasesClient(cva_client.CvaClient):
         assert len(phenotypes) > 0, "At least one phenotype must be provided"
         if params is None:
             params = {}
-        params['similarity_metric'] = similarity_metric
+        params['phenotypeSimilarityMetric'] = similarity_metric
         params['limit'] = limit
-        params['hpo_ids'] = phenotypes
+        params['hpoIds'] = phenotypes
         results, _ = self._get(
             "{endpoint}/phenotypes/similar-cases".format(endpoint=self._BASE_ENDPOINT), params)
         if not results:
