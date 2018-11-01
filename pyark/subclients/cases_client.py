@@ -2,6 +2,8 @@ import pyark.cva_client as cva_client
 from protocols.protocol_7_0.cva import Program, Assembly, ReportEventType
 import logging
 from enum import Enum
+import pandas as pd
+import collections
 
 SIMILARITY_METRICS = ["RESNIK", "JACCARD", "PHENODIGM"]
 REPORT_EVENT_TYPES = [ReportEventType.genomics_england_tiering, ReportEventType.candidate, ReportEventType.reported,
@@ -69,16 +71,36 @@ class CasesClient(cva_client.CvaClient):
 
     def get_summary(self, params={}, as_data_frame=False):
         """
-        :param as_data_frame: bool
-        :type params: dict
+        :type as_data_frame: bool
+        :type params: dict or list
         :return:
         """
-        results, _ = self._get("{endpoint}/summary".format(endpoint=self._BASE_ENDPOINT), params)
-        if not results:
-            logging.warning("No summary found")
-            return None
-        assert len(results) == 1, "Unexpected number of summaries"
-        return self._render_single_result(results, as_data_frame=as_data_frame)
+        if isinstance(params, dict):
+            results, _ = self._get("{endpoint}/summary".format(endpoint=self._BASE_ENDPOINT), params)
+            if not results:
+                logging.warning("No summary found")
+                return None
+            assert len(results) == 1, "Unexpected number of summaries"
+            return self._render_single_result(results, as_data_frame=as_data_frame, indexes=params)
+        elif isinstance(params, collections.Iterable):
+            self._params_sanity_checks(params=params)
+            results_list = [self.get_summary(params=p, as_data_frame=as_data_frame) for p in params]
+            return self._render_multiple_results(results_list, as_data_frame=as_data_frame)
+        else:
+            raise ValueError("Cannot accept 'params' in other type than list of dict")
+
+    @staticmethod
+    def _params_sanity_checks(params):
+        if not all(isinstance(p, dict) for p in params):
+            raise ValueError("Cannot accept a list of 'params' not being only by dicts")
+        keys = None
+        for p in params:
+            if keys is None:
+                keys = set(p.keys())
+            else:
+                if len(set(p.keys()).difference(keys)) > 0:
+                    raise ValueError("Cannot accept a list of 'params' with different lists of filters")
+
 
     def get_case(self, identifier, version, as_data_frame=False):
         """
@@ -93,7 +115,8 @@ class CasesClient(cva_client.CvaClient):
             logging.warning("No case found with id-version {}-{}".format(identifier, version))
             return None
         assert len(results) == 1, "Unexpected number of cases returned when searching by identifier"
-        return self._render_single_result(results, as_data_frame=as_data_frame)
+        return self._render_single_result(results, as_data_frame=as_data_frame,
+                                          indexes={'case_id': ["{}-{}".format(identifier, version)]})
 
     def _get_cases_aggregation_query(self, path, program, include_aggregations, params):
         if params is None:
@@ -302,7 +325,7 @@ class CasesClient(cva_client.CvaClient):
 
         if params is None:
             params = {}
-        params['similarity_metric'] = similarity_metric
+        params['phenotypeSimilarityMetric'] = similarity_metric
         params['limit'] = limit
         results, _ = self._get("{endpoint}/{case_id}/{case_version}/similar-cases".format(
             endpoint=self._BASE_ENDPOINT, case_id=case_id, case_version=case_version), params)
@@ -324,9 +347,9 @@ class CasesClient(cva_client.CvaClient):
         assert len(phenotypes) > 0, "At least one phenotype must be provided"
         if params is None:
             params = {}
-        params['similarity_metric'] = similarity_metric
+        params['phenotypeSimilarityMetric'] = similarity_metric
         params['limit'] = limit
-        params['hpo_ids'] = phenotypes
+        params['hpoIds'] = phenotypes
         results, _ = self._get(
             "{endpoint}/phenotypes/similar-cases".format(endpoint=self._BASE_ENDPOINT), params)
         if not results:

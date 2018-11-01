@@ -228,19 +228,30 @@ class CvaClient(RestClient):
         """
         if not params:
             params = {}
-        params['include_aggregations'] = include_aggregations
+        params['includeAggregations'] = include_aggregations
         results, _ = self._get("/".join(path), params=params)
         return results
 
-    def _render_single_result(self, results, as_data_frame=True):
+    def _render_single_result(self, results, as_data_frame=True, indexes={}):
         first = results[0]
-        return self._render(first, as_data_frame)
+        return self._render(first, as_data_frame=as_data_frame, indexes=indexes)
+
+    def _render_multiple_results(self, results, as_data_frame=True):
+        if as_data_frame:
+            return pd.concat(results)
+        else:
+            return results
 
     @staticmethod
-    def _render(results, as_data_frame=True):
+    def _render(results, as_data_frame=True, indexes={}):
         if as_data_frame:
             if results:
-                return json_normalize(results)
+                df = json_normalize(results)
+                if indexes:
+                    df.index = pd.MultiIndex.from_arrays(
+                        [[values] if type(values) != list else indexes.values() for values in indexes.values()],
+                        names=indexes.keys())
+                return df
             else:
                 return pd.DataFrame()
         else:
