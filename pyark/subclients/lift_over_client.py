@@ -28,7 +28,7 @@ class LiftOverClient(cva_client.CvaClient):
         variants_coordinates.variants = variant_coordinates_list
 
         results, _ = self._post(self._BASE_ENDPOINT, payload=variants_coordinates.toJsonDict(),
-                                params={'variant_format': variant_format, 'force_symmetric': force_symmetric})
+                                params={'variantFormat': variant_format, 'forceSymmetric': force_symmetric})
         assert len(results) == len(variant_identifiers), "Some variants failed to lift over"
 
         return [VariantCoordinates.fromJsonDict(x) for x in results]
@@ -48,7 +48,7 @@ class LiftOverClient(cva_client.CvaClient):
         variants_coordinates.variants = variant_coordinates_list
 
         results, _ = self._post(self._BASE_ENDPOINT, payload=variants_coordinates.toJsonDict(),
-                                params={'variant_format': variant_format, 'force_symmetric': force_symmetric})
+                                params={'variantFormat': variant_format, 'forceSymmetric': force_symmetric})
         assert len(results) == len(variant_coordinates_list), "Some variants failed to lift over"
 
         return [VariantCoordinates.fromJsonDict(x) for x in results]
