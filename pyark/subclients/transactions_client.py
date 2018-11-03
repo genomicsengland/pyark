@@ -28,13 +28,11 @@ class TransactionsClient(cva_client.CvaClient):
 
         self._format_results(results, status_transform, transaction_id, just_return_status)
 
-    def count_transactions(self, params={}):
-        if not params:
-            params = {}
+    def count(self, **params):
         params['count'] = True
-        return self.get_transactions(params)
+        return self.get_transactions(**params)
 
-    def get_transactions(self, params={}):
+    def get_transactions(self, **params):
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
             return results[0]
