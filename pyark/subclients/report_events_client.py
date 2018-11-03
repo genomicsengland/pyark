@@ -11,7 +11,7 @@ class ReportEventsClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
-    def count_report_events(self, **params):
+    def count(self, **params):
         params['count'] = True
         return self.get_report_events(**params)
 
