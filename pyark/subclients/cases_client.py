@@ -97,8 +97,17 @@ class CasesClient(cva_client.CvaClient):
             logging.warning("No case found with id-version {}-{}".format(identifier, version))
             return None
         assert len(results) == 1, "Unexpected number of cases returned when searching by identifier"
-        return self._render_single_result(results, as_data_frame=as_data_frame,
-                                          indexes={'case_id': ["{}-{}".format(identifier, version)]})
+        return self._render(results, as_data_frame=as_data_frame)
+
+    def get_case_by_identifiers(self, identifiers, as_data_frame=False):
+        """
+        :param as_data_frame: bool
+        :type identifiers: list
+        :return:
+        """
+        results, _ = self._get("{endpoint}/{identifiers}".format(
+            endpoint=self._BASE_ENDPOINT, identifiers=",".join(identifiers)))
+        return self._render(results, as_data_frame=as_data_frame)
 
     def search(self, query):
         results, _ = self._get("{endpoint}/search/{query}".format(endpoint=self._BASE_ENDPOINT, query=query))
@@ -241,11 +250,11 @@ class CasesClient(cva_client.CvaClient):
                 self._OutputEntities.genes.value]
         return self._get(os.path.join(path), params)
 
-    def get_similar_cases_by_case(self, case_id, case_version, **params):
+    def get_similar_cases_by_case(self, case_id, case_version, as_data_frame=False, **params):
         """
+        :type as_data_frame: bool
         :type case_id: str
         :type case_version: int
-        :type limit: int
         :type params: dict
         :return:
         """
@@ -254,10 +263,11 @@ class CasesClient(cva_client.CvaClient):
         if not results:
             logging.warning("No similar cases found")
             return None
-        return results
+        return self._render(results, as_data_frame=as_data_frame)
 
-    def get_similar_cases_by_phenotypes(self, phenotypes, **params):
+    def get_similar_cases_by_phenotypes(self, phenotypes, as_data_frame=False, **params):
         """
+        :type as_data_frame: bool
         :type phenotypes: list
         :type params: dict
         :return:
@@ -268,7 +278,7 @@ class CasesClient(cva_client.CvaClient):
         if not results:
             logging.warning("No similar cases found")
             return None
-        return results
+        return self._render(results, as_data_frame=as_data_frame)
 
     def get_shared_variants_cases_by_case(self, case_id, case_version, report_event_type, **params):
         """
