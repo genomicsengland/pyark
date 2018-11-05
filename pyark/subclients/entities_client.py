@@ -14,7 +14,8 @@ class EntitiesClient(cva_client.CvaClient):
         :return: returns all observed panels and the number of cases on which they were applied.
         :rtype: list or pd.DataFrame
         """
-        results, _ = self._get("panels/summary", params=params)
+        results, _ = self._get("panels", params=params)
+        # some additional flattening
         return self._render(results, as_data_frame)
 
     def get_all_panels(self, **params):
@@ -33,7 +34,7 @@ class EntitiesClient(cva_client.CvaClient):
         :return:
         :rtype: list or pd.DataFrame
         """
-        results, _ = self._get("disorders/summary", params=params)
+        results, _ = self._get("disorders", params=params)
         return self._render(results, as_data_frame)
 
     def get_all_specific_diseases(self, **params):
@@ -70,7 +71,7 @@ class EntitiesClient(cva_client.CvaClient):
         :return:
         :rtype: list or pd.DataFrame
         """
-        results, _ = self._get("genes/summary", params=params)
+        results, _ = self._get("genes", params=params)
         return self._render(results, as_data_frame)
 
     def get_genes(self, as_data_frame=False, **params):
@@ -79,7 +80,16 @@ class EntitiesClient(cva_client.CvaClient):
         :type as_data_frame: bool
         :return:
         """
-        results, _ = self._get(endpoint="genes", params=params)
+        results, _ = self._get(endpoint="genes/search", params=params)
+        return self._render(results, as_data_frame=as_data_frame)
+
+    def get_phenotypes(self, as_data_frame=False, **params):
+        """
+        :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
+        :type as_data_frame: bool
+        :return:
+        """
+        results, _ = self._get(endpoint="phenotypes", params=params)
         return self._render(results, as_data_frame=as_data_frame)
 
     def get_hpo(self, identifier, as_data_frame=False):
@@ -92,7 +102,7 @@ class EntitiesClient(cva_client.CvaClient):
         :rtype: list or pd.DataFrame
         """
         results, _ = self._get("hpos/{id}".format(id=identifier))
-        return self._render_single_result(results, as_data_frame=as_data_frame)
+        return self._render(results, as_data_frame=as_data_frame)
 
     def get_hpos(self, as_data_frame=False, **params):
         """
@@ -100,4 +110,4 @@ class EntitiesClient(cva_client.CvaClient):
         :type as_data_frame: bool
         :return:
         """
-        return self._paginate(endpoint="hpos", params=params, as_data_frame=as_data_frame)
+        return self._paginate(endpoint="hpos/search", params=params, as_data_frame=as_data_frame)
