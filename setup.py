@@ -20,7 +20,8 @@ setup(
         'enum34',
         'pandas',
         'mock',
-        'future'
+        'future',
+        'pytest'
     ],
     tests_require=test_deps,
     extras_require={'test': test_deps},
