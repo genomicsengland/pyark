@@ -60,7 +60,9 @@ class CasesClient(cva_client.CvaClient):
         """
         if params_list:
             self._params_sanity_checks(params=params)
-            results_list = [self.get_summary(params=p.update(params), as_data_frame=as_data_frame) for p in params_list]
+            for p in params_list:
+                p.update(params)
+            results_list = [self.get_summary(as_data_frame=as_data_frame, **p) for p in params_list]
             return self._render_multiple_results(results_list, as_data_frame=as_data_frame)
         else:
             results, _ = self._get("{endpoint}/summary".format(endpoint=self._BASE_ENDPOINT), params)
