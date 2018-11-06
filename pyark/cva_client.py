@@ -214,24 +214,6 @@ class CvaClient(RestClient):
         else:
             return []
 
-    def _get_aggregation_query(self, path, include_aggregations=False, params={}):
-        """
-
-        :param path:
-        :type path: list
-        :param include_aggregations:
-        :type include_aggregations: bool
-        :param params:
-        :type params: dict
-        :return:
-        :rtype: list
-        """
-        if not params:
-            params = {}
-        params['includeAggregations'] = include_aggregations
-        results, _ = self._get("/".join(path), params=params)
-        return results
-
     def _render_single_result(self, results, as_data_frame=True, indexes={}):
         first = results[0]
         return self._render(first, as_data_frame=as_data_frame, indexes=indexes)
@@ -256,3 +238,15 @@ class CvaClient(RestClient):
                 return pd.DataFrame()
         else:
             return results
+
+    def _paginate(self, endpoint, params, as_data_frame=False):
+        more_results = True
+        while more_results:
+            results, next_page_params = self._get(endpoint, params=params)
+            results = list(results)
+            if next_page_params:
+                params[CvaClient._LIMIT_PARAM] = next_page_params[CvaClient._LIMIT_PARAM]
+                params[CvaClient._MARKER_PARAM] = next_page_params[CvaClient._MARKER_PARAM]
+            else:
+                more_results = False
+            yield self._render(results, as_data_frame=as_data_frame)
