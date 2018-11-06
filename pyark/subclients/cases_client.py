@@ -3,10 +3,8 @@ import pyark.cva_client as cva_client
 from protocols.protocol_7_0.cva import Program, Assembly, ReportEventType
 import logging
 from enum import Enum
-import collections
 
 
-SIMILARITY_METRICS = ["RESNIK", "JACCARD", "PHENODIGM"]
 REPORT_EVENT_TYPES = [ReportEventType.genomics_england_tiering, ReportEventType.candidate, ReportEventType.reported,
                       ReportEventType.questionnaire]
 
