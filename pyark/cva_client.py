@@ -214,18 +214,18 @@ class CvaClient(RestClient):
         else:
             return []
 
-    def _render_single_result(self, results, as_data_frame=True, indexes={}):
+    def _render_single_result(self, results, as_data_frame=False, indexes={}):
         first = results[0]
         return self._render(first, as_data_frame=as_data_frame, indexes=indexes)
 
-    def _render_multiple_results(self, results, as_data_frame=True):
+    def _render_multiple_results(self, results, as_data_frame=False):
         if as_data_frame:
             return pd.concat(results)
         else:
             return results
 
     @staticmethod
-    def _render(results, as_data_frame=True, indexes={}):
+    def _render(results, as_data_frame=False, indexes={}):
         if as_data_frame:
             if results:
                 df = json_normalize(results)

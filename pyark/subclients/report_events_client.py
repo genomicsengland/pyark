@@ -42,20 +42,19 @@ class ReportEventsClient(cva_client.CvaClient):
 
     @staticmethod
     def _by_gene_id(assembly, gene_id):
-        return "gene-ids/{assembly}/{gene_id}".format(assembly=assembly, gene_id=gene_id)
+        return ["gene-ids", assembly, gene_id]
 
     @staticmethod
     def _by_transcript_id(assembly, transcript_id):
-        return "transcript-ids/{assembly}/{transcript_id}".format(assembly=assembly, transcript_id=transcript_id)
+        return ["transcript-ids", assembly, transcript_id]
 
     @staticmethod
     def _by_gene_symbol(assembly, gene_symbol):
-        return "gene-symbols/{assembly}/{gene_symbol}".format(assembly=assembly, gene_symbol=gene_symbol)
+        return ["gene-symbols", assembly, gene_symbol]
 
     @staticmethod
     def _by_genomic_coordinates(assembly, chromosome, start, end):
-        return "genomic-regions/{assembly}/{chromosome}/{start}/{end}".format(
-            assembly=assembly, chromosome=chromosome, start=start, end=end)
+        return ["genomic-regions", assembly, chromosome, start, end]
 
     def get_variants_by_gene_id(self, assembly, gene_id, **params):
         """
@@ -64,33 +63,36 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT, ReportEventsClient._by_gene_id(assembly, gene_id),
-                self._OutputEntities.variants.value]
-        return self._get(os.path.join(path), params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_id(assembly, gene_id) + \
+               [self._OutputEntities.variants.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_variants_by_transcript_id(self, assembly, transcript_id, params={}):
+    def get_variants_by_transcript_id(self, assembly, transcript_id, **params):
         """
         :type assembly: Assembly
         :type transcript_id: str
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT, ReportEventsClient._by_transcript_id(assembly, transcript_id),
-                self._OutputEntities.variants.value]
-        return self._get(os.path.join(path), params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_transcript_id(assembly, transcript_id) + \
+               [self._OutputEntities.variants.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_variants_by_gene_symbol(self, assembly, gene_symbol, params={}):
+    def get_variants_by_gene_symbol(self, assembly, gene_symbol, **params):
         """
         :type assembly: Assembly
         :type gene_symbol: str
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT, ReportEventsClient._by_gene_symbol(assembly, gene_symbol),
-                self._OutputEntities.variants.value]
-        return self._get(os.path.join(path), params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_symbol(assembly, gene_symbol) + \
+               [self._OutputEntities.variants.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_variants_by_genomic_region(self, assembly, chromosome, start, end, params={}):
+    def get_variants_by_genomic_region(self, assembly, chromosome, start, end, **params):
         """
         :type assembly: Assembly
         :type chromosome: str
@@ -99,44 +101,48 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT, ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
-                self._OutputEntities.variants.value]
-        return self._get(os.path.join(path), params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
+               [self._OutputEntities.variants.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_phenotypes_by_gene_id(self, assembly, gene_id, params={}):
+    def get_phenotypes_by_gene_id(self, assembly, gene_id, **params):
         """
         :type assembly: Assembly
         :type gene_id: str
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT, ReportEventsClient._by_gene_id(assembly, gene_id),
-                self._OutputEntities.phenotypes.value]
-        return self._get(os.path.join(path), params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_id(assembly, gene_id) + \
+               [self._OutputEntities.phenotypes.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_phenotypes_by_transcript_id(self, assembly, transcript_id, params={}):
+    def get_phenotypes_by_transcript_id(self, assembly, transcript_id, **params):
         """
         :type assembly: Assembly
         :type transcript_id: str
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT, ReportEventsClient._by_transcript_id(assembly, transcript_id),
-                self._OutputEntities.phenotypes.value]
-        return self._get(os.path.join(path), params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_transcript_id(assembly, transcript_id) + \
+               [self._OutputEntities.phenotypes.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_phenotypes_by_gene_symbol(self, assembly, gene_symbol, params={}):
+    def get_phenotypes_by_gene_symbol(self, assembly, gene_symbol, **params):
         """
         :type assembly: Assembly
         :type gene_symbol: str
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT, ReportEventsClient._by_gene_symbol(assembly, gene_symbol),
-                self._OutputEntities.phenotypes.value]
-        return self._get(os.path.join(path), params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_symbol(assembly, gene_symbol) + \
+               [self._OutputEntities.phenotypes.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_phenotypes_by_genomic_region(self, assembly, chromosome, start, end, params={}):
+    def get_phenotypes_by_genomic_region(self, assembly, chromosome, start, end, **params):
         """
         :type assembly: Assembly
         :type chromosome: str
@@ -145,11 +151,12 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT, ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
-                self._OutputEntities.phenotypes.value]
-        return self._get(os.path.join(path), params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
+               [self._OutputEntities.phenotypes.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_genes_by_genomic_region(self, assembly, chromosome, start, end, params={}):
+    def get_genes_by_genomic_region(self, assembly, chromosome, start, end, **params):
         """
         :type assembly: Assembly
         :type chromosome: str
@@ -158,6 +165,7 @@ class ReportEventsClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT, ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
-                self._OutputEntities.genes.value]
-        return self._get(os.path.join(path), params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
+               [self._OutputEntities.genes.value]
+        results, _ = self._get(path, params)
+        return results
