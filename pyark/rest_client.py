@@ -29,7 +29,8 @@ class RestClient(object):
         segments = []
         if self._endpoint_base:
             segments = self._endpoint_base.split("/")
-        endpoint = endpoint.split("/")
+        if isinstance(endpoint, (str,)):
+            endpoint = endpoint.split("/")
         if isinstance(endpoint, (list,)):
             segments = segments + endpoint
         else:
