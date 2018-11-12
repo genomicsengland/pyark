@@ -16,7 +16,7 @@ class EntitiesClient(cva_client.CvaClient):
         """
         results, _ = self._get("panels", params=params)
         # some additional flattening
-        return self._render(results, as_data_frame)
+        return self._render(results, as_data_frame=as_data_frame)
 
     def get_all_panels(self, **params):
         """
@@ -35,7 +35,7 @@ class EntitiesClient(cva_client.CvaClient):
         :rtype: list or pd.DataFrame
         """
         results, _ = self._get("disorders", params=params)
-        return self._render(results, as_data_frame)
+        return self._render(results, as_data_frame=as_data_frame)
 
     def get_all_specific_diseases(self, **params):
         """
@@ -72,7 +72,7 @@ class EntitiesClient(cva_client.CvaClient):
         :rtype: list or pd.DataFrame
         """
         results, _ = self._get("genes", params=params)
-        return self._render(results, as_data_frame)
+        return self._render(results, as_data_frame=as_data_frame)
 
     def get_genes(self, as_data_frame=False, **params):
         """
