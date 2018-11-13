@@ -7,74 +7,107 @@ class EntitiesClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
-    def get_panels_summary(self, consider_versions=True, as_data_frame=False, latest=True):
+    def get_panels_summary(self, as_data_frame=False, **params):
         """
-        :param latest: return only panels corresponding to latest cases
-        :type latest: bool
         :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
         :type as_data_frame: bool
-        :param consider_versions: aggregates all versions of each panel or not
-        :type consider_versions: bool
         :return: returns all observed panels and the number of cases on which they were applied.
         :rtype: list or pd.DataFrame
         """
-        params = {'considerVersions': consider_versions, 'latest': latest}
-        results, _ = self._get("panels/summary", params=params)
-        return self._render(results, as_data_frame)
+        results, _ = self._get("panels", params=params)
+        # some additional flattening
+        return self._render(results, as_data_frame=as_data_frame)
 
-    def get_all_panels(self, latest=True):
+    def get_all_panels(self, **params):
         """
-        :param latest: return only panels corresponding to latest cases
-        :type latest: bool
         :return: return a list of observed panel names
         :rtype: pd.Series
         """
-        results = self.get_panels_summary(consider_versions=False, latest=latest)
+        results = self.get_panels_summary(consider_versions=False, **params)
         all_panels = [x['panel']['panelName'] for x in results]
         return pd.Series(all_panels, index=all_panels)
 
-    def get_disorders_summary(self, as_data_frame=False, latest=True):
+    def get_disorders_summary(self, as_data_frame=False, **params):
         """
-        :param latest: return only disorders corresponding to latest cases
-        :type latest: bool
         :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
         :type as_data_frame: bool
         :return:
         :rtype: list or pd.DataFrame
         """
-        params = {'latest': latest}
-        results, _ = self._get("disorders/summary", params=params)
-        return self._render(results, as_data_frame)
+        results, _ = self._get("disorders", params=params)
+        return self._render(results, as_data_frame=as_data_frame)
 
-    def get_all_specific_diseases(self, latest=True):
+    def get_all_specific_diseases(self, **params):
         """
-        :param latest: return only disorders corresponding to latest cases
-        :type latest: bool
         :return: return a list of observed specific diseases
         :rtype: pd.Series
         """
-        results = self.get_disorders_summary(latest=latest)
+        results = self.get_disorders_summary(**params)
         all_diseases = list(set([x['disorder']['specificDisease'] for x in results]))
         return pd.Series(all_diseases, index=all_diseases)
 
-    def get_all_disease_groups(self, latest=True):
+    def get_all_disease_groups(self, **params):
         """
-        :param latest: return only disorders corresponding to latest cases
-        :type latest: bool
         :return: return a list of observed disease groups
         :rtype: pd.Series
         """
-        results = self.get_disorders_summary(latest=latest)
+        results = self.get_disorders_summary(**params)
         all_disease_groups = list(set([x['disorder']['diseaseGroup'] for x in results]))
         return pd.Series(all_disease_groups, index=all_disease_groups)
 
-    def get_all_disease_subgroups(self, latest=True):
+    def get_all_disease_subgroups(self, **params):
         """
-        :param latest: return only disorders corresponding to latest cases
-        :type latest: bool
         :return: return a list of observed disease subgroups
         :rtype: pd.Series
         """
-        results = self.get_disorders_summary(latest=latest)
+        results = self.get_disorders_summary(**params)
         all_disease_subgroups = list(set([x['disorder']['diseaseSubGroup'] for x in results]))
         return pd.Series(all_disease_subgroups, index=all_disease_subgroups)
+
+    def get_genes_summary(self, as_data_frame=False, **params):
+        """
+        :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
+        :type as_data_frame: bool
+        :return:
+        :rtype: list or pd.DataFrame
+        """
+        results, _ = self._get("genes", params=params)
+        return self._render(results, as_data_frame=as_data_frame)
+
+    def get_genes(self, as_data_frame=False, **params):
+        """
+        :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
+        :type as_data_frame: bool
+        :return:
+        """
+        results, _ = self._get(endpoint="genes/search", params=params)
+        return self._render(results, as_data_frame=as_data_frame)
+
+    def get_phenotypes(self, as_data_frame=False, **params):
+        """
+        :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
+        :type as_data_frame: bool
+        :return:
+        """
+        results, _ = self._get(endpoint="phenotypes", params=params)
+        return self._render(results, as_data_frame=as_data_frame)
+
+    def get_hpo(self, identifier, as_data_frame=False):
+        """
+        :param identifier: An HPO identifier as in HP:00012345
+        :type identifier: dict
+        :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
+        :type as_data_frame: bool
+        :return:
+        :rtype: list or pd.DataFrame
+        """
+        results, _ = self._get("hpos/{id}".format(id=identifier))
+        return self._render(results, as_data_frame=as_data_frame)
+
+    def get_hpos(self, as_data_frame=False, **params):
+        """
+        :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
+        :type as_data_frame: bool
+        :return:
+        """
+        return self._paginate(endpoint="hpos/search", params=params, as_data_frame=as_data_frame)

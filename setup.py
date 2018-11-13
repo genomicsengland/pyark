@@ -1,11 +1,12 @@
 from distutils.core import setup
 from setuptools import find_packages
+import pyark
 
 test_deps = ['mock']
 
 setup(
     name='pyark',
-    version='2.0.4',
+    version=pyark.VERSION,
     packages=find_packages(),
     scripts=[],
     url='',
@@ -20,7 +21,8 @@ setup(
         'enum34',
         'pandas',
         'mock',
-        'future'
+        'future',
+        'pytest'
     ],
     tests_require=test_deps,
     extras_require={'test': test_deps},

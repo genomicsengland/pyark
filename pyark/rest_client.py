@@ -29,7 +29,8 @@ class RestClient(object):
         segments = []
         if self._endpoint_base:
             segments = self._endpoint_base.split("/")
-        endpoint = endpoint.split("/")
+        if isinstance(endpoint, (str,)):
+            endpoint = endpoint.split("/")
         if isinstance(endpoint, (list,)):
             segments = segments + endpoint
         else:
@@ -54,12 +55,9 @@ class RestClient(object):
             response = self._session.post(url, json=payload, params=params, headers=self._headers)
         else:
             response = requests.post(url, json=payload, params=params, headers=self._headers)
-        logging.info("{date} {method} {url} {headers}".format(
-            date=datetime.datetime.now(),
-            method="POST",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.items()
-                               if name != "Authorization"])
+        logging.info("{method} {url}".format(
+            method="GET",
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
         ))
         self._verify_response(response)
         return response.json(), dict(response.headers)
@@ -72,12 +70,9 @@ class RestClient(object):
             response = self._session.get(url, params=params, headers=self._headers)
         else:
             response = requests.get(url, params=params, headers=self._headers)
-        logging.info("{date} {method} {url} {headers}".format(
-            date=datetime.datetime.now(),
+        logging.info("{method} {url}".format(
             method="GET",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.items()
-                               if name != "Authorization"])
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
         ))
         self._verify_response(response)
         return response.json(), dict(response.headers)
@@ -90,12 +85,9 @@ class RestClient(object):
             response = self._session.patch(url, params=params, headers=self._headers)
         else:
             response = requests.patch(url, params=params, headers=self._headers)
-        logging.info("{date} {method} {url} {headers}".format(
-            date=datetime.datetime.now(),
-            method="PATCH",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.items()
-                               if name != "Authorization"])
+        logging.info("{method} {url}".format(
+            method="GET",
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
         ))
         self._verify_response(response)
         return response.json(), dict(response.headers)
@@ -105,12 +97,9 @@ class RestClient(object):
             raise ValueError("Must define endpoint before get")
         url = self._build_url(endpoint)
         response = self._session.delete(url, params=params)
-        logging.info("{date} {method} {url} {headers}".format(
-            date=datetime.datetime.now(),
-            method="DELETE",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))),
-            headers=", ".join(["{}={}".format(name, value) for name, value in response.headers.items()
-                               if name != "Authorization"])
+        logging.info("{method} {url}".format(
+            method="GET",
+            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
         ))
         self._verify_response(response)
         return response.json(), dict(response.headers)

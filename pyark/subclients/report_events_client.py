@@ -1,6 +1,7 @@
+import os
 import pyark.cva_client as cva_client
 from enum import Enum
-from protocols.protocol_7_0.cva import ReportEventEntry, Program, ReportEventType, Assembly
+from protocols.protocol_7_0.cva import ReportEventEntry, Assembly
 
 
 class ReportEventsClient(cva_client.CvaClient):
@@ -10,13 +11,11 @@ class ReportEventsClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
-    def count_report_events(self, params={}):
-        if not params:
-            params = {}
+    def count(self, **params):
         params['count'] = True
-        return self.get_report_events(params)
+        return self.get_report_events(**params)
 
-    def get_report_events(self, params={}):
+    def get_report_events(self, **params):
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
             return results[0]
@@ -43,194 +42,130 @@ class ReportEventsClient(cva_client.CvaClient):
 
     @staticmethod
     def _by_gene_id(assembly, gene_id):
-        return "gene-ids/{assembly}/{gene_id}".format(assembly=assembly, gene_id=gene_id)
+        return ["gene-ids", assembly, gene_id]
 
     @staticmethod
     def _by_transcript_id(assembly, transcript_id):
-        return "transcript-ids/{assembly}/{transcript_id}".format(assembly=assembly, transcript_id=transcript_id)
+        return ["transcript-ids", assembly, transcript_id]
 
     @staticmethod
     def _by_gene_symbol(assembly, gene_symbol):
-        return "gene-symbols/{assembly}/{gene_symbol}".format(assembly=assembly, gene_symbol=gene_symbol)
+        return ["gene-symbols", assembly, gene_symbol]
 
     @staticmethod
     def _by_genomic_coordinates(assembly, chromosome, start, end):
-        return "genomic-regions/{assembly}/{chromosome}/{start}/{end}".format(
-            assembly=assembly, chromosome=chromosome, start=start, end=end)
+        return ["genomic-regions", assembly, chromosome, start, end]
 
-    def _get_report_events_aggregation_query(self, path, program, report_event_type, include_aggregations, params):
-        if params is None:
-            params = {}
-        if program:
-            params['program'] = program
-        if report_event_type:
-            params['type'] = report_event_type
-        return self._get_aggregation_query(path, include_aggregations, params)
-
-    def get_variants_by_gene_id(self, program, report_event_type, assembly, gene_id,
-                                include_aggregations=False, params={}):
+    def get_variants_by_gene_id(self, assembly, gene_id, **params):
         """
-
-        :type program: Program
-        :type report_event_type: ReportEventType
         :type assembly: Assembly
         :type gene_id: str
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT,
-                ReportEventsClient._by_gene_id(assembly, gene_id),
-                self._OutputEntities.variants.value]
-        return self._get_report_events_aggregation_query(
-            path, program, report_event_type, include_aggregations, params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_id(assembly, gene_id) + \
+               [self._OutputEntities.variants.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_variants_by_transcript_id(self, program, report_event_type, assembly, transcript_id,
-                                      include_aggregations=False, params={}):
+    def get_variants_by_transcript_id(self, assembly, transcript_id, **params):
         """
-
-        :type program: Program
-        :type report_event_type: ReportEventType
         :type assembly: Assembly
         :type transcript_id: str
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT,
-                ReportEventsClient._by_transcript_id(assembly, transcript_id),
-                self._OutputEntities.variants.value]
-        return self._get_report_events_aggregation_query(
-            path, program, report_event_type, include_aggregations, params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_transcript_id(assembly, transcript_id) + \
+               [self._OutputEntities.variants.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_variants_by_gene_symbol(self, program, report_event_type, assembly, gene_symbol,
-                                    include_aggregations=False, params={}):
+    def get_variants_by_gene_symbol(self, assembly, gene_symbol, **params):
         """
-
-        :type program: Program
-        :type report_event_type: ReportEventType
         :type assembly: Assembly
         :type gene_symbol: str
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT,
-                ReportEventsClient._by_gene_symbol(assembly, gene_symbol),
-                self._OutputEntities.variants.value]
-        return self._get_report_events_aggregation_query(
-            path, program, report_event_type, include_aggregations, params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_symbol(assembly, gene_symbol) + \
+               [self._OutputEntities.variants.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_variants_by_genomic_region(self, program, report_event_type, assembly, chromosome, start, end,
-                                       include_aggregations=False, params={}):
+    def get_variants_by_genomic_region(self, assembly, chromosome, start, end, **params):
         """
-
-        :type program: Program
-        :type report_event_type: ReportEventType
         :type assembly: Assembly
         :type chromosome: str
         :type start: int
         :type end: int
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT,
-                ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
-                self._OutputEntities.variants.value]
-        return self._get_report_events_aggregation_query(
-            path, program, report_event_type, include_aggregations, params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
+               [self._OutputEntities.variants.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_phenotypes_by_gene_id(self, program, report_event_type, assembly, gene_id,
-                                  include_aggregations=False, params={}):
+    def get_phenotypes_by_gene_id(self, assembly, gene_id, **params):
         """
-
-        :type program: Program
-        :type report_event_type: ReportEventType
         :type assembly: Assembly
         :type gene_id: str
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT,
-                ReportEventsClient._by_gene_id(assembly, gene_id),
-                self._OutputEntities.phenotypes.value]
-        return self._get_report_events_aggregation_query(
-            path, program, report_event_type, include_aggregations, params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_id(assembly, gene_id) + \
+               [self._OutputEntities.phenotypes.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_phenotypes_by_transcript_id(self, program, report_event_type, assembly, transcript_id,
-                                        include_aggregations=False, params={}):
+    def get_phenotypes_by_transcript_id(self, assembly, transcript_id, **params):
         """
-
-        :type program: Program
-        :type report_event_type: ReportEventType
         :type assembly: Assembly
         :type transcript_id: str
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT,
-                ReportEventsClient._by_transcript_id(assembly, transcript_id),
-                self._OutputEntities.phenotypes.value]
-        return self._get_report_events_aggregation_query(
-            path, program, report_event_type, include_aggregations, params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_transcript_id(assembly, transcript_id) + \
+               [self._OutputEntities.phenotypes.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_phenotypes_by_gene_symbol(self, program, report_event_type, assembly, gene_symbol,
-                                      include_aggregations=False, params={}):
+    def get_phenotypes_by_gene_symbol(self, assembly, gene_symbol, **params):
         """
-
-        :type program: Program
-        :type report_event_type: ReportEventType
         :type assembly: Assembly
         :type gene_symbol: str
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT,
-                ReportEventsClient._by_gene_symbol(assembly, gene_symbol),
-                self._OutputEntities.phenotypes.value]
-        return self._get_report_events_aggregation_query(
-            path, program, report_event_type, include_aggregations, params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_symbol(assembly, gene_symbol) + \
+               [self._OutputEntities.phenotypes.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_phenotypes_by_genomic_region(self, program, report_event_type, assembly, chromosome, start, end,
-                                         include_aggregations=False, params={}):
+    def get_phenotypes_by_genomic_region(self, assembly, chromosome, start, end, **params):
         """
-
-        :type program: Program
-        :type report_event_type: ReportEventType
         :type assembly: Assembly
         :type chromosome: str
         :type start: int
         :type end: int
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT,
-                ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
-                self._OutputEntities.phenotypes.value]
-        return self._get_report_events_aggregation_query(
-            path, program, report_event_type, include_aggregations, params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
+               [self._OutputEntities.phenotypes.value]
+        results, _ = self._get(path, params)
+        return results
 
-    def get_genes_by_genomic_region(self, program, report_event_type, assembly, chromosome, start, end,
-                                    include_aggregations=False, params={}):
+    def get_genes_by_genomic_region(self, assembly, chromosome, start, end, **params):
         """
-
-        :type program: Program
-        :type report_event_type: ReportEventType
         :type assembly: Assembly
         :type chromosome: str
         :type start: int
         :type end: int
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT,
-                ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end),
-                self._OutputEntities.genes.value]
-        return self._get_report_events_aggregation_query(
-            path, program, report_event_type, include_aggregations, params)
+        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
+               [self._OutputEntities.genes.value]
+        results, _ = self._get(path, params)
+        return results
