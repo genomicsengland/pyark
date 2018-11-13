@@ -18,7 +18,7 @@ class VariantsClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
-    def count_variants(self):
+    def count(self):
         """
         :rtype: int
         """
