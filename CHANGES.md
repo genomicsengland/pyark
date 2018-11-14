@@ -1,3 +1,17 @@
+v3.0.1
+======
+
+* Added endpoints to search panels and disorders by regex
+
+v3.0.0
+======
+
+* Added new endpoints about entities in backend
+* Still more Pandas integration
+* Added `**params` all over the place, so we can use parameter names as they are in pyark
+* Test reports for builds
+* Align version with backend
+
 v2.0.4
 ======
 
