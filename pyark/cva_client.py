@@ -54,15 +54,15 @@ class CvaClient(RestClient):
         return "Bearer {}".format(results[0]['token'])
 
     def _post(self, endpoint, payload, session=True, **params):
-        response, headers = super(CvaClient, self)._post(endpoint, payload, params, session)
+        response, headers = super(CvaClient, self)._post(endpoint, payload, session, **params)
         return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
     def _get(self, endpoint, session=True, **params):
-        response, headers = super(CvaClient, self)._get(endpoint, params, session)
+        response, headers = super(CvaClient, self)._get(endpoint, session, **params)
         return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
     def _delete(self, endpoint, **params):
-        response, headers = super(CvaClient, self)._delete(endpoint, params)
+        response, headers = super(CvaClient, self)._delete(endpoint, **params)
         return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
     @staticmethod
