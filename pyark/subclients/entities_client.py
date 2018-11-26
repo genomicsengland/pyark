@@ -18,6 +18,16 @@ class EntitiesClient(cva_client.CvaClient):
         # some additional flattening
         return self._render(results, as_data_frame=as_data_frame)
 
+    def get_panels_by_regex(self, as_data_frame=False, **params):
+        """
+        :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
+        :type as_data_frame: bool
+        :return: returns observed panels matching the regex.
+        :rtype: list or pd.DataFrame
+        """
+        results, _ = self._get("panels/search", params=params)
+        return self._render(results, as_data_frame=as_data_frame)
+
     def get_all_panels(self, **params):
         """
         :return: return a list of observed panel names
@@ -35,6 +45,16 @@ class EntitiesClient(cva_client.CvaClient):
         :rtype: list or pd.DataFrame
         """
         results, _ = self._get("disorders", params=params)
+        return self._render(results, as_data_frame=as_data_frame)
+
+    def get_disorders_by_regex(self, as_data_frame=False, **params):
+        """
+        :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
+        :type as_data_frame: bool
+        :return: returns observed disorders matching the regex.
+        :rtype: list or pd.DataFrame
+        """
+        results, _ = self._get("disorders/search", params=params)
         return self._render(results, as_data_frame=as_data_frame)
 
     def get_all_specific_diseases(self, **params):
