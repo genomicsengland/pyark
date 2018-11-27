@@ -14,7 +14,7 @@ class EntitiesClient(cva_client.CvaClient):
         :return: returns all observed panels and the number of cases on which they were applied.
         :rtype: list or pd.DataFrame
         """
-        results, _ = self._get("panels", params=params)
+        results, _ = self._get("panels", **params)
         # some additional flattening
         return self._render(results, as_data_frame=as_data_frame)
 
@@ -25,7 +25,7 @@ class EntitiesClient(cva_client.CvaClient):
         :return: returns observed panels matching the regex.
         :rtype: list or pd.DataFrame
         """
-        results, _ = self._get("panels/search", params=params)
+        results, _ = self._get("panels/search", **params)
         return self._render(results, as_data_frame=as_data_frame)
 
     def get_all_panels(self, **params):
@@ -44,7 +44,7 @@ class EntitiesClient(cva_client.CvaClient):
         :return:
         :rtype: list or pd.DataFrame
         """
-        results, _ = self._get("disorders", params=params)
+        results, _ = self._get("disorders", **params)
         return self._render(results, as_data_frame=as_data_frame)
 
     def get_disorders_by_regex(self, as_data_frame=False, **params):
@@ -54,7 +54,7 @@ class EntitiesClient(cva_client.CvaClient):
         :return: returns observed disorders matching the regex.
         :rtype: list or pd.DataFrame
         """
-        results, _ = self._get("disorders/search", params=params)
+        results, _ = self._get("disorders/search", **params)
         return self._render(results, as_data_frame=as_data_frame)
 
     def get_all_specific_diseases(self, **params):
@@ -91,7 +91,7 @@ class EntitiesClient(cva_client.CvaClient):
         :return:
         :rtype: list or pd.DataFrame
         """
-        results, _ = self._get("genes", params=params)
+        results, _ = self._get("genes", **params)
         return self._render(results, as_data_frame=as_data_frame)
 
     def get_genes(self, as_data_frame=False, **params):
@@ -100,7 +100,7 @@ class EntitiesClient(cva_client.CvaClient):
         :type as_data_frame: bool
         :return:
         """
-        results, _ = self._get(endpoint="genes/search", params=params)
+        results, _ = self._get(endpoint="genes/search", **params)
         return self._render(results, as_data_frame=as_data_frame)
 
     def get_phenotypes(self, as_data_frame=False, **params):
@@ -109,7 +109,7 @@ class EntitiesClient(cva_client.CvaClient):
         :type as_data_frame: bool
         :return:
         """
-        results, _ = self._get(endpoint="phenotypes", params=params)
+        results, _ = self._get(endpoint="phenotypes", **params)
         return self._render(results, as_data_frame=as_data_frame)
 
     def get_hpo(self, identifier, as_data_frame=False):
@@ -130,4 +130,4 @@ class EntitiesClient(cva_client.CvaClient):
         :type as_data_frame: bool
         :return:
         """
-        return self._paginate(endpoint="hpos/search", params=params, as_data_frame=as_data_frame)
+        return self._paginate(endpoint="hpos/search", as_data_frame=as_data_frame, **params)
