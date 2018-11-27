@@ -47,7 +47,7 @@ class RestClient(object):
     def _get_token(self):
         raise ValueError("Not implemented")
 
-    def _post(self, endpoint, payload, params={}, session=True):
+    def _post(self, endpoint, payload, session=True, **params):
         if endpoint is None or payload is None:
             raise ValueError("Must define payload and endpoint before post")
         url = self._build_url(endpoint)
@@ -62,7 +62,7 @@ class RestClient(object):
         self._verify_response(response)
         return response.json(), dict(response.headers)
 
-    def _get(self, endpoint, params={}, session=True):
+    def _get(self, endpoint, session=True, **params):
         if endpoint is None:
             raise ValueError("Must define endpoint before get")
         url = self._build_url(endpoint)
@@ -77,7 +77,7 @@ class RestClient(object):
         self._verify_response(response)
         return response.json(), dict(response.headers)
 
-    def _patch(self, endpoint, params={}, session=True):
+    def _patch(self, endpoint, session=True, **params):
         if endpoint is None:
             raise ValueError("Must define endpoint before patch")
         url = self._build_url(endpoint)
@@ -92,7 +92,7 @@ class RestClient(object):
         self._verify_response(response)
         return response.json(), dict(response.headers)
 
-    def _delete(self, endpoint, params={}):
+    def _delete(self, endpoint, **params):
         if endpoint is None:
             raise ValueError("Must define endpoint before get")
         url = self._build_url(endpoint)
