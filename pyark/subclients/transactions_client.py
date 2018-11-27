@@ -34,15 +34,15 @@ class TransactionsClient(cva_client.CvaClient):
 
     def get_transactions(self, **params):
         if params.get('count', False):
-            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
-            return self._paginate_transactions(params)
+            return self._paginate_transactions(**params)
 
-    def _paginate_transactions(self, params):
+    def _paginate_transactions(self, **params):
         more_results = True
         while more_results:
-            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             transactions = list(map(lambda x: Transaction.fromJsonDict(x), results))
             if next_page_params:
                 params[cva_client.CvaClient._LIMIT_PARAM] = next_page_params[cva_client.CvaClient._LIMIT_PARAM]

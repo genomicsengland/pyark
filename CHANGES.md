@@ -1,3 +1,9 @@
+v3.0.2
+======
+
+* Bugfixes.....
+* Allow building custom endpoints from the main client
+
 v3.0.1
 ======
 
