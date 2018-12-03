@@ -45,6 +45,7 @@ class CvaClient(RestClient):
         self._lift_overs_client = None
         self._data_intake_client = None
         self._transactions_client = None
+        self._evidences_client = None
 
     def _get_token(self):
         results, _ = self._post(self._AUTHENTICATION_ENDPOINT, payload={
@@ -160,6 +161,14 @@ class CvaClient(RestClient):
             self._transactions_client = pyark.subclients.transactions_client.TransactionsClient(
                 self._url_base, self._token)
         return self._transactions_client
+
+    def evidences(self):
+        import pyark.subclients.evidences_client
+        if self._evidences_client is None:
+            # initialise subclients
+            self._evidences_client = pyark.subclients.evidences_client.EvidencesClient(
+                self._url_base, self._token)
+        return self._evidences_client
 
     def lift_overs(self):
         """

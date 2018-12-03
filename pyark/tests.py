@@ -637,6 +637,11 @@ class TestPyArk (TestCase):
         self.assertEqual(0,
                          CvaClient("https://nowhere.invalid", user='u', password='p').entities().get_all_panels().size)
 
+    def test_gets_evidence(self):
+        client = self.cva.evidences()
+        evidences = client.get_evidences("curation team")
+        self.assertTrue(evidences, "expected some evidences")
+
     @staticmethod
     def _mock_panels_to_return(get, post, status_code):
         auth_response = MockResponse(status_code, {'response': [{'result': [{'token': 'xyz'}]}]})
