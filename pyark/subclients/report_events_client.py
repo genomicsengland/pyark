@@ -17,15 +17,15 @@ class ReportEventsClient(cva_client.CvaClient):
 
     def get_report_events(self, **params):
         if params.get('count', False):
-            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
-            return self._paginate_report_events(params)
+            return self._paginate_report_events(**params)
 
-    def _paginate_report_events(self, params):
+    def _paginate_report_events(self, **params):
         more_results = True
         while more_results:
-            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             report_events = list(map(lambda x: ReportEventEntry.fromJsonDict(x), results))
             if next_page_params:
                 params[cva_client.CvaClient._LIMIT_PARAM] = next_page_params[cva_client.CvaClient._LIMIT_PARAM]
@@ -65,7 +65,7 @@ class ReportEventsClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_id(assembly, gene_id) + \
                [self._OutputEntities.variants.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_variants_by_transcript_id(self, assembly, transcript_id, **params):
@@ -77,7 +77,7 @@ class ReportEventsClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_transcript_id(assembly, transcript_id) + \
                [self._OutputEntities.variants.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_variants_by_gene_symbol(self, assembly, gene_symbol, **params):
@@ -89,7 +89,7 @@ class ReportEventsClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_symbol(assembly, gene_symbol) + \
                [self._OutputEntities.variants.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_variants_by_genomic_region(self, assembly, chromosome, start, end, **params):
@@ -103,7 +103,7 @@ class ReportEventsClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
                [self._OutputEntities.variants.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_phenotypes_by_gene_id(self, assembly, gene_id, **params):
@@ -115,7 +115,7 @@ class ReportEventsClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_id(assembly, gene_id) + \
                [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_phenotypes_by_transcript_id(self, assembly, transcript_id, **params):
@@ -127,7 +127,7 @@ class ReportEventsClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_transcript_id(assembly, transcript_id) + \
                [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_phenotypes_by_gene_symbol(self, assembly, gene_symbol, **params):
@@ -139,7 +139,7 @@ class ReportEventsClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_symbol(assembly, gene_symbol) + \
                [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_phenotypes_by_genomic_region(self, assembly, chromosome, start, end, **params):
@@ -153,7 +153,7 @@ class ReportEventsClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
                [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_genes_by_genomic_region(self, assembly, chromosome, start, end, **params):
@@ -167,5 +167,5 @@ class ReportEventsClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
                [self._OutputEntities.genes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results

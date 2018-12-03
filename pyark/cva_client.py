@@ -45,6 +45,7 @@ class CvaClient(RestClient):
         self._lift_overs_client = None
         self._data_intake_client = None
         self._transactions_client = None
+        self._evidences_client = None
 
     def _get_token(self):
         results, _ = self._post(self._AUTHENTICATION_ENDPOINT, payload={
@@ -53,16 +54,16 @@ class CvaClient(RestClient):
         })
         return "Bearer {}".format(results[0]['token'])
 
-    def _post(self, endpoint, payload, params={}, session=True):
-        response, headers = super(CvaClient, self)._post(endpoint, payload, params, session)
+    def _post(self, endpoint, payload, session=True, **params):
+        response, headers = super(CvaClient, self)._post(endpoint, payload, session, **params)
         return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
-    def _get(self, endpoint, params={}, session=True):
-        response, headers = super(CvaClient, self)._get(endpoint, params, session)
+    def _get(self, endpoint, session=True, **params):
+        response, headers = super(CvaClient, self)._get(endpoint, session, **params)
         return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
-    def _delete(self, endpoint, params={}):
-        response, headers = super(CvaClient, self)._delete(endpoint, params)
+    def _delete(self, endpoint, **params):
+        response, headers = super(CvaClient, self)._delete(endpoint, **params)
         return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
     @staticmethod
@@ -161,6 +162,14 @@ class CvaClient(RestClient):
                 self._url_base, self._token)
         return self._transactions_client
 
+    def evidences(self):
+        import pyark.subclients.evidences_client
+        if self._evidences_client is None:
+            # initialise subclients
+            self._evidences_client = pyark.subclients.evidences_client.EvidencesClient(
+                self._url_base, self._token)
+        return self._evidences_client
+
     def lift_overs(self):
         """
 
@@ -239,10 +248,10 @@ class CvaClient(RestClient):
         else:
             return results
 
-    def _paginate(self, endpoint, params, as_data_frame=False):
+    def _paginate(self, endpoint, as_data_frame=False, **params):
         more_results = True
         while more_results:
-            results, next_page_params = self._get(endpoint, params=params)
+            results, next_page_params = self._get(endpoint, **params)
             results = list(results)
             if next_page_params:
                 params[CvaClient._LIMIT_PARAM] = next_page_params[CvaClient._LIMIT_PARAM]
