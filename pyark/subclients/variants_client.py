@@ -45,10 +45,10 @@ class VariantsClient(cva_client.CvaClient):
 
     def get_variants(self, as_data_frame=False, **params):
         if params.get('count', False):
-            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
-            return self._paginate(endpoint=self._BASE_ENDPOINT, params=params, as_data_frame=as_data_frame)
+            return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, **params)
 
     def _set_singleton(self):
         global _singleton_instance
