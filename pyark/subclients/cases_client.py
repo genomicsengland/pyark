@@ -17,14 +17,15 @@ class CasesClient(cva_client.CvaClient):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
     def count(self, **params):
-        return self.get_cases(count=True, **params)
+        params['count'] = True
+        return self.get_cases(**params)
 
     def get_cases(self, as_data_frame=False, **params):
         if params.get('count', False):
-            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
+            results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
-            return self._paginate(endpoint=self._BASE_ENDPOINT, params=params, as_data_frame=as_data_frame)
+            return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, **params)
 
     class _OutputEntities(Enum):
         variants = 'variants'
@@ -58,13 +59,13 @@ class CasesClient(cva_client.CvaClient):
         :return:
         """
         if params_list:
-            self._params_sanity_checks(params=params)
+            self._params_sanity_checks(**params)
             for p in params_list:
                 p.update(params)
             results_list = [self.get_summary(as_data_frame=as_data_frame, **p) for p in params_list]
             return self._render_multiple_results(results_list, as_data_frame=as_data_frame)
         else:
-            results, _ = self._get("{endpoint}/summary".format(endpoint=self._BASE_ENDPOINT), params)
+            results, _ = self._get("{endpoint}/summary".format(endpoint=self._BASE_ENDPOINT), **params)
             if not results:
                 logging.warning("No summary found")
                 return None
@@ -112,19 +113,17 @@ class CasesClient(cva_client.CvaClient):
         results, _ = self._get("{endpoint}/search/{query}".format(endpoint=self._BASE_ENDPOINT, query=query))
         return self._render(results, as_data_frame=False)
 
-    def get_variants_by_gene_id(self, program, assembly, gene_id,
-                                include_aggregations=False, **params):
+    def get_variants_by_gene_id(self, program, assembly, gene_id, **params):
         """
         :type program: Program
         :type assembly: Assembly
         :type gene_id: str
-        :type include_aggregations: bool
         :type params: dict
         :return:
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_gene_id(assembly, gene_id) +\
                [self._OutputEntities.variants.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_variants_by_transcript_id(self, assembly, transcript_id, **params):
@@ -136,7 +135,7 @@ class CasesClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_transcript_id(assembly, transcript_id) + \
                [self._OutputEntities.variants.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_variants_by_gene_symbol(self, assembly, gene_symbol, **params):
@@ -148,7 +147,7 @@ class CasesClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_gene_symbol(assembly, gene_symbol) + \
                [self._OutputEntities.variants.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_variants_by_panel(self, panel_name, **params):
@@ -158,7 +157,7 @@ class CasesClient(cva_client.CvaClient):
         :return:
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_panel(panel_name) + [self._OutputEntities.variants.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_genes_by_panel(self, panel_name, **params):
@@ -168,7 +167,7 @@ class CasesClient(cva_client.CvaClient):
         :return:
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_panel(panel_name) + [self._OutputEntities.genes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_variants_by_genomic_region(self, assembly, chromosome, start, end, **params):
@@ -182,7 +181,7 @@ class CasesClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
                [self._OutputEntities.variants.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_phenotypes_by_gene_id(self, assembly, gene_id, **params):
@@ -194,7 +193,7 @@ class CasesClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_gene_id(assembly, gene_id) + \
                [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_phenotypes_by_transcript_id(self, assembly, transcript_id, **params):
@@ -206,7 +205,7 @@ class CasesClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_transcript_id(assembly, transcript_id) + \
                [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_phenotypes_by_gene_symbol(self, assembly, gene_symbol, **params):
@@ -216,9 +215,9 @@ class CasesClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        path = [self._BASE_ENDPOINT] +  CasesClient._by_gene_symbol(assembly, gene_symbol) + \
+        path = [self._BASE_ENDPOINT] + CasesClient._by_gene_symbol(assembly, gene_symbol) + \
                [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_phenotypes_by_genomic_region(self, assembly, chromosome, start, end, **params):
@@ -232,7 +231,7 @@ class CasesClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
                [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_genes_by_genomic_region(self, assembly, chromosome, start, end, **params):
@@ -246,7 +245,7 @@ class CasesClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
                [self._OutputEntities.genes.value]
-        results, _ = self._get(path, params)
+        results, _ = self._get(path, **params)
         return results
 
     def get_similar_cases_by_case(self, case_id, case_version, as_data_frame=False, **params):
@@ -257,7 +256,7 @@ class CasesClient(cva_client.CvaClient):
         :type params: dict
         :return:
         """
-        results, _ = self._get([self._BASE_ENDPOINT, case_id, case_version, "similar-cases"], params)
+        results, _ = self._get([self._BASE_ENDPOINT, case_id, case_version, "similar-cases"], **params)
         if not results:
             logging.warning("No similar cases found")
             return None
@@ -271,7 +270,7 @@ class CasesClient(cva_client.CvaClient):
         :return:
         """
         params['hpoIds'] = phenotypes
-        results, _ = self._get([self._BASE_ENDPOINT, "phenotypes", "similar-cases"], params)
+        results, _ = self._get([self._BASE_ENDPOINT, "phenotypes", "similar-cases"], **params)
         if not results:
             logging.warning("No similar cases found")
             return None
@@ -288,8 +287,10 @@ class CasesClient(cva_client.CvaClient):
         """
         assert report_event_type in REPORT_EVENT_TYPES, \
             "Invalid report event type provided '{}'. Valid values: {}".format(report_event_type, REPORT_EVENT_TYPES)
+        if params is None:
+            params = {}
         params['type'] = report_event_type
-        results, _ = self._get([self._BASE_ENDPOINT, case_id, case_version, "shared-variants"], params)
+        results, _ = self._get([self._BASE_ENDPOINT, case_id, case_version, "shared-variants"], **params)
         if not results:
             logging.warning("No cases sharing {} variants found".format(report_event_type))
             return None
@@ -308,7 +309,7 @@ class CasesClient(cva_client.CvaClient):
         if params is None:
             params = {}
         params['type'] = report_event_type
-        results, _ = self._get([self._BASE_ENDPOINT, case_id, case_version, "shared-genes"], params)
+        results, _ = self._get([self._BASE_ENDPOINT, case_id, case_version, "shared-genes"], **params)
         if not results:
             logging.warning("No cases sharing {} genes found".format(report_event_type))
             return None
