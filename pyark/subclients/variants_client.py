@@ -18,12 +18,8 @@ class VariantsClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
-    def count(self):
-        """
-        :rtype: int
-        """
-        results, _ = self._get("{endpoint}".format(endpoint=self._BASE_ENDPOINT), params={'count':True})
-        return results[0]
+    def count(self, **params):
+        return self.get_variants(count=True, **params)
 
     def get_variant_by_id(self, identifier):
         """
@@ -46,6 +42,13 @@ class VariantsClient(cva_client.CvaClient):
         """
         self._set_singleton()
         return VariantsClient.run_parallel_requests(_get_variant_by_id, identifiers)
+
+    def get_variants(self, as_data_frame=False, **params):
+        if params.get('count', False):
+            results, next_page_params = self._get(self._BASE_ENDPOINT, params=params)
+            return results[0]
+        else:
+            return self._paginate(endpoint=self._BASE_ENDPOINT, params=params, as_data_frame=as_data_frame)
 
     def _set_singleton(self):
         global _singleton_instance

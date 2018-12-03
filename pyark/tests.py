@@ -86,6 +86,17 @@ class TestPyArk (TestCase):
         count = self.variants.count()
         self.assertIsInstance(count, int)
 
+    def test_get_variants(self):
+
+        all_variants = self.variants.get_variants(limit=2)
+        re_count = 0
+        for batch_variants in all_variants:
+            self.assertIsNotNone(batch_variants)
+            re_count += 1
+            if re_count == 5:
+                break
+        self.assertEqual(re_count, 5)
+
     def test_get_by_gene_id(self):
 
         gene_id = "ENSG00000130826"
