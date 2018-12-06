@@ -1,4 +1,3 @@
-import os
 import pyark.cva_client as cva_client
 from protocols.protocol_7_0.cva import Program, Assembly, ReportEventType
 import logging
@@ -29,7 +28,6 @@ class CasesClient(cva_client.CvaClient):
 
     class _OutputEntities(Enum):
         variants = 'variants'
-        phenotypes = 'phenotypes'
         genes = 'genes'
 
     @staticmethod
@@ -160,16 +158,6 @@ class CasesClient(cva_client.CvaClient):
         results, _ = self._get(path, **params)
         return results
 
-    def get_genes_by_panel(self, panel_name, **params):
-        """
-        :type panel_name: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_panel(panel_name) + [self._OutputEntities.genes.value]
-        results, _ = self._get(path, **params)
-        return results
-
     def get_variants_by_genomic_region(self, assembly, chromosome, start, end, **params):
         """
         :type assembly: Assembly
@@ -181,56 +169,6 @@ class CasesClient(cva_client.CvaClient):
         """
         path = [self._BASE_ENDPOINT] + CasesClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
                [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_phenotypes_by_gene_id(self, assembly, gene_id, **params):
-        """
-        :type assembly: Assembly
-        :type gene_id: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_gene_id(assembly, gene_id) + \
-               [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_phenotypes_by_transcript_id(self, assembly, transcript_id, **params):
-        """
-        :type assembly: Assembly
-        :type transcript_id: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_transcript_id(assembly, transcript_id) + \
-               [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_phenotypes_by_gene_symbol(self, assembly, gene_symbol, **params):
-        """
-        :type assembly: Assembly
-        :type gene_symbol: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_gene_symbol(assembly, gene_symbol) + \
-               [self._OutputEntities.phenotypes.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_phenotypes_by_genomic_region(self, assembly, chromosome, start, end, **params):
-        """
-        :type assembly: Assembly
-        :type chromosome: str
-        :type start: int
-        :type end: int
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
-               [self._OutputEntities.phenotypes.value]
         results, _ = self._get(path, **params)
         return results
 
