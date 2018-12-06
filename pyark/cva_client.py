@@ -21,12 +21,12 @@ class CvaClient(RestClient):
     _AUTHENTICATION_ENDPOINT = "authentication"
 
     def __init__(self, url_base, token=None, user=None, password=None,
-                 disable_validation=True, disable_annotation=False):
+                 disable_validation=True, disable_annotation=False, retries=10):
 
         if not (token or (user and password is not None)):
             logging.error("Credentials are required. Either token or user/password.")
             raise ValueError("Missing credentials")
-        RestClient.__init__(self, url_base, self._ENDPOINT_BASE)
+        RestClient.__init__(self, url_base, self._ENDPOINT_BASE, retries=retries)
         self._disable_validation = disable_validation
         self._disable_annotation = disable_annotation
         self._push_data_params = {'disable_validation': self._disable_validation,
@@ -45,6 +45,7 @@ class CvaClient(RestClient):
         self._lift_overs_client = None
         self._data_intake_client = None
         self._transactions_client = None
+        self._evidences_client = None
 
     def _get_token(self):
         results, _ = self._post(self._AUTHENTICATION_ENDPOINT, payload={
@@ -160,6 +161,14 @@ class CvaClient(RestClient):
             self._transactions_client = pyark.subclients.transactions_client.TransactionsClient(
                 self._url_base, self._token)
         return self._transactions_client
+
+    def evidences(self):
+        import pyark.subclients.evidences_client
+        if self._evidences_client is None:
+            # initialise subclients
+            self._evidences_client = pyark.subclients.evidences_client.EvidencesClient(
+                self._url_base, self._token)
+        return self._evidences_client
 
     def lift_overs(self):
         """

@@ -1,10 +1,10 @@
 import logging
 import os
 from unittest import TestCase
-import pandas as pd
 
+import pandas as pd
 from mock import patch
-from protocols.protocol_7_0.cva import ReportEventType, Assembly, Variant, PedigreeInjectRD, CancerParticipantInject
+from protocols.protocol_7_0.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject
 from protocols.protocol_7_0.reports import Program
 from protocols.util import dependency_manager
 from protocols.util.factories.avro_factory import GenericFactoryAvro
@@ -27,7 +27,7 @@ class TestPyArk (TestCase):
         if not self.CVA_URL_BASE or not self.GEL_USER:
             logging.error("Please set the configuration environment variables: CVA_URL, GEL_USER, GEL_PASSWORD")
             raise ValueError("Missing config")
-        self.cva = CvaClient(self.CVA_URL_BASE, user=self.GEL_USER, password=self.GEL_PASSWORD)
+        self.cva = CvaClient(self.CVA_URL_BASE, user=self.GEL_USER, password=self.GEL_PASSWORD, retries=10)
         self.report_events = self.cva.report_events()
         self.entities = self.cva.entities()
         self.cases = self.cva.cases()
@@ -86,6 +86,17 @@ class TestPyArk (TestCase):
         count = self.variants.count()
         self.assertIsInstance(count, int)
 
+    def test_get_variants(self):
+
+        all_variants = self.variants.get_variants(limit=2)
+        re_count = 0
+        for batch_variants in all_variants:
+            self.assertIsNotNone(batch_variants)
+            re_count += 1
+            if re_count == 5:
+                break
+        self.assertEqual(re_count, 5)
+
     def test_get_by_gene_id(self):
 
         gene_id = "ENSG00000130826"
@@ -98,19 +109,6 @@ class TestPyArk (TestCase):
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_gene_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_id=gene_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        # gets phenotypes
-        results = self.report_events.get_phenotypes_by_gene_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_id=gene_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_phenotypes_by_gene_id(
             program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
             assembly=Assembly.GRCh38, gene_id=gene_id, includeAggregations=True)
         self.assertIsNotNone(results)
@@ -133,19 +131,6 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-        # gets phenotypes
-        results = self.report_events.get_phenotypes_by_transcript_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_phenotypes_by_transcript_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
     def test_get_variants_by_gene_symbol(self):
 
         gene_symbol = "BRCA1"
@@ -158,19 +143,6 @@ class TestPyArk (TestCase):
         self.assertIsInstance(results, list)
 
         results = self.report_events.get_variants_by_gene_symbol(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        # gets phenotypes
-        results = self.report_events.get_phenotypes_by_gene_symbol(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_phenotypes_by_gene_symbol(
             program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
             assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=True)
         self.assertIsNotNone(results)
@@ -196,19 +168,6 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-        # gets phenotypes
-        results = self.report_events.get_phenotypes_by_genomic_region(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=assembly, chromosome=chromosome, start=start, end=end, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_phenotypes_by_genomic_region(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=assembly, chromosome=chromosome, start=start, end=end, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
         # gets genes
         results = self.report_events.get_genes_by_genomic_region(
             program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
@@ -223,7 +182,6 @@ class TestPyArk (TestCase):
         self.assertIsInstance(results, list)
 
     def test_get_all_panels(self):
-
         panels = self.entities.get_all_panels()
         self.assertIsNotNone(panels)
         self.assertIsInstance(panels, pd.Series)
@@ -285,19 +243,6 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-        # gets phenotypes
-        results = self.cases.get_phenotypes_by_gene_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38,
-            gene_id=gene_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_phenotypes_by_gene_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38,
-            gene_id=gene_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
     def test_get_cases(self):
 
         all_cases = self.cases.get_cases({'limit': 2})
@@ -331,17 +276,6 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-        # gets phenotypes
-        results = self.cases.get_phenotypes_by_transcript_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_phenotypes_by_transcript_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
     def test_get_cases_variants_by_gene_symbol(self):
 
         gene_symbol = "BRCA1"
@@ -356,47 +290,6 @@ class TestPyArk (TestCase):
             program=Program.rare_disease, assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
-
-        # gets phenotypes
-        results = self.cases.get_phenotypes_by_gene_symbol(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_phenotypes_by_gene_symbol(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-    def test_get_cases_variants_by_panel(self):
-
-        panel_name = "cakut"
-
-        # gets variants
-        results = self.cases.get_variants_by_panel(
-            program=Program.rare_disease, panel_name=panel_name, hasReported=True, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_variants_by_panel(
-            program=Program.rare_disease, panel_name=panel_name, hasReported=True, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results[0], dict)
-
-    def test_get_cases_genes_by_panel(self):
-
-        panel_name = "cakut"
-
-        # gets variants
-        results = self.cases.get_genes_by_panel(
-            program=Program.rare_disease, panel_name=panel_name, hasReported=True, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_genes_by_panel(
-            program=Program.rare_disease, panel_name=panel_name, hasReported=True, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results[0], dict)
 
     def test_get_cases_variants_by_genomic_region(self):
 
@@ -418,19 +311,6 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-        # gets phenotypes
-        results = self.cases.get_phenotypes_by_genomic_region(
-            program=Program.rare_disease, assembly=assembly, chromosome=chromosome, start=start, end=end,
-            includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_phenotypes_by_genomic_region(
-            program=Program.rare_disease, assembly=assembly, chromosome=chromosome, start=start, end=end,
-            includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
         # gets genes
         results = self.cases.get_genes_by_genomic_region(
             program=Program.rare_disease, assembly=assembly, chromosome=chromosome, start=start, end=end,
@@ -446,8 +326,7 @@ class TestPyArk (TestCase):
 
     def test_get_similar_cases_by_case(self):
 
-        case_id = "1000"
-        case_version = 1
+        case_id, case_version = self._get_random_case()
 
         results = self.cases.get_similar_cases_by_case(
             case_id=case_id, case_version=case_version, phenotypeSimilarityMetric="LIN")
@@ -496,9 +375,7 @@ class TestPyArk (TestCase):
         self.assertIsInstance(results, list)
 
     def test_get_shared_variants_cases(self):
-
-        case_id = "132"
-        case_version = 1
+        case_id, case_version = self._get_random_case()
 
         results = self.cases.get_shared_variants_cases_by_case(
             case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
@@ -516,9 +393,7 @@ class TestPyArk (TestCase):
         # self.assertIsInstance(results, list)
 
     def test_get_shared_gene_cases(self):
-
-        case_id = "132"
-        case_version = 1
+        case_id, case_version = self._get_random_case()
 
         results = self.cases.get_shared_genes_cases_by_case(
             case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
@@ -609,7 +484,7 @@ class TestPyArk (TestCase):
     def test_errors_if_cva_down(self):
         self.assertRaises(
             ConnectionError,
-            lambda: CvaClient("https://nowhere.invalid", user='u', password='p').panels().get_all_panels()
+            lambda: CvaClient("https://nowhere.invalid", user='u', password='p', retries=2).entities().get_all_panels()
         )
 
     @patch('requests.sessions.Session.get')
@@ -618,7 +493,7 @@ class TestPyArk (TestCase):
         self._mock_panels_to_return(get, post, 400)
         self.assertRaises(
             CvaClientError,
-            lambda: CvaClient("https://nowhere.invalid", user='u', password='p').panels().get_all_panels()
+            lambda: CvaClient("https://nowhere.invalid", user='u', password='p').entities().get_all_panels()
         )
 
     @patch('requests.sessions.Session.get')
@@ -627,7 +502,7 @@ class TestPyArk (TestCase):
         self._mock_panels_to_return(get, post, 500)
         self.assertRaises(
             CvaServerError,
-            lambda: CvaClient("https://nowhere.invalid", user='u', password='p').panels().get_all_panels()
+            lambda: CvaClient("https://nowhere.invalid", user='u', password='p').entities().get_all_panels()
         )
 
     @patch('requests.sessions.Session.get')
@@ -636,6 +511,11 @@ class TestPyArk (TestCase):
         self._mock_panels_to_return(get, post, 200)
         self.assertEqual(0,
                          CvaClient("https://nowhere.invalid", user='u', password='p').entities().get_all_panels().size)
+
+    def test_gets_evidence(self):
+        client = self.cva.evidences()
+        evidences = client.get_evidences("curation team")
+        self.assertTrue(evidences, "expected some evidences")
 
     @staticmethod
     def _mock_panels_to_return(get, post, status_code):
@@ -654,6 +534,27 @@ class TestPyArk (TestCase):
         response = post_function(model)
         # this is stronger than it looks because post checks for errors
         self.assertIsNotNone(response)
+
+    def _get_random_case(self):
+        example_case = self.random_case()
+        case_id = example_case['identifier']
+        case_version = example_case['version']
+        return case_id, case_version
+
+    def _get_random_panel(self):
+        example_case = self.random_case()
+        return example_case['reportEventsAnalysisPanels'][0]['panelName']
+
+    def _get_random_gene(self):
+        example_case = self.random_case()
+        return example_case['reportedGenes'][0]
+
+    def _get_random_tx(self):
+        example_case = self.random_case()
+        return example_case['reportEventsAnalysisPanels'][0]['panelName']
+
+    def random_case(self):
+        return next(self.cases.get_cases(hasExitQuestionnaire=True, hasClinicalReport=True, limit=1))[0]
 
 
 class MockResponse:
