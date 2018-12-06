@@ -40,7 +40,7 @@ def wrapper(func, retries):
                     raise ex
                 retries_count += 1
                 # waits for an increasing random time
-                random_sleep = random.randrange(0, (2 ** backoff_iteration) - 1)
+                random_sleep = random.randrange(0, min((2 ** backoff_iteration) - 1, 10))
                 logging.info("Retrying connection after %s seconds" % str(random_sleep))
                 time.sleep(random_sleep)
                 # when it reaches the maximum value that it may wait it stops increasing time
