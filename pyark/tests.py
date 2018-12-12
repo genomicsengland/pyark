@@ -4,7 +4,9 @@ from unittest import TestCase
 
 import pandas as pd
 from mock import patch
-from protocols.protocol_7_0.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject
+from protocols.protocol_7_0.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject, \
+    EvidenceEntryAndVariants, EvidenceEntry, Property, EvidenceSource, Actions, Therapy, DrugResponse, GenomicFeature, \
+    FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification
 from protocols.protocol_7_0.reports import Program
 from protocols.util import dependency_manager
 from protocols.util.factories.avro_factory import GenericFactoryAvro
@@ -12,6 +14,8 @@ from requests import ConnectionError
 
 from pyark.cva_client import CvaClient
 from pyark.errors import CvaClientError, CvaServerError
+
+import uuid
 
 
 class TestPyArk (TestCase):
@@ -513,9 +517,17 @@ class TestPyArk (TestCase):
                          CvaClient("https://nowhere.invalid", user='u', password='p').entities().get_all_panels().size)
 
     def test_gets_evidence(self):
-        client = self.cva.evidences()
-        evidences = client.get_evidences("curation team")
-        self.assertTrue(evidences, "expected some evidences")
+        model = example_evidence()
+        model.evidenceEntry.source.name = str(uuid.uuid1())
+        model.evidenceEntry.source.version = str(uuid.uuid1())
+
+        self.cva.evidences().post_evidences(model)
+
+        evidences = self.cva.evidences().get_evidences(
+            model.evidenceEntry.source.name,
+            version=model.evidenceEntry.source.version
+        )
+        self.assertTrue(list(evidences), "expected some evidence")
 
     @staticmethod
     def _mock_panels_to_return(get, post, status_code):
@@ -534,6 +546,7 @@ class TestPyArk (TestCase):
         response = post_function(model)
         # this is stronger than it looks because post checks for errors
         self.assertIsNotNone(response)
+        return response
 
     def _get_random_case(self):
         example_case = self.random_case()
@@ -571,3 +584,58 @@ class MockResponse:
 
     def json(self):
         return self.json_dict
+
+
+def example_evidence():
+    coordinates = VariantCoordinates(
+        assembly=Assembly.GRCh38, reference='C', alternate='T', chromosome='1', position=97450058
+    )
+
+    marker_coordinates = VariantCoordinates(
+        assembly=Assembly.GRCh38, reference='C', alternate='T', chromosome='1', position=97450058
+    )
+
+    genomic_feature = GenomicFeature(
+        featureType=FeatureTypes.transcript,
+        ensemblId="ENST00000370192.7"
+    )
+
+
+    actions = Actions(therapies=
+        Therapy(drugResponse=
+            DrugResponse(
+                TreatmentAgent="the drug",
+                drugResponseClassification=DrugResponseClassification.toxicity
+            ),
+            variantActionable=True,
+            referenceUrl="https://something.com/db.html"
+        )
+    )
+
+
+    source = EvidenceSource(
+        date="today",
+        name="genomics-england-phamacogenomics",
+        version="v1.0"
+    )
+
+
+    pharmGKB_id = Property(
+        id="data:2649",
+        name="PharmGKB ID",
+        value="PA166153760"
+    )
+
+    return EvidenceEntryAndVariants(
+        evidenceEntry=EvidenceEntry(
+            source=source,
+            ethnicity='Z',
+            genomicFeatures=[genomic_feature],
+            heritable_trait=[],
+            penetrance=Penetrance.complete,
+            additionalProperties=[pharmGKB_id]
+        ),
+        variantsCoordinates=VariantsCoordinates(variants=[coordinates]),
+        markersCoordinates=VariantsCoordinates(variants=[marker_coordinates]),
+        actions=actions
+    )
