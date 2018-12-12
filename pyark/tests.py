@@ -103,7 +103,7 @@ class TestPyArk (TestCase):
 
     def test_get_by_gene_id(self):
 
-        gene_id = "ENSG00000130826"
+        gene_id = self._get_random_gene()
 
         # gets variants
         results = self.report_events.get_variants_by_gene_id(
@@ -118,26 +118,8 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-    def test_get_variants_by_transcript_id(self):
-
-        tx_id = "ENST00000426673"
-
-        # gets variants
-        results = self.report_events.get_variants_by_transcript_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_variants_by_transcript_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
     def test_get_variants_by_gene_symbol(self):
-
-        gene_symbol = "BRCA1"
+        gene_symbol = self._get_random_gene()
 
         # gets variants
         results = self.report_events.get_variants_by_gene_symbol(
@@ -232,7 +214,7 @@ class TestPyArk (TestCase):
 
     def test_cases_get_by_gene_id(self):
 
-        gene_id = "ENSG00000130826"
+        gene_id = self._get_random_gene()
 
         # gets variants
         results = self.cases.get_variants_by_gene_id(
@@ -265,24 +247,9 @@ class TestPyArk (TestCase):
         count = self.cases.count()
         self.assertIsInstance(count, int)
 
-    def test_get_cases_variants_by_transcript_id(self):
-
-        tx_id = "ENST00000426673"
-
-        # gets variants
-        results = self.cases.get_variants_by_transcript_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_variants_by_transcript_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
     def test_get_cases_variants_by_gene_symbol(self):
 
-        gene_symbol = "BRCA1"
+        gene_symbol = self._get_random_gene()
 
         # gets variants
         results = self.cases.get_variants_by_gene_symbol(
@@ -517,7 +484,7 @@ class TestPyArk (TestCase):
                          CvaClient("https://nowhere.invalid", user='u', password='p').entities().get_all_panels().size)
 
     def test_gets_evidence(self):
-        model = example_evidence()
+        model = create_example_evidence()
         model.evidenceEntry.source.name = str(uuid.uuid1())
         model.evidenceEntry.source.version = str(uuid.uuid1())
 
@@ -549,25 +516,26 @@ class TestPyArk (TestCase):
         return response
 
     def _get_random_case(self):
-        example_case = self.random_case()
+        example_case = self.random_case(lambda x: x)
         case_id = example_case['identifier']
         case_version = example_case['version']
         return case_id, case_version
 
     def _get_random_panel(self):
-        example_case = self.random_case()
-        return example_case['reportEventsAnalysisPanels'][0]['panelName']
+        return self.random_case(lambda case: case['reportEventsAnalysisPanels'][0]['panelName'])
 
     def _get_random_gene(self):
-        example_case = self.random_case()
-        return example_case['reportedGenes'][0]
+        return self.random_case(lambda case: case['reportedGenes'][0])
 
-    def _get_random_tx(self):
-        example_case = self.random_case()
-        return example_case['reportEventsAnalysisPanels'][0]['panelName']
-
-    def random_case(self):
-        return next(self.cases.get_cases(hasExitQuestionnaire=True, hasClinicalReport=True, limit=1))[0]
+    def random_case(self, extractor):
+        for case in self.cases.get_cases(hasExitQuestionnaire=True, hasClinicalReport=True):
+            for c in case:
+                try:
+                    extracted = extractor(c)
+                    if extracted:
+                        return extracted
+                except:
+                    pass
 
 
 class MockResponse:
@@ -586,32 +554,16 @@ class MockResponse:
         return self.json_dict
 
 
-def example_evidence():
-    coordinates = VariantCoordinates(
-        assembly=Assembly.GRCh38, reference='C', alternate='T', chromosome='1', position=97450058
-    )
-
-    marker_coordinates = VariantCoordinates(
-        assembly=Assembly.GRCh38, reference='C', alternate='T', chromosome='1', position=97450058
-    )
+def create_example_evidence():
+    coordinates = coordinate()
+    marker_coordinates = marker_coordinate()
 
     genomic_feature = GenomicFeature(
         featureType=FeatureTypes.transcript,
         ensemblId="ENST00000370192.7"
     )
 
-
-    actions = Actions(therapies=
-        Therapy(drugResponse=
-            DrugResponse(
-                TreatmentAgent="the drug",
-                drugResponseClassification=DrugResponseClassification.toxicity
-            ),
-            variantActionable=True,
-            referenceUrl="https://something.com/db.html"
-        )
-    )
-
+    actions = action()
 
     source = EvidenceSource(
         date="today",
@@ -619,10 +571,8 @@ def example_evidence():
         version="v1.0"
     )
 
-
-    pharmGKB_id = Property(
-        id="data:2649",
-        name="PharmGKB ID",
+    pharmgkb_id = Property(
+        name="PharmGKB",
         value="PA166153760"
     )
 
@@ -633,9 +583,39 @@ def example_evidence():
             genomicFeatures=[genomic_feature],
             heritable_trait=[],
             penetrance=Penetrance.complete,
-            additionalProperties=[pharmGKB_id]
+            additionalProperties=[pharmgkb_id]
         ),
         variantsCoordinates=VariantsCoordinates(variants=[coordinates]),
         markersCoordinates=VariantsCoordinates(variants=[marker_coordinates]),
         actions=actions
     )
+
+
+def action():
+    return Actions(
+        therapies=[
+            Therapy(
+                drugResponse=[DrugResponse(
+                    TreatmentAgent="the drug",
+                    drugResponseClassification=DrugResponseClassification.increased_monitoring
+                )],
+                variantActionable=True,
+                referenceUrl="https://something.com/db.html",
+                conditions=[]
+            )
+        ]
+    )
+
+
+def marker_coordinate():
+    marker_coordinates = VariantCoordinates(
+        assembly=Assembly.GRCh38, reference='G', alternate='T', chromosome='1', position=99450058
+    )
+    return marker_coordinates
+
+
+def coordinate():
+    coordinates = VariantCoordinates(
+        assembly=Assembly.GRCh38, reference='C', alternate='T', chromosome='1', position=97450058
+    )
+    return coordinates
