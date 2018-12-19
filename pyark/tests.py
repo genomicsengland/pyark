@@ -370,20 +370,10 @@ class TestPyArk (TestCase):
         self.assertTrue(len(variants) == len(identifiers))
         # [self.assertIsNotNone(variants[v]) for v in identifiers]
 
+    def test_dont_get_variants_by_id(self):
         non_existing_identifiers = ['whatever', 'this', 'that']
-        variants = self.variants.get_variants_by_id(identifiers=non_existing_identifiers)
-        self.assertIsNotNone(variants)
-        self.assertIsInstance(variants, dict)
-        self.assertTrue(len(variants) == len(non_existing_identifiers))
-        [self.assertTrue(variants[v] is None) for v in non_existing_identifiers]
-
-        mixed_identifiers = ['whatever', self._get_random_variant()]
-        variants = self.variants.get_variants_by_id(identifiers=mixed_identifiers)
-        self.assertIsNotNone(variants)
-        self.assertIsInstance(variants, dict)
-        self.assertTrue(len(variants) == len(mixed_identifiers))
-        # self.assertTrue(variants[mixed_identifiers[0]] is None)
-        # self.assertIsNotNone(variants[mixed_identifiers[1]])
+        self.assertRaises(CvaClientError,
+                          lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
 
     def test_post_pedigree(self):
         self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
