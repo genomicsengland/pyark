@@ -118,22 +118,6 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-    def test_get_variants_by_gene_symbol(self):
-        gene_symbol = self._get_random_gene()
-
-        # gets variants
-        results = self.report_events.get_variants_by_gene_symbol(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_variants_by_gene_symbol(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
     def test_get_variants_by_genomic_region(self):
 
         assembly = Assembly.GRCh38
@@ -247,21 +231,6 @@ class TestPyArk (TestCase):
         count = self.cases.count()
         self.assertIsInstance(count, int)
 
-    def test_get_cases_variants_by_gene_symbol(self):
-
-        gene_symbol = self._get_random_gene()
-
-        # gets variants
-        results = self.cases.get_variants_by_gene_symbol(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_variants_by_gene_symbol(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
     def test_get_cases_variants_by_genomic_region(self):
 
         assembly = Assembly.GRCh38
@@ -348,20 +317,17 @@ class TestPyArk (TestCase):
     def test_get_shared_variants_cases(self):
         case_id, case_version = self._get_random_case()
 
-        results = self.cases.get_shared_variants_cases_by_case(
+        results1 = self.cases.get_shared_variants_cases_by_case(
             case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
 
-        results = self.cases.get_shared_variants_cases_by_case(
+        results2 = self.cases.get_shared_variants_cases_by_case(
             case_id=case_id, case_version=case_version, report_event_type=ReportEventType.reported)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
 
-        results = self.cases.get_shared_variants_cases_by_case(
+        results3 = self.cases.get_shared_variants_cases_by_case(
             case_id=case_id, case_version=case_version, report_event_type=ReportEventType.questionnaire)
-        # self.assertIsNotNone(results)
-        # self.assertIsInstance(results, list)
+
+        non_null = (r for r in (results1, results2, results3) if r)
+        self.assertIsNotNone([s for r in non_null for s in r])
 
     def test_get_shared_gene_cases(self):
         case_id, case_version = self._get_random_case()
@@ -384,7 +350,7 @@ class TestPyArk (TestCase):
 
     def test_get_variant_by_id(self):
 
-        identifier = "GRCh38: 9: 110303682:C:G"
+        identifier = self._get_random_variant()
 
         # gets variant
         variant = self.variants.get_variant_by_id(identifier=identifier)
@@ -397,7 +363,7 @@ class TestPyArk (TestCase):
 
     def test_get_variants_by_id(self):
 
-        identifiers = ["GRCh38: 9: 110303682:C:G", "GRCh38: 4:  56810156:G:A", "GRCh38:12:  51346624:A:C"]
+        identifiers = [self._get_random_variant()]
         variants = self.variants.get_variants_by_id(identifiers=identifiers)
         self.assertIsNotNone(variants)
         self.assertIsInstance(variants, dict)
@@ -411,7 +377,7 @@ class TestPyArk (TestCase):
         self.assertTrue(len(variants) == len(non_existing_identifiers))
         [self.assertTrue(variants[v] is None) for v in non_existing_identifiers]
 
-        mixed_identifiers = ['whatever', "GRCh38: 9: 110303682:C:G"]
+        mixed_identifiers = ['whatever', self._get_random_variant()]
         variants = self.variants.get_variants_by_id(identifiers=mixed_identifiers)
         self.assertIsNotNone(variants)
         self.assertIsInstance(variants, dict)
@@ -526,6 +492,9 @@ class TestPyArk (TestCase):
 
     def _get_random_gene(self):
         return self.random_case(lambda case: case['reportedGenes'][0])
+
+    def _get_random_variant(self):
+        return self.random_case(lambda case: case['allVariants'][0])
 
     def random_case(self, extractor):
         for case in self.cases.get_cases(hasExitQuestionnaire=True, hasClinicalReport=True):
