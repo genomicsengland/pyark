@@ -4,7 +4,9 @@ from unittest import TestCase
 
 import pandas as pd
 from mock import patch
-from protocols.protocol_7_0.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject
+from protocols.protocol_7_0.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject, \
+    EvidenceEntryAndVariants, EvidenceEntry, Property, EvidenceSource, Actions, Therapy, DrugResponse, GenomicFeature, \
+    FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification
 from protocols.protocol_7_0.reports import Program
 from protocols.util import dependency_manager
 from protocols.util.factories.avro_factory import GenericFactoryAvro
@@ -12,6 +14,8 @@ from requests import ConnectionError
 
 from pyark.cva_client import CvaClient
 from pyark.errors import CvaClientError, CvaServerError
+
+import uuid
 
 
 class TestPyArk (TestCase):
@@ -99,7 +103,7 @@ class TestPyArk (TestCase):
 
     def test_get_by_gene_id(self):
 
-        gene_id = "ENSG00000130826"
+        gene_id = self._get_random_gene()
 
         # gets variants
         results = self.report_events.get_variants_by_gene_id(
@@ -111,40 +115,6 @@ class TestPyArk (TestCase):
         results = self.report_events.get_variants_by_gene_id(
             program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
             assembly=Assembly.GRCh38, gene_id=gene_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-    def test_get_variants_by_transcript_id(self):
-
-        tx_id = "ENST00000426673"
-
-        # gets variants
-        results = self.report_events.get_variants_by_transcript_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_variants_by_transcript_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-    def test_get_variants_by_gene_symbol(self):
-
-        gene_symbol = "BRCA1"
-
-        # gets variants
-        results = self.report_events.get_variants_by_gene_symbol(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_variants_by_gene_symbol(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=True)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
@@ -228,7 +198,7 @@ class TestPyArk (TestCase):
 
     def test_cases_get_by_gene_id(self):
 
-        gene_id = "ENSG00000130826"
+        gene_id = self._get_random_gene()
 
         # gets variants
         results = self.cases.get_variants_by_gene_id(
@@ -260,36 +230,6 @@ class TestPyArk (TestCase):
 
         count = self.cases.count()
         self.assertIsInstance(count, int)
-
-    def test_get_cases_variants_by_transcript_id(self):
-
-        tx_id = "ENST00000426673"
-
-        # gets variants
-        results = self.cases.get_variants_by_transcript_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_variants_by_transcript_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, transcript_id=tx_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-    def test_get_cases_variants_by_gene_symbol(self):
-
-        gene_symbol = "BRCA1"
-
-        # gets variants
-        results = self.cases.get_variants_by_gene_symbol(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_variants_by_gene_symbol(
-            program=Program.rare_disease, assembly=Assembly.GRCh38, gene_symbol=gene_symbol, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
 
     def test_get_cases_variants_by_genomic_region(self):
 
@@ -377,20 +317,17 @@ class TestPyArk (TestCase):
     def test_get_shared_variants_cases(self):
         case_id, case_version = self._get_random_case()
 
-        results = self.cases.get_shared_variants_cases_by_case(
+        results1 = self.cases.get_shared_variants_cases_by_case(
             case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
 
-        results = self.cases.get_shared_variants_cases_by_case(
+        results2 = self.cases.get_shared_variants_cases_by_case(
             case_id=case_id, case_version=case_version, report_event_type=ReportEventType.reported)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
 
-        results = self.cases.get_shared_variants_cases_by_case(
+        results3 = self.cases.get_shared_variants_cases_by_case(
             case_id=case_id, case_version=case_version, report_event_type=ReportEventType.questionnaire)
-        # self.assertIsNotNone(results)
-        # self.assertIsInstance(results, list)
+
+        non_null = (r for r in (results1, results2, results3) if r)
+        self.assertIsNotNone([s for r in non_null for s in r])
 
     def test_get_shared_gene_cases(self):
         case_id, case_version = self._get_random_case()
@@ -413,7 +350,7 @@ class TestPyArk (TestCase):
 
     def test_get_variant_by_id(self):
 
-        identifier = "GRCh38: 9: 110303682:C:G"
+        identifier = self._get_random_variant()
 
         # gets variant
         variant = self.variants.get_variant_by_id(identifier=identifier)
@@ -426,27 +363,17 @@ class TestPyArk (TestCase):
 
     def test_get_variants_by_id(self):
 
-        identifiers = ["GRCh38: 9: 110303682:C:G", "GRCh38: 4:  56810156:G:A", "GRCh38:12:  51346624:A:C"]
+        identifiers = [self._get_random_variant()]
         variants = self.variants.get_variants_by_id(identifiers=identifiers)
         self.assertIsNotNone(variants)
         self.assertIsInstance(variants, dict)
         self.assertTrue(len(variants) == len(identifiers))
         # [self.assertIsNotNone(variants[v]) for v in identifiers]
 
+    def test_dont_get_variants_by_id(self):
         non_existing_identifiers = ['whatever', 'this', 'that']
-        variants = self.variants.get_variants_by_id(identifiers=non_existing_identifiers)
-        self.assertIsNotNone(variants)
-        self.assertIsInstance(variants, dict)
-        self.assertTrue(len(variants) == len(non_existing_identifiers))
-        [self.assertTrue(variants[v] is None) for v in non_existing_identifiers]
-
-        mixed_identifiers = ['whatever', "GRCh38: 9: 110303682:C:G"]
-        variants = self.variants.get_variants_by_id(identifiers=mixed_identifiers)
-        self.assertIsNotNone(variants)
-        self.assertIsInstance(variants, dict)
-        self.assertTrue(len(variants) == len(mixed_identifiers))
-        # self.assertTrue(variants[mixed_identifiers[0]] is None)
-        # self.assertIsNotNone(variants[mixed_identifiers[1]])
+        self.assertRaises(CvaClientError,
+                          lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
 
     def test_post_pedigree(self):
         self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
@@ -513,9 +440,17 @@ class TestPyArk (TestCase):
                          CvaClient("https://nowhere.invalid", user='u', password='p').entities().get_all_panels().size)
 
     def test_gets_evidence(self):
-        client = self.cva.evidences()
-        evidences = client.get_evidences("curation team")
-        self.assertTrue(evidences, "expected some evidences")
+        model = create_example_evidence()
+        model.evidenceEntry.source.name = str(uuid.uuid1())
+        model.evidenceEntry.source.version = str(uuid.uuid1())
+
+        self.cva.evidences().post_evidences(model)
+
+        evidences = self.cva.evidences().get_evidences(
+            model.evidenceEntry.source.name,
+            version=model.evidenceEntry.source.version
+        )
+        self.assertTrue(list(evidences), "expected some evidence")
 
     @staticmethod
     def _mock_panels_to_return(get, post, status_code):
@@ -534,27 +469,32 @@ class TestPyArk (TestCase):
         response = post_function(model)
         # this is stronger than it looks because post checks for errors
         self.assertIsNotNone(response)
+        return response
 
     def _get_random_case(self):
-        example_case = self.random_case()
+        example_case = self.random_case(lambda x: x)
         case_id = example_case['identifier']
         case_version = example_case['version']
         return case_id, case_version
 
     def _get_random_panel(self):
-        example_case = self.random_case()
-        return example_case['reportEventsAnalysisPanels'][0]['panelName']
+        return self.random_case(lambda case: case['reportEventsAnalysisPanels'][0]['panelName'])
 
     def _get_random_gene(self):
-        example_case = self.random_case()
-        return example_case['reportedGenes'][0]
+        return self.random_case(lambda case: case['reportedGenes'][0])
 
-    def _get_random_tx(self):
-        example_case = self.random_case()
-        return example_case['reportEventsAnalysisPanels'][0]['panelName']
+    def _get_random_variant(self):
+        return self.random_case(lambda case: case['allVariants'][0])
 
-    def random_case(self):
-        return next(self.cases.get_cases(hasExitQuestionnaire=True, hasClinicalReport=True, limit=1))[0]
+    def random_case(self, extractor):
+        for case in self.cases.get_cases(hasExitQuestionnaire=True, hasClinicalReport=True):
+            for c in case:
+                try:
+                    extracted = extractor(c)
+                    if extracted:
+                        return extracted
+                except:
+                    pass
 
 
 class MockResponse:
@@ -571,3 +511,70 @@ class MockResponse:
 
     def json(self):
         return self.json_dict
+
+
+def create_example_evidence():
+    coordinates = coordinate()
+    marker_coordinates = marker_coordinate()
+
+    genomic_feature = GenomicFeature(
+        featureType=FeatureTypes.transcript,
+        ensemblId="ENST00000370192.7"
+    )
+
+    actions = action()
+
+    source = EvidenceSource(
+        date="today",
+        name="genomics-england-phamacogenomics",
+        version="v1.0"
+    )
+
+    pharmgkb_id = Property(
+        name="PharmGKB",
+        value="PA166153760"
+    )
+
+    return EvidenceEntryAndVariants(
+        evidenceEntry=EvidenceEntry(
+            source=source,
+            ethnicity='Z',
+            genomicFeatures=[genomic_feature],
+            heritable_trait=[],
+            penetrance=Penetrance.complete,
+            additionalProperties=[pharmgkb_id]
+        ),
+        variantsCoordinates=VariantsCoordinates(variants=[coordinates]),
+        markersCoordinates=VariantsCoordinates(variants=[marker_coordinates]),
+        actions=actions
+    )
+
+
+def action():
+    return Actions(
+        therapies=[
+            Therapy(
+                drugResponse=[DrugResponse(
+                    TreatmentAgent="the drug",
+                    drugResponseClassification=DrugResponseClassification.increased_monitoring
+                )],
+                variantActionable=True,
+                referenceUrl="https://something.com/db.html",
+                conditions=[]
+            )
+        ]
+    )
+
+
+def marker_coordinate():
+    marker_coordinates = VariantCoordinates(
+        assembly=Assembly.GRCh38, reference='G', alternate='T', chromosome='1', position=99450058
+    )
+    return marker_coordinates
+
+
+def coordinate():
+    coordinates = VariantCoordinates(
+        assembly=Assembly.GRCh38, reference='C', alternate='T', chromosome='1', position=97450058
+    )
+    return coordinates
