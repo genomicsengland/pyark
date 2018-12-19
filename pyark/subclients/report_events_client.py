@@ -41,15 +41,11 @@ class ReportEventsClient(cva_client.CvaClient):
 
     @staticmethod
     def _by_gene_id(assembly, gene_id):
-        return ["gene-ids", assembly, gene_id]
+        return ["genes", assembly, gene_id]
 
     @staticmethod
     def _by_transcript_id(assembly, transcript_id):
-        return ["transcript-ids", assembly, transcript_id]
-
-    @staticmethod
-    def _by_gene_symbol(assembly, gene_symbol):
-        return ["gene-symbols", assembly, gene_symbol]
+        return ["transcripts", assembly, transcript_id]
 
     @staticmethod
     def _by_genomic_coordinates(assembly, chromosome, start, end):
@@ -75,18 +71,6 @@ class ReportEventsClient(cva_client.CvaClient):
         :return:
         """
         path = [self._BASE_ENDPOINT] + ReportEventsClient._by_transcript_id(assembly, transcript_id) + \
-               [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_variants_by_gene_symbol(self, assembly, gene_symbol, **params):
-        """
-        :type assembly: Assembly
-        :type gene_symbol: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + ReportEventsClient._by_gene_symbol(assembly, gene_symbol) + \
                [self._OutputEntities.variants.value]
         results, _ = self._get(path, **params)
         return results
