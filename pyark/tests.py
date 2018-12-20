@@ -455,6 +455,8 @@ class TestPyArk (TestCase):
 
         for item in results:
             self.assertEquals(EvidenceEntryAndVariants, type(item))
+            # test random field that has no normalisation against it.
+            self.assertEquals(item.evidenceEntry.ethnicity, model.evidenceEntry.ethnicity)
 
     @staticmethod
     def _mock_panels_to_return(get, post, status_code):
