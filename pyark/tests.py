@@ -450,7 +450,11 @@ class TestPyArk (TestCase):
             model.evidenceEntry.source.name,
             version=model.evidenceEntry.source.version
         )
-        self.assertTrue(list(evidences), "expected some evidence")
+        results = list(evidences)
+        self.assertTrue(results, "expected some evidence")
+
+        for item in results:
+            self.assertEquals(EvidenceEntryAndVariants, type(item))
 
     @staticmethod
     def _mock_panels_to_return(get, post, status_code):
