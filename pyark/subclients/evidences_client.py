@@ -12,7 +12,9 @@ class EvidencesClient(cva_client.CvaClient):
     def get_evidences(self, source, **params):
         url = "{endpoint}/sources/{source}".format(endpoint=self._BASE_ENDPOINT, source=source)
         results = self._paginate(endpoint=url, **params)
-        return map(lambda x: EvidenceEntryAndVariants.fromJsonDict(x), results)
+        for r in results:
+            for e in r:
+                yield EvidenceEntryAndVariants.fromJsonDict(e)
 
     def post_evidences(self, evidence, **params):
         """
