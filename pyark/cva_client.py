@@ -241,7 +241,7 @@ class CvaClient(RestClient):
                 if indexes:
                     df.index = pd.MultiIndex.from_arrays(
                         [[values] if type(values) != list else indexes.values() for values in indexes.values()],
-                        names=indexes.keys())
+                        names=list(indexes.keys()))
                 return df
             else:
                 return pd.DataFrame()
