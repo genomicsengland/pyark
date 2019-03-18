@@ -236,3 +236,14 @@ class CasesClient(cva_client.CvaClient):
             logging.warning("No cases sharing {} genes found".format(report_event_type))
             return None
         return results
+
+    def get_phenosim_matrix(self, as_data_frame=False, **params):
+        """
+        :type as_data_frame: bool
+        :return:
+        """
+        results, _ = self._get("{endpoint}/similarity-matrix".format(endpoint=self._BASE_ENDPOINT), **params)
+        if not results:
+            logging.warning("No similarity matrix found")
+            return None
+        return self._render(results, as_data_frame=as_data_frame)
