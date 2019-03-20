@@ -53,7 +53,7 @@ class CasesClient(cva_client.CvaClient):
         :return:
         """
         if params_list:
-            self._params_sanity_checks(**params)
+            self._params_sanity_checks(params)
             for p in params_list:
                 p.update(params)
             results_list = [self.get_summary(as_data_frame=as_data_frame, **p) for p in params_list]
