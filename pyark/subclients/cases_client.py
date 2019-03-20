@@ -69,7 +69,8 @@ class CasesClient(cva_client.CvaClient):
     @staticmethod
     def _params_sanity_checks(params):
         if not all(isinstance(p, dict) for p in params):
-            raise ValueError("Cannot accept a list of 'params' not being only by dicts")
+            raise ValueError("Cannot accept a list of 'params' combined with other parameters. " +
+                             "Include all parameters in the list")
         keys = None
         for p in params:
             if keys is None:

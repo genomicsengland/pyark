@@ -2,6 +2,7 @@ import logging
 import os
 from unittest import TestCase
 import random
+import itertools
 
 import pandas as pd
 from mock import patch
@@ -166,6 +167,23 @@ class TestPyArk (TestCase):
         summary = self.cases.get_summary(program=Program.rare_disease, as_data_frame=True)
         self.assertIsNotNone(summary)
         self.assertIsInstance(summary, pd.DataFrame)
+
+    def test_get_cases_summary_with_many_queries(self):
+
+        queries = [{'assembly': a} for a in [Assembly.GRCh37, Assembly.GRCh38]]
+        summary = self.cases.get_summary(params_list=queries)
+        self.assertIsNotNone(summary)
+        self.assertIsInstance(summary, list)
+
+        summary = self.cases.get_summary(params_list=queries, as_data_frame=True)
+        self.assertIsNotNone(summary)
+        self.assertIsInstance(summary, pd.DataFrame)
+
+        try:
+            self.cases.get_summary(params_list=queries, program=Program.rare_disease)
+            self.assertTrue(False)
+        except:
+            self.assertTrue(True)
 
     def test_get_similarity_matrix(self):
 
