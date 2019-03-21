@@ -53,7 +53,7 @@ class CasesClient(cva_client.CvaClient):
         :return:
         """
         if params_list:
-            self._params_sanity_checks(**params)
+            self._params_sanity_checks(params)
             for p in params_list:
                 p.update(params)
             results_list = [self.get_summary(as_data_frame=as_data_frame, **p) for p in params_list]
@@ -69,7 +69,8 @@ class CasesClient(cva_client.CvaClient):
     @staticmethod
     def _params_sanity_checks(params):
         if not all(isinstance(p, dict) for p in params):
-            raise ValueError("Cannot accept a list of 'params' not being only by dicts")
+            raise ValueError("Cannot accept a list of 'params' combined with other parameters. " +
+                             "Include all parameters in the list")
         keys = None
         for p in params:
             if keys is None:
@@ -236,3 +237,14 @@ class CasesClient(cva_client.CvaClient):
             logging.warning("No cases sharing {} genes found".format(report_event_type))
             return None
         return results
+
+    def get_phenosim_matrix(self, as_data_frame=False, **params):
+        """
+        :type as_data_frame: bool
+        :return:
+        """
+        results, _ = self._get("{endpoint}/similarity-matrix".format(endpoint=self._BASE_ENDPOINT), **params)
+        if not results:
+            logging.warning("No similarity matrix found")
+            return None
+        return self._render(results, as_data_frame=as_data_frame)

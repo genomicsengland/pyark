@@ -1,6 +1,8 @@
 import logging
 import os
 from unittest import TestCase
+import random
+import itertools
 
 import pandas as pd
 from mock import patch
@@ -24,25 +26,26 @@ class TestPyArk (TestCase):
     GEL_USER = os.getenv("GEL_USER")
     GEL_PASSWORD = os.getenv("GEL_PASSWORD")
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         logging.basicConfig(level=logging.INFO)
-        if self.GEL_PASSWORD is None:
-            self.GEL_PASSWORD = ""
-        if not self.CVA_URL_BASE or not self.GEL_USER:
+        if cls.GEL_PASSWORD is None:
+            cls.GEL_PASSWORD = ""
+        if not cls.CVA_URL_BASE or not cls.GEL_USER:
             logging.error("Please set the configuration environment variables: CVA_URL, GEL_USER, GEL_PASSWORD")
             raise ValueError("Missing config")
-        self.cva = CvaClient(self.CVA_URL_BASE, user=self.GEL_USER, password=self.GEL_PASSWORD, retries=10)
-        self.report_events = self.cva.report_events()
-        self.entities = self.cva.entities()
-        self.cases = self.cva.cases()
-        self.pedigrees = self.cva.pedigrees()
-        self.variants = self.cva.variants()
-        self.data_intake = self.cva.data_intake()
+        logging.info("Running tests against {}".format(cls.CVA_URL_BASE))
+        cls.cva = CvaClient(cls.CVA_URL_BASE, user=cls.GEL_USER, password=cls.GEL_PASSWORD, retries=10)
+        cls.report_events = cls.cva.report_events()
+        cls.entities = cls.cva.entities()
+        cls.cases = cls.cva.cases()
+        cls.pedigrees = cls.cva.pedigrees()
+        cls.variants = cls.cva.variants()
+        cls.data_intake = cls.cva.data_intake()
 
     def test_get_case(self):
 
-        case_id = "1000"
-        case_version = 1
+        case_id, case_version = self._get_random_case()
 
         # gets case
         result = self.cases.get_case(case_id, case_version)
@@ -56,8 +59,7 @@ class TestPyArk (TestCase):
 
     def test_get_pedigree(self):
 
-        case_id = "2020"
-        case_version = 1
+        case_id, case_version = self._get_random_case()
 
         # gets pedigree
         result = self.pedigrees.get_pedigree(case_id, case_version)
@@ -71,7 +73,7 @@ class TestPyArk (TestCase):
 
     def test_get_report_events(self):
 
-        all_report_events = self.report_events.get_report_events(caseId='1000', limit=2)
+        all_report_events = self.report_events.get_report_events(limit=2)
         re_count = 0
         for batch_report_events in all_report_events:
             self.assertIsNotNone(batch_report_events)
@@ -155,6 +157,44 @@ class TestPyArk (TestCase):
         panels = self.entities.get_all_panels()
         self.assertIsNotNone(panels)
         self.assertIsInstance(panels, pd.Series)
+
+    def test_get_cases_summary(self):
+
+        summary = self.cases.get_summary(program=Program.rare_disease)
+        self.assertIsNotNone(summary)
+        self.assertIsInstance(summary, dict)
+
+        summary = self.cases.get_summary(program=Program.rare_disease, as_data_frame=True)
+        self.assertIsNotNone(summary)
+        self.assertIsInstance(summary, pd.DataFrame)
+
+    def test_get_cases_summary_with_many_queries(self):
+
+        queries = [{'assembly': a} for a in [Assembly.GRCh37, Assembly.GRCh38]]
+        summary = self.cases.get_summary(params_list=queries)
+        self.assertIsNotNone(summary)
+        self.assertIsInstance(summary, list)
+
+        summary = self.cases.get_summary(params_list=queries, as_data_frame=True)
+        self.assertIsNotNone(summary)
+        self.assertIsInstance(summary, pd.DataFrame)
+
+        try:
+            self.cases.get_summary(params_list=queries, program=Program.rare_disease)
+            self.assertTrue(False)
+        except:
+            self.assertTrue(True)
+
+    def test_get_similarity_matrix(self):
+
+        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut')
+        self.assertIsNotNone(matrix)
+        self.assertIsInstance(matrix, list)
+
+        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut',
+                                                   as_data_frame=True)
+        self.assertIsNotNone(matrix)
+        self.assertIsInstance(matrix, pd.DataFrame)
 
     def test_get_panel_summary(self):
 
@@ -268,51 +308,27 @@ class TestPyArk (TestCase):
 
         case_id, case_version = self._get_random_case()
 
-        results = self.cases.get_similar_cases_by_case(
-            case_id=case_id, case_version=case_version, phenotypeSimilarityMetric="LIN")
+        results = self.cases.get_similar_cases_by_case(case_id=case_id, case_version=case_version)
         if results:
             self.assertIsInstance(results, list)
 
-        results = self.cases.get_similar_cases_by_case(
-            case_id=case_id, case_version=case_version, phenotypeSimilarityMetric="LIN", limit=5)
+        results = self.cases.get_similar_cases_by_case(case_id=case_id, case_version=case_version, limit=5)
         if results:
             self.assertIsInstance(results, list)
             self.assertTrue(len(results) <= 5)
-
-        results = self.cases.get_similar_cases_by_case(
-            case_id=case_id, case_version=case_version, phenotypeSimilarityMetric="RESNIK")
-        if results:
-            self.assertIsInstance(results, list)
-
-        results = self.cases.get_similar_cases_by_case(
-            case_id=case_id, case_version=case_version, phenotypeSimilarityMetric="JACCARD")
-        if results:
-            self.assertIsInstance(results, list)
 
     def test_get_similar_cases_by_phenotypes(self):
 
         phenotypes = ["HP:0000006", "HP:0003186", "HP:0002365"]
 
-        results = self.cases.get_similar_cases_by_phenotypes(
-            phenotypes=phenotypes, phenotypeSimilarityMetric="LIN")
+        results = self.cases.get_similar_cases_by_phenotypes(phenotypes=phenotypes)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-        results = self.cases.get_similar_cases_by_phenotypes(
-            phenotypes=phenotypes, phenotypeSimilarityMetric="LIN", limit=5)
+        results = self.cases.get_similar_cases_by_phenotypes(phenotypes=phenotypes, limit=5)
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
         self.assertTrue(len(results) == 5)
-
-        results = self.cases.get_similar_cases_by_phenotypes(
-            phenotypes=phenotypes, phenotypeSimilarityMetric="RESNIK")
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_similar_cases_by_phenotypes(
-            phenotypes=phenotypes, phenotypeSimilarityMetric="JACCARD")
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
 
     def test_get_shared_variants_cases(self):
         case_id, case_version = self._get_random_case()
@@ -478,29 +494,22 @@ class TestPyArk (TestCase):
         return response
 
     def _get_random_case(self):
-        example_case = self.random_case(lambda x: x)
-        case_id = example_case['identifier']
-        case_version = example_case['version']
-        return case_id, case_version
+        case = self._random_case()
+        return case['identifier'], case['version']
+
+    def _random_case(self):
+        return random.choice(self.cases.get_cases(
+            limit=50, program=Program.rare_disease,
+            filter='countInterpretationServices.exomiser gt 0', hasClinicalData=True).next())
 
     def _get_random_panel(self):
-        return self.random_case(lambda case: case['reportEventsAnalysisPanels'][0]['panelName'])
+        return self._random_case()['reportEventsAnalysisPanels'][0]['panelName']
 
     def _get_random_gene(self):
-        return self.random_case(lambda case: case['reportedGenes'][0])
+        return self._random_case()['genes'][0]
 
     def _get_random_variant(self):
-        return self.random_case(lambda case: case['allVariants'][0])
-
-    def random_case(self, extractor):
-        for case in self.cases.get_cases(hasExitQuestionnaire=True, hasClinicalReport=True):
-            for c in case:
-                try:
-                    extracted = extractor(c)
-                    if extracted:
-                        return extracted
-                except:
-                    pass
+        return self._random_case()['allVariants'][0]
 
 
 class MockResponse:
