@@ -1,3 +1,6 @@
+# Install gel report models dep
+
+pip install gelreportmodels==7.2.6 --index-url=https://pypi.gel.zone/genomics/dev
 
 # The CVA Python client: pyark
 
