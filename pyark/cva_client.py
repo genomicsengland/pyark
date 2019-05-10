@@ -224,10 +224,14 @@ class CvaClient(RestClient):
             return []
 
     def _render_single_result(self, results, as_data_frame=False, indexes={}):
+        if results is None or len(results) == 0:
+            return None
         first = results[0]
         return self._render(first, as_data_frame=as_data_frame, indexes=indexes)
 
     def _render_multiple_results(self, results, as_data_frame=False):
+        if results is None or len(results) == 0:
+            return None
         if as_data_frame:
             return pd.concat(results)
         else:

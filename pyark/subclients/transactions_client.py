@@ -1,6 +1,5 @@
 from pyark import cva_client
-from pyark.errors import CvaClientError
-from protocols.protocol_7_0.cva import Transaction
+from protocols.protocol_7_2.cva import Transaction
 
 
 class TransactionsClient(cva_client.CvaClient):
@@ -10,34 +9,52 @@ class TransactionsClient(cva_client.CvaClient):
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
-    def get_transaction(self, transaction_id, just_return_status=False):
-        results = self._get("{endpoint}/{identifier}".format(
+    def get_transaction(self, transaction_id):
+        """
+        :type transaction_id: str
+        :rtype: Transaction
+        """
+        results, _ = self._get("{endpoint}/{identifier}".format(
             endpoint=self._BASE_ENDPOINT, identifier=transaction_id))
+        result = self._render_single_result(results, as_data_frame=False)
+        return Transaction.fromJsonDict(result) if result else None
 
-        def status_transform(x):
-            return x[0][0]['status']
-
-        return self._format_results(results, status_transform, transaction_id, just_return_status)
-
-    def retry_transaction(self, transaction_id, just_return_status=False):
-        results = self._patch("{endpoint}/{identifier}".format(
+    def retry_transaction(self, transaction_id):
+        """
+        :type transaction_id: str
+        :rtype: Transaction
+        """
+        results, _ = self._patch("{endpoint}/{identifier}".format(
             endpoint=self._BASE_ENDPOINT, identifier=transaction_id))
-
-        def status_transform(x):
-            return x[0]['response'][0]['result'][0]['status']
-
-        self._format_results(results, status_transform, transaction_id, just_return_status)
+        result = self._render_single_result(results, as_data_frame=False)
+        return Transaction.fromJsonDict(result) if result else None
 
     def count(self, **params):
         params['count'] = True
         return self.get_transactions(**params)
 
     def get_transactions(self, **params):
+        """
+        :param params:
+        :rtype: Transaction or int
+        """
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
             return self._paginate_transactions(**params)
+
+    def delete_transaction(self, **params):
+        id = params.get('id', None)
+
+        message = params.get('message', None)
+        if not id:
+            raise CvaClientError("You must specify an transaction id to delete a transaction")
+
+        return self._delete(
+            "{endpoint}/{identifier}".format(endpoint=self._BASE_ENDPOINT, identifier=params.get('id')),
+            params={'message': message}
+        )
 
     def _paginate_transactions(self, **params):
         more_results = True
@@ -51,13 +68,3 @@ class TransactionsClient(cva_client.CvaClient):
                 more_results = False
             for transaction in transactions:
                 yield transaction
-
-    @staticmethod
-    def _format_results(items, transform, transaction_id, just_return_status):
-        try:
-            if just_return_status:
-                return transform(items)
-            else:
-                return items
-        except (KeyError, IndexError):
-            raise CvaClientError("no transaction for {}".format(transaction_id))
