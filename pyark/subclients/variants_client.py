@@ -1,5 +1,5 @@
 import pyark.cva_client as cva_client
-from protocols.protocol_7_0.cva import Variant
+from protocols.protocol_7_2.cva import Variant
 import logging
 
 
