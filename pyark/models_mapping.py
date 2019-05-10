@@ -1,4 +1,4 @@
-from protocols.protocol_7_0.cva import VariantCoordinates
+from protocols.protocol_7_2.cva import VariantCoordinates
 import re
 
 

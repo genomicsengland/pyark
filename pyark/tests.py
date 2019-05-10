@@ -6,10 +6,10 @@ import itertools
 
 import pandas as pd
 from mock import patch
-from protocols.protocol_7_0.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject, \
+from protocols.protocol_7_2.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject, \
     EvidenceEntryAndVariants, EvidenceEntry, Property, EvidenceSource, Actions, Therapy, DrugResponse, GenomicFeature, \
     FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification
-from protocols.protocol_7_0.reports import Program
+from protocols.protocol_7_2.reports import Program
 from protocols.util import dependency_manager
 from protocols.util.factories.avro_factory import GenericFactoryAvro
 from requests import ConnectionError
