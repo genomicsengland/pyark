@@ -1,5 +1,5 @@
 from pyark import cva_client
-from protocols.protocol_7_0.cva import EvidenceEntryAndVariants
+from protocols.protocol_7_2.cva import EvidenceEntryAndVariants
 
 
 class EvidencesClient(cva_client.CvaClient):

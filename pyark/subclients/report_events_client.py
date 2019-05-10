@@ -1,5 +1,5 @@
 from enum import Enum
-from protocols.protocol_7_0.cva import ReportEventEntry, Assembly
+from protocols.protocol_7_2.cva import ReportEventEntry, Assembly
 
 import pyark.cva_client as cva_client
 

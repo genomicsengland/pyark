@@ -5,19 +5,19 @@ import pyark
 test_deps = ['mock']
 
 setup(
-    name='pyark',
+    name='clinical-variant-ark',
     version=pyark.VERSION,
     packages=find_packages(),
     scripts=[],
     url='',
     license='',
     author='priesgo',
-    author_email='pablo.ferreiro@genomicsengland.co.uk',
+    author_email='pablo.riesgo-ferreiro@genomicsengland.co.uk',
     description='',
     install_requires=[
         'requests',
         'furl==1.0.1',
-        'gelreportmodels==7.2.6',
+        'gelreportmodels==7.2.8',
         'enum34',
         'pandas',
         'mock',
