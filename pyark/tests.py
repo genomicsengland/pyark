@@ -409,9 +409,15 @@ class TestPyArk (TestCase):
     def test_get_transactions(self):
         client = self.cva.transactions()
         tx = client.get_transactions(params={'limit': 1}).next()
-        self.assertTrue(client.get_transaction(tx.id))
+        tx2 = client.get_transaction(tx.id)
+        self.assertIsNotNone(tx2)
+        self.assertTrue(isinstance(tx2, Transaction))
+        self.assertIsNone(tx2.compressedData)
         try:
-            self.assertTrue(client.retry_transaction(tx.id))
+            tx3 = client.retry_transaction(tx.id)
+            self.assertIsNotNone(tx3)
+            self.assertTrue(isinstance(tx3, Transaction))
+            self.assertIsNone(tx3.compressedData)
         except CvaServerError as e:
             # this should be a Done transaction so you can't retry it
             self.assertTrue("cannot be retried" in e.message)
@@ -421,16 +427,12 @@ class TestPyArk (TestCase):
         count = self.cva.transactions().count()
         self.assertIsInstance(count, int)
 
-    def test_get_transaction_status_only(self):
-        client = self.cva.transactions()
-        tx = client.get_transactions(params={'limit': 1}).next()
-        self.assertEqual(client.get_transaction(tx.id, just_return_status=True), 'DONE')
-
-    def test_get_transaction_status_only_fails_if_no_results(self):
+    def test_get_transaction_fails_if_no_results(self):
+        # NOTE: this will work when backend returns 404 on this one
         client = self.cva.transactions()
         self.assertRaises(
             CvaClientError,
-            lambda: client.get_transaction("notreal", just_return_status=True)
+            lambda: client.get_transaction("notreal")
         )
 
     def test_errors_if_cva_down(self):
