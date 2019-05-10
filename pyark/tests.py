@@ -8,7 +8,8 @@ import pandas as pd
 from mock import patch
 from protocols.protocol_7_2.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject, \
     EvidenceEntryAndVariants, EvidenceEntry, Property, EvidenceSource, Actions, Therapy, DrugResponse, GenomicFeature, \
-    FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification
+    FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification, Transaction, \
+    TransactionStatus
 from protocols.protocol_7_2.reports import Program
 from protocols.util import dependency_manager
 from protocols.util.factories.avro_factory import GenericFactoryAvro
@@ -392,17 +393,31 @@ class TestPyArk (TestCase):
                           lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
 
     def test_post_pedigree(self):
-        self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
+        transaction = self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
+        self.assertTrue(isinstance(transaction, Transaction))
+        self.assertTrue(transaction.id is not None)
+        self.assertTrue(transaction.status == TransactionStatus.PENDING)
+        self.assertTrue(transaction.compressedData is None)
 
     def test_post_participant(self):
-        self._test_post(CancerParticipantInject, self.data_intake.post_participant)
+        transaction = self._test_post(CancerParticipantInject, self.data_intake.post_participant)
+        self.assertTrue(isinstance(transaction, Transaction))
+        self.assertTrue(transaction.id is not None)
+        self.assertTrue(transaction.status == TransactionStatus.PENDING)
+        self.assertTrue(transaction.compressedData is None)
 
     def test_get_transactions(self):
         client = self.cva.transactions()
         tx = client.get_transactions(params={'limit': 1}).next()
-        self.assertTrue(client.get_transaction(tx.id))
+        tx2 = client.get_transaction(tx.id)
+        self.assertIsNotNone(tx2)
+        self.assertTrue(isinstance(tx2, Transaction))
+        self.assertIsNone(tx2.compressedData)
         try:
-            self.assertTrue(client.retry_transaction(tx.id))
+            tx3 = client.retry_transaction(tx.id)
+            self.assertIsNotNone(tx3)
+            self.assertTrue(isinstance(tx3, Transaction))
+            self.assertIsNone(tx3.compressedData)
         except CvaServerError as e:
             # this should be a Done transaction so you can't retry it
             self.assertTrue("cannot be retried" in e.message)
@@ -412,16 +427,12 @@ class TestPyArk (TestCase):
         count = self.cva.transactions().count()
         self.assertIsInstance(count, int)
 
-    def test_get_transaction_status_only(self):
-        client = self.cva.transactions()
-        tx = client.get_transactions(params={'limit': 1}).next()
-        self.assertEqual(client.get_transaction(tx.id, just_return_status=True), 'DONE')
-
-    def test_get_transaction_status_only_fails_if_no_results(self):
+    def test_get_transaction_fails_if_no_results(self):
+        # NOTE: this will work when backend returns 404 on this one
         client = self.cva.transactions()
         self.assertRaises(
             CvaClientError,
-            lambda: client.get_transaction("notreal", just_return_status=True)
+            lambda: client.get_transaction("notreal")
         )
 
     def test_errors_if_cva_down(self):
