@@ -17,7 +17,7 @@ setup(
     install_requires=[
         'requests',
         'furl==1.0.1',
-        'gelreportmodels==7.2.6',
+        'gelreportmodels==7.2.8',
         'enum34',
         'pandas',
         'mock',
