@@ -44,6 +44,18 @@ class TransactionsClient(cva_client.CvaClient):
         else:
             return self._paginate_transactions(**params)
 
+    def delete_transaction(self, **params):
+        id = params.get('id', None)
+
+        message = params.get('message', None)
+        if not id:
+            raise CvaClientError("You must specify an transaction id to delete a transaction")
+
+        return self._delete(
+            "{endpoint}/{identifier}".format(endpoint=self._BASE_ENDPOINT, identifier=params.get('id')),
+            params={'message': message}
+        )
+
     def _paginate_transactions(self, **params):
         more_results = True
         while more_results:
