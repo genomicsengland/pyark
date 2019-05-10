@@ -5,7 +5,8 @@ from protocols.protocol_7_2.cva import (
     InterpretedGenomeInject,
     ClinicalReportInject,
     ExitQuestionnaireInjectRD,
-    ExitQuestionnaireInjectCancer
+    ExitQuestionnaireInjectCancer,
+    Transaction
 )
 
 
@@ -25,46 +26,52 @@ class DataIntakeClient(cva_client.CvaClient):
         """
         :type pedigree: PedigreeInjectRD
         :type params: dict
-        :rtype: dict
+        :rtype: Transaction
         """
-        return self._post(self._PEDIGREE_POST, pedigree.toJsonDict(), params)
+        results, _ = self._post(self._PEDIGREE_POST, pedigree.toJsonDict(), params)
+        return Transaction.fromJsonDict(self._render_single_result(results, as_data_frame=False))
 
     def post_participant(self, participant, params={}):
         """
         :type participant: CancerParticipantInject
         :type params: dict
-        :rtype: dict
+        :rtype: Transaction
         """
-        return self._post(self._PARTICIPANT_POST, participant.toJsonDict(), params)
+        results, _ = self._post(self._PARTICIPANT_POST, participant.toJsonDict(), params)
+        return Transaction.fromJsonDict(self._render_single_result(results, as_data_frame=False))
 
     def post_interpreted_genome(self, tiered_variant, params={}):
         """
         :type tiered_variant: InterpretedGenomeInject
         :type params: dict
-        :rtype: dict
+        :rtype: Transaction
         """
-        return self._post(self._INTERPRETED_GENOME_POST, tiered_variant.toJsonDict(), params)
+        results, _ = self._post(self._INTERPRETED_GENOME_POST, tiered_variant.toJsonDict(), params)
+        return Transaction.fromJsonDict(self._render_single_result(results, as_data_frame=False))
 
     def post_clinical_report(self, candidate_variant, params={}):
         """
         :type candidate_variant: ClinicalReportInject
         :type params: dict
-        :rtype: dict
+        :rtype: Transaction
         """
-        return self._post(self._CLINICAL_REPORT_POST, candidate_variant.toJsonDict(), params)
+        results, _ = self._post(self._CLINICAL_REPORT_POST, candidate_variant.toJsonDict(), params)
+        return Transaction.fromJsonDict(self._render_single_result(results, as_data_frame=False))
 
     def post_exit_questionaire(self, exit_questionaire, params={}):
         """
         :type exit_questionaire: ExitQuestionnaireInjectRD
         :type params: dict
-        :rtype: dict
+        :rtype: Transaction
         """
-        return self._post(self._EXIT_QUESTIONAIRES_RD_POST, exit_questionaire.toJsonDict(), params)
+        results, _ = self._post(self._EXIT_QUESTIONAIRES_RD_POST, exit_questionaire.toJsonDict(), params)
+        return Transaction.fromJsonDict(self._render_single_result(results, as_data_frame=False))
 
     def post_exit_questionaire_cancer(self, exit_questionaire, params={}):
         """
         :type exit_questionaire: ExitQuestionnaireInjectCancer
         :type params: dict
-        :rtype: dict
+        :rtype: Transaction
         """
-        return self._post(self._EXIT_QUESTIONAIRES_CANCER_POST, exit_questionaire.toJsonDict(), params)
+        results, _ = self._post(self._EXIT_QUESTIONAIRES_CANCER_POST, exit_questionaire.toJsonDict(), params)
+        return Transaction.fromJsonDict(self._render_single_result(results, as_data_frame=False))

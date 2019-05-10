@@ -8,7 +8,8 @@ import pandas as pd
 from mock import patch
 from protocols.protocol_7_2.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject, \
     EvidenceEntryAndVariants, EvidenceEntry, Property, EvidenceSource, Actions, Therapy, DrugResponse, GenomicFeature, \
-    FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification
+    FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification, Transaction, \
+    TransactionStatus
 from protocols.protocol_7_2.reports import Program
 from protocols.util import dependency_manager
 from protocols.util.factories.avro_factory import GenericFactoryAvro
@@ -392,10 +393,18 @@ class TestPyArk (TestCase):
                           lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
 
     def test_post_pedigree(self):
-        self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
+        transaction = self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
+        self.assertTrue(isinstance(transaction, Transaction))
+        self.assertTrue(transaction.id is not None)
+        self.assertTrue(transaction.status == TransactionStatus.PENDING)
+        self.assertTrue(transaction.compressedData is None)
 
     def test_post_participant(self):
-        self._test_post(CancerParticipantInject, self.data_intake.post_participant)
+        transaction = self._test_post(CancerParticipantInject, self.data_intake.post_participant)
+        self.assertTrue(isinstance(transaction, Transaction))
+        self.assertTrue(transaction.id is not None)
+        self.assertTrue(transaction.status == TransactionStatus.PENDING)
+        self.assertTrue(transaction.compressedData is None)
 
     def test_get_transactions(self):
         client = self.cva.transactions()
