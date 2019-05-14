@@ -365,6 +365,17 @@ class TestPyArk (TestCase):
         # self.assertIsNotNone(results)
         # self.assertIsInstance(results, list)
 
+    def test_get_shared_variants_counts(self):
+        # case = self._random_case()
+        case = self.cases.get_cases(
+            limit=10, program=Program.rare_disease, assembly='GRCh38',
+            filter='countInterpretationServices.exomiser gt 0', hasClinicalData=True).next()[7]
+        all_variants = case['allVariants']
+        results = self.cases.get_shared_variants_counts(all_variants)
+        for r in results:
+            self.assertTrue(r['variantId'] in all_variants)
+            self.assertTrue(r['countCases'] >= 1)
+
     def test_get_variant_by_id(self):
 
         identifier = self._get_random_variant()
