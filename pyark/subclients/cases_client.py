@@ -14,6 +14,7 @@ class CasesClient(cva_client.CvaClient):
 
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
+        self.variants_client = self.variants()
 
     def count(self, **params):
         params['count'] = True
@@ -236,6 +237,18 @@ class CasesClient(cva_client.CvaClient):
         if not results:
             logging.warning("No cases sharing {} genes found".format(report_event_type))
             return None
+        return results
+
+    def get_shared_variants_counts(self, variant_ids, **params):
+        """
+        :type variant_ids: list
+        :type params: dict
+        :return:
+        """
+        variant_coordinates = [v.toJsonDict() for v in self.variants_client.variant_ids_to_coordinates(variant_ids)]
+        if params is None:
+            params = {}
+        results, _ = self._post([self._BASE_ENDPOINT, "shared-variants-counts"], variant_coordinates, **params)
         return results
 
     def get_phenosim_matrix(self, as_data_frame=False, **params):

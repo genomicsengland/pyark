@@ -56,7 +56,7 @@ class RestClient(object):
         else:
             response = requests.post(url, json=payload, params=params, headers=self._headers)
         logging.info("{method} {url}".format(
-            method="GET",
+            method="POST",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
         ))
         self._verify_response(response)
