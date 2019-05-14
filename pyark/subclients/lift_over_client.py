@@ -1,6 +1,5 @@
 import pyark.cva_client as cva_client
 from protocols.protocol_7_2.cva import VariantsCoordinates, VariantCoordinates
-import pyark.models_mapping
 
 
 class LiftOverClient(cva_client.CvaClient):
@@ -9,6 +8,7 @@ class LiftOverClient(cva_client.CvaClient):
 
     def __init__(self, url_base, token):
         cva_client.CvaClient.__init__(self, url_base, token=token)
+        self.variants_client = self.variants()
 
     def lift_over_by_identifiers(self, variant_identifiers, **params):
         """
@@ -18,8 +18,7 @@ class LiftOverClient(cva_client.CvaClient):
         :return list of VariantCoordinates
         :rtype: list
         """
-        variant_coordinates_list = [pyark.models_mapping.map_variant_id_to_variant(variant_id)
-                                    for variant_id in variant_identifiers]
+        variant_coordinates_list = self.variants_client.variant_ids_to_coordinates(variant_identifiers)
         variants_coordinates = VariantsCoordinates()
         variants_coordinates.variants = variant_coordinates_list
 

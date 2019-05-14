@@ -1,6 +1,8 @@
-import pyark.cva_client as cva_client
-from protocols.protocol_7_2.cva import Variant
+import re
 import logging
+import pyark.cva_client as cva_client
+from pyark.models.wrappers import VariantWrapper
+from protocols.protocol_7_2.cva import VariantCoordinates
 
 
 _singleton_instance = None
@@ -24,7 +26,7 @@ class VariantsClient(cva_client.CvaClient):
     def get_variant_by_id(self, identifier):
         """
         :type identifier: str
-        :rtype: Variant
+        :rtype: VariantWrapper
         """
         results, _ = self._get("{endpoint}/{identifier}".format(
             endpoint=self._BASE_ENDPOINT, identifier=identifier))
@@ -32,7 +34,7 @@ class VariantsClient(cva_client.CvaClient):
             logging.warning("No variant found with id {}".format(identifier))
             return None
         assert len(results) == 1, "Unexpected number of variants returned when searching by identifier"
-        variant = Variant.fromJsonDict(results[0])
+        variant = VariantWrapper.fromJsonDict(results[0])
         return variant
 
     def get_variants_by_id(self, identifiers):
@@ -49,6 +51,38 @@ class VariantsClient(cva_client.CvaClient):
             return results[0]
         else:
             return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, **params)
+
+    def variant_ids_to_coordinates(self, variant_ids, fail_on_structural=False):
+        return list(filter(lambda x: x is not None,
+                           [self.variant_id_to_coordinates(v, fail_on_structural) for v in variant_ids]))
+
+    def variant_id_to_coordinates(self, variant_id, fail_on_structural=False):
+        """
+        :type variant_id: str
+        :type fail_on_structural: bool
+        :rtype: VariantCoordinates
+        """
+        match = re.match(r'(GRCh37|GRCh38):(.+):([ 0-9]+):(-| |[A|C|G|T|a|c|g|t]*):(-| |[A|C|G|T|a|c|g|t]*)', variant_id)
+        if match and (len(match.group(4)) > 0 or len(match.group(5)) > 0):
+            variant_coordinates = VariantCoordinates.fromJsonDict({
+                'assembly': match.group(1),
+                'chromosome': match.group(2),
+                'position': match.group(3).strip(),
+                'reference': match.group(4),
+                'alternate': match.group(5)
+            })
+        else:
+            variant = self.get_variant_by_id(variant_id)
+            if variant is None:
+                raise ValueError("The variant id {} could not be mapped".format(variant_id))
+            variant_representation = variant.get_default_variant_representation()
+            variant_coordinates = variant_representation.smallVariantCoordinates
+            if variant_coordinates is None:
+                if fail_on_structural:
+                    raise ValueError("The variant id {} does not correspond to a small variant".format(variant_id))
+                else:
+                    return None
+        return variant_coordinates
 
     def _set_singleton(self):
         global _singleton_instance
