@@ -47,7 +47,18 @@ class VariantWrapper(Variant):
 
 class VariantAnnotationWrapper(VariantAnnotation):
 
-    def get_max_allele_frequency(self):
+    @staticmethod
+    def _include_frequency(freq, studies_populations):
+        if not studies_populations:
+            return True
+        freq_dict = {'study': freq.study, 'population': freq.population}
+        return freq_dict in studies_populations
+
+    def get_max_allele_frequency(self, studies_populations=[]):
         if not self.populationFrequencies:
             return 0.0
-        return max([freq.altAlleleFreq for freq in self.populationFrequencies])
+        freqs = [freq.altAlleleFreq for freq in self.populationFrequencies
+                 if self._include_frequency(freq, studies_populations)]
+        if not freqs:
+            return 0.0
+        return max(freqs)
