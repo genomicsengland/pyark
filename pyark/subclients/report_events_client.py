@@ -2,6 +2,7 @@ from enum import Enum
 from protocols.protocol_7_2.cva import ReportEventEntry, Assembly
 
 import pyark.cva_client as cva_client
+from pyark.models.wrappers import ReportEventEntryWrapper
 
 
 class ReportEventsClient(cva_client.CvaClient):
@@ -16,6 +17,10 @@ class ReportEventsClient(cva_client.CvaClient):
         return self.get_report_events(**params)
 
     def get_report_events(self, **params):
+        """
+        :param params:
+        :rtype: int | ReportEventEntryWrapper
+        """
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
@@ -26,7 +31,7 @@ class ReportEventsClient(cva_client.CvaClient):
         more_results = True
         while more_results:
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
-            report_events = list(map(lambda x: ReportEventEntry.fromJsonDict(x), results))
+            report_events = list(map(lambda x: ReportEventEntryWrapper.fromJsonDict(x), results))
             if next_page_params:
                 params[cva_client.CvaClient._LIMIT_PARAM] = next_page_params[cva_client.CvaClient._LIMIT_PARAM]
                 params[cva_client.CvaClient._MARKER_PARAM] = next_page_params[cva_client.CvaClient._MARKER_PARAM]
