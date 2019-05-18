@@ -1,5 +1,12 @@
 import re
-from protocols.protocol_7_2.cva import Variant, Assembly, VariantRepresentation, VariantAnnotation
+from protocols.protocol_7_2.cva import Variant, Assembly, VariantRepresentation, \
+    VariantAnnotation, ReportEventEntry
+
+
+class ReportEventEntryWrapper(ReportEventEntry):
+
+    def get_variant(self):
+        return VariantWrapper.fromJsonDict(self.observedVariants[0].variant.toJsonDict())
 
 
 class VariantWrapper(Variant):
