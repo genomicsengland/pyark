@@ -62,7 +62,7 @@ class VariantsClient(cva_client.CvaClient):
         :type fail_on_structural: bool
         :rtype: VariantCoordinates
         """
-        match = re.match(r'(GRCh37|GRCh38):(.+):([ 0-9]+):(-| |[A|C|G|T|a|c|g|t]*):(-| |[A|C|G|T|a|c|g|t]*)', variant_id)
+        match = re.match(r'(GRCh37|GRCh38):(.+):([ 0-9]+):(-| |[A|C|G|T]*):(-| |[A|C|G|T]*)', variant_id)
         if match and (len(match.group(4)) > 0 or len(match.group(5)) > 0):
             variant_coordinates = VariantCoordinates.fromJsonDict({
                 'assembly': match.group(1),
