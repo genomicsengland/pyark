@@ -254,18 +254,30 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(results)
         self.assertIsInstance(results, list)
 
-    def test_get_cases(self):
+    def test_get_cases_one_by_one(self):
 
-        all_cases = self.cases.get_cases({'limit': 2})
+        all_cases = self.cases.get_cases(as_data_frame=False, limit=2)
         case_count = 0
-        for batch_cases in all_cases:
-            self.assertIsNotNone(batch_cases)
-            # self.assertEqual(len(batch_report_events), 10)
-            # logging.info("Returned {} report events".format(len(batch_report_events)))
+        for c in all_cases:
+            self.assertIsNotNone(c)
+            self.assertIsInstance(c, dict)
             case_count += 1
             if case_count == 5:
                 break
         self.assertEqual(case_count, 5)
+
+    def test_get_cases_as_dataframes(self):
+
+        all_cases = self.cases.get_cases(as_data_frame=True, limit=2)
+        batch_count = 0
+        for batch in all_cases:
+            self.assertIsNotNone(batch)
+            self.assertIsInstance(batch, pd.DataFrame)
+            self.assertTrue(batch.shape[0] == 2)
+            batch_count += 1
+            if batch_count == 3:
+                break
+        self.assertEqual(batch_count, 3)
 
     def test_count_cases(self):
 
