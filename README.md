@@ -77,7 +77,7 @@ report_events_client.count_report_events()
 ```python
 # count the number of report events with a certain criteria
 report_events_client.count_report_events(
-    params={'program':Program.rare_disease, 'panel_name':"cakut", 'families':['1', '2']})
+    program=Program.rare_disease, panel_name="cakut", families=['1', '2'])
 ```
 
     INFO:root:2018-08-05 09:43:47.203411 GET http://localhost:8080/cva/api/0/report-events?count=True&panel_name=cakut&program=rare_disease&families=1&families=2 Server=Apache-Coyote/1.1, Access-Control-Allow-Origin=*, Access-Control-Allow-Headers=x-requested-with, content-type, Access-Control-Allow-Credentials=true, Access-Control-Allow-Methods=GET, POST, OPTIONS, Content-Type=application/json, Content-Length=272, Date=Sun, 05 Aug 2018 08:43:47 GMT
@@ -110,7 +110,7 @@ cases_client.count_cases()
 
 ```python
 # NOTE: this count is wrong because the test database needs reloading with the latest version
-cases_client.count_cases(params={'program':Program.rare_disease, 'panel_name':"intellectual disability"})
+cases_client.count_cases(program=Program.rare_disease, panel_name="intellectual disability")
 ```
 
     INFO:root:2018-08-05 09:43:47.303665 GET http://localhost:8080/cva/api/0/cases?count=True&panel_name=intellectual disability&program=rare_disease Server=Apache-Coyote/1.1, Access-Control-Allow-Origin=*, Access-Control-Allow-Headers=x-requested-with, content-type, Access-Control-Allow-Credentials=true, Access-Control-Allow-Methods=GET, POST, OPTIONS, Content-Type=application/json, Content-Length=274, Date=Sun, 05 Aug 2018 08:43:47 GMT
@@ -155,7 +155,7 @@ To fetch the next page, these attributes must be passed in the query parameter `
 ```python
 # create an iterator for the report events
 report_events = report_events_client.get_report_events(
-    params={'program':Program.rare_disease, 'only_latest':True, 'limit':3})
+    program=Program.rare_disease, only_latest=True, limit=3)
 
 # iterate through the first 5
 i = 0
@@ -174,7 +174,7 @@ for report_event in report_events:
 
 ```python
 # create an iterator for the cases
-cases = cases_client.get_cases(params={'program':Program.rare_disease, 'limit':3})
+cases = cases_client.get_cases(program=Program.rare_disease, limit=3)
 
 # iterate through the first 5
 i = 0
@@ -196,7 +196,7 @@ The case is the main entity in CVA to summarise data. It is possible to create s
 
 
 ```python
-cases_client.get_summary({'program':Program.rare_disease}, as_data_frame=True)
+cases_client.get_summary(program=Program.rare_disease, as_data_frame=True)
 ```
 
     INFO:root:2018-08-05 09:43:49.981997 GET http://localhost:8080/cva/api/0/cases/summary?program=rare_disease Server=Apache-Coyote/1.1, Access-Control-Allow-Origin=*, Access-Control-Allow-Headers=x-requested-with, content-type, Access-Control-Allow-Credentials=true, Access-Control-Allow-Methods=GET, POST, OPTIONS, Content-Type=application/json, Content-Length=1547, Date=Sun, 05 Aug 2018 08:43:49 GMT
@@ -281,9 +281,9 @@ cases_client.get_summary({'program':Program.rare_disease}, as_data_frame=True)
 
 
 ```python
-cases_summary_family1 = cases_client.get_summary({'program':Program.rare_disease, 'num_samples':1}, as_data_frame=True)
-cases_summary_family2 = cases_client.get_summary({'program':Program.rare_disease, 'num_samples':2}, as_data_frame=True)
-cases_summary_family3 = cases_client.get_summary({'program':Program.rare_disease, 'num_samples':3}, as_data_frame=True)
+cases_summary_family1 = cases_client.get_summary(program=Program.rare_disease, num_samples=1, as_data_frame=True)
+cases_summary_family2 = cases_client.get_summary(program=Program.rare_disease, num_samples=2, as_data_frame=True)
+cases_summary_family3 = cases_client.get_summary(program=Program.rare_disease, num_samples:=3, as_data_frame=True)
 pd.concat([cases_summary_family1, cases_summary_family2, cases_summary_family3]).transpose()
 
 ```
@@ -630,9 +630,9 @@ We may want to select a set cases by different criteria
 
 ```python
 # Get all cases in panel intellectual disability having 3 samples in the family
-cases = cases_client.get_cases({'program':Program.rare_disease, 
-                        'panel_name':'intellectual disability',
-                        'num_samples':3})
+cases = cases_client.get_cases(program=Program.rare_disease, 
+                        panel_name='intellectual disability',
+                        num_samples=3)
 print "Found {} cases".format(len(list(cases)))
 ```
 
@@ -648,7 +648,7 @@ print "Found {} cases".format(len(list(cases)))
 
 ```python
 # Get all cases having a given gene reported
-cases = cases_client.get_cases({'reported_ensembl_ids':'ENSG00000182872'})
+cases = cases_client.get_cases(reported_ensembl_ids='ENSG00000182872')
 print "Found {} cases".format(len(list(cases)))
 ```
 
@@ -664,7 +664,7 @@ print "Found {} cases".format(len(list(cases)))
 
 ```python
 # Get all cases having any phenotype from a list
-cases = cases_client.get_cases({'proband_hpo_terms':['HP:0002616', 'HP:0003124']})
+cases = cases_client.get_cases(proband_hpo_terms=['HP:0002616', 'HP:0003124'])
 print "Found {} cases".format(len(list(cases)))
 ```
 
@@ -680,8 +680,8 @@ print "Found {} cases".format(len(list(cases)))
 
 ```python
 # Get all cases having all phenotypes from a list
-cases = cases_client.get_cases({'proband_hpo_terms':['HP:0002616', 'HP:0003124'],
-                               'any_or_all_hpos':'ALL'})
+cases = cases_client.get_cases(proband_hpo_terms=['HP:0002616', 'HP:0003124'],
+                               any_or_all_hpos='ALL')
 print "Found {} cases".format(len(list(cases)))
 ```
 
@@ -755,7 +755,7 @@ reduce(lambda x, y: pd.merge(x, y, on = 'attribute'), members).shape
 
 ```python
 # get all report events for a case
-report_events = report_events_client.get_report_events(params={'case_id':"132", 'case_version':1})
+report_events = report_events_client.get_report_events(case_id="132", case_version=1)
 print "Found {} report events for the case".format(len(list(report_events)))
 ```
 
@@ -773,7 +773,7 @@ print "Found {} report events for the case".format(len(list(report_events)))
 # get all report events in a case for a given variant
 case = cases_client.get_case(identifier="132", version=1, as_data_frame=False)
 variant = case['tieredVariants'][Tier.TIER3][0]
-report_events = report_events_client.get_report_events(params={'case_id':"132", 'case_version':1, 'variants':[variant]})
+report_events = report_events_client.get_report_events(case_id="132", case_version=1, variants=[variant])
 print "Found {} report events for the given variant in the case".format(len(list(report_events)))
 ```
 
@@ -792,7 +792,7 @@ print "Found {} report events for the given variant in the case".format(len(list
 ```python
 # fetch the report events together with all Cellbase annotations using `full_populate=true`
 report_events = report_events_client.get_report_events(
-    params={'case_id':"132", 'case_version':1, 'full_populate':True})
+    case_id="132", case_version=1, full_populate=True)
 variant_annotations = report_events.next().observedVariants[0].variant
 biotypes = [ct.biotype for ct in variant_annotations.variants[0].variant.annotation.consequenceTypes]
 print "The variant in the first report event is annotated with biotypes: {}".format(", ".join(biotypes))
