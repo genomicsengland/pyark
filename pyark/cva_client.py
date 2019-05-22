@@ -262,4 +262,10 @@ class CvaClient(RestClient):
                 params[CvaClient._MARKER_PARAM] = next_page_params[CvaClient._MARKER_PARAM]
             else:
                 more_results = False
-            yield self._render(results, as_data_frame=as_data_frame)
+            # NOTE: when returning a data frame we want all results in a batch in the
+            # same data frame, otherwise we want to iterate through them one by one
+            if as_data_frame:
+                yield self._render(results, as_data_frame=as_data_frame)
+            else:
+                for r in results:
+                    yield r
