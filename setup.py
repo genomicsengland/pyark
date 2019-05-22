@@ -7,13 +7,14 @@ test_deps = ['mock']
 setup(
     name='clinical-variant-ark',
     version=pyark.VERSION,
+    description='A Python client for the Clinical Variant Ark',
     packages=find_packages(),
     scripts=[],
-    url='',
-    license='',
-    author='priesgo',
+    url='https://github.com/genomicsengland/pyark',
+    download_url="https://github.com/genomicsengland/pyark/archive/v{}.tar.gz".format(pyark.VERSION),
+    license='Apache',
+    author=['Pablo Riesgo Ferreiro', 'Kevin Savage', 'William Bellamy'],
     author_email='pablo.riesgo-ferreiro@genomicsengland.co.uk',
-    description='',
     install_requires=[
         'requests',
         'furl==1.0.1',
@@ -26,4 +27,5 @@ setup(
     ],
     tests_require=test_deps,
     extras_require={'test': test_deps},
+    keywords=['CVA', 'pyark', 'clinical variant ark', 'Genomics England']
 )
