@@ -252,8 +252,9 @@ class CvaClient(RestClient):
         else:
             return results
 
-    def _paginate(self, endpoint, as_data_frame=False, **params):
+    def _paginate(self, endpoint, as_data_frame=False, max=None, **params):
         more_results = True
+        count_returned = 0
         while more_results:
             results, next_page_params = self._get(endpoint, **params)
             results = list(results)
@@ -264,8 +265,12 @@ class CvaClient(RestClient):
                 more_results = False
             # NOTE: when returning a data frame we want all results in a batch in the
             # same data frame, otherwise we want to iterate through them one by one
+            if max and count_returned >= max:
+                return
             if as_data_frame:
+                count_returned += len(results)
                 yield self._render(results, as_data_frame=as_data_frame)
             else:
                 for r in results:
+                    count_returned += 1
                     yield r
