@@ -45,12 +45,12 @@ class VariantsClient(cva_client.CvaClient):
         self._set_singleton()
         return VariantsClient.run_parallel_requests(_get_variant_by_id, identifiers)
 
-    def get_variants(self, as_data_frame=False, **params):
+    def get_variants(self, as_data_frame=False, max=None, **params):
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
-            return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, **params)
+            return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, max=max, **params)
 
     def variant_ids_to_coordinates(self, variant_ids, fail_on_structural=False):
         return list(filter(lambda x: x is not None,
