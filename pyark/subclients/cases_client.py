@@ -33,26 +33,6 @@ class CasesClient(cva_client.CvaClient):
         else:
             return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, max=max, **params)
 
-    class _OutputEntities(Enum):
-        variants = 'variants'
-        genes = 'genes'
-
-    @staticmethod
-    def _by_gene_id(assembly, gene_id):
-        return ["genes", assembly, gene_id]
-
-    @staticmethod
-    def _by_transcript_id(assembly, transcript_id):
-        return ["transcripts", assembly, transcript_id]
-
-    @staticmethod
-    def _by_panel(panel_name):
-        return ["panels", panel_name]
-
-    @staticmethod
-    def _by_genomic_coordinates(assembly, chromosome, start, end):
-        return ["genomic-regions", assembly, chromosome, start, end]
-
     def get_summary(self, as_data_frame=False, params_list=[], **params):
         """
         :type as_data_frame: bool
@@ -114,69 +94,6 @@ class CasesClient(cva_client.CvaClient):
     def search(self, query):
         results, _ = self._get("{endpoint}/search/{query}".format(endpoint=self._BASE_ENDPOINT, query=query))
         return self._render(results, as_data_frame=False)
-
-    def get_variants_by_gene_id(self, program, assembly, gene_id, **params):
-        """
-        :type program: Program
-        :type assembly: Assembly
-        :type gene_id: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_gene_id(assembly, gene_id) +\
-               [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_variants_by_transcript_id(self, assembly, transcript_id, **params):
-        """
-        :type assembly: Assembly
-        :type transcript_id: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_transcript_id(assembly, transcript_id) + \
-               [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_variants_by_panel(self, panel_name, **params):
-        """
-        :type panel_name: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_panel(panel_name) + [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_variants_by_genomic_region(self, assembly, chromosome, start, end, **params):
-        """
-        :type assembly: Assembly
-        :type chromosome: str
-        :type start: int
-        :type end: int
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
-               [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_genes_by_genomic_region(self, assembly, chromosome, start, end, **params):
-        """
-        :type assembly: Assembly
-        :type chromosome: str
-        :type start: int
-        :type end: int
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
-               [self._OutputEntities.genes.value]
-        results, _ = self._get(path, **params)
-        return results
 
     def get_similar_cases_by_case(self, case_id, case_version, as_data_frame=False, **params):
         """
