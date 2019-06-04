@@ -45,11 +45,11 @@ class VariantWrapper(Variant):
         variant_representation = self.get_default_variant_representation()
         return VariantAnnotationWrapper.fromJsonDict(variant_representation.annotation.toJsonDict())
 
-    @staticmethod
-    def is_small_variant(variant_id):
-        fields = variant_id.split(':')
-        seq_re = re.compile("^[ACGT]*$")
-        return seq_re.match(fields[3]) and seq_re.match(fields[4])
+    def is_small_variant(self):
+        """
+        :rtype: bool
+        """
+        return self.get_default_variant_representation().smallVariantCoordinates is not None
 
 
 class VariantAnnotationWrapper(VariantAnnotation):
@@ -62,6 +62,10 @@ class VariantAnnotationWrapper(VariantAnnotation):
         return freq_dict in studies_populations
 
     def get_max_allele_frequency(self, studies_populations=[]):
+        """
+        :type studies_populations: dict
+        :rtype: float
+        """
         if not self.populationFrequencies:
             return 0.0
         freqs = [freq.altAlleleFreq for freq in self.populationFrequencies

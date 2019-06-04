@@ -2,6 +2,7 @@ import pyark.cva_client as cva_client
 from protocols.protocol_7_2.cva import Program, Assembly, ReportEventType
 import logging
 from enum import Enum
+import pandas as pd
 
 
 REPORT_EVENT_TYPES = [ReportEventType.genomics_england_tiering, ReportEventType.candidate, ReportEventType.reported,
@@ -19,12 +20,18 @@ class CasesClient(cva_client.CvaClient):
         params['count'] = True
         return self.get_cases(**params)
 
-    def get_cases(self, as_data_frame=False, **params):
+    def get_cases(self, as_data_frame=False, max=None, **params):
+        """
+        :type as_data_frame: bool
+        :type max: int
+        :type params: dict
+        :rtype: list | pd.DataFrame
+        """
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
-            return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, **params)
+            return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, max=max, **params)
 
     class _OutputEntities(Enum):
         variants = 'variants'
