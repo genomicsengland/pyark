@@ -1,3 +1,5 @@
+from pyark.errors import CvaClientError
+
 from pyark import cva_client
 from protocols.protocol_7_2.cva import Transaction
 
@@ -28,10 +30,6 @@ class TransactionsClient(cva_client.CvaClient):
             endpoint=self._BASE_ENDPOINT, identifier=transaction_id))
         result = self._render_single_result(results, as_data_frame=False)
         return Transaction.fromJsonDict(result) if result else None
-
-    def count(self, **params):
-        params['count'] = True
-        return self.get_transactions(**params)
 
     def delete_transaction(self, **params):
         id = params.get('id', None)

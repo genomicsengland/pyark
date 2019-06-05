@@ -16,26 +16,19 @@ class ReportEventsClient(cva_client.CvaClient):
         params['count'] = True
         return self.get_report_events(**params)
 
-    def get_report_events(self, **params):
+    def get_report_events(self, max_results=None, include_all=True, **params):
         """
-        :param params:
+        :type max_results: bool
+        :type include_all: bool
+        :type params: dict
         :rtype: int | ReportEventEntryWrapper
         """
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
-            return self._paginate_report_events(**params)
-
-    def _paginate_report_events(self, **params):
-        more_results = True
-        while more_results:
-            results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
-            report_events = list(map(lambda x: ReportEventEntryWrapper.fromJsonDict(x), results))
-            if next_page_params:
-                params[cva_client.CvaClient._LIMIT_PARAM] = next_page_params[cva_client.CvaClient._LIMIT_PARAM]
-                params[cva_client.CvaClient._MARKER_PARAM] = next_page_params[cva_client.CvaClient._MARKER_PARAM]
-            else:
-                more_results = False
-            for report_event in report_events:
-                yield report_event
+            if include_all:
+                params['include'] = [self._INCLUDE_ALL]
+            return self._paginate(
+                endpoint=self._BASE_ENDPOINT, max_results=max_results,
+                transformer=lambda x: ReportEventEntryWrapper.fromJsonDict(x), **params)
