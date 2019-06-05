@@ -1,7 +1,6 @@
 import pyark.cva_client as cva_client
-from protocols.protocol_7_2.cva import Program, Assembly, ReportEventType
+from protocols.protocol_7_2.cva import ReportEventType
 import logging
-from enum import Enum
 import pandas as pd
 
 
@@ -17,13 +16,19 @@ class CasesClient(cva_client.CvaClient):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
     def count(self, **params):
+        """
+        :type params: dict
+        :rtype: int
+        """
         params['count'] = True
         return self.get_cases(**params)
 
-    def get_cases(self, as_data_frame=False, max=None, **params):
+    def get_cases(self, as_data_frame=False, max_results=None, include_all=True, **params):
         """
         :type as_data_frame: bool
-        :type max: int
+        :type max_results: int
+        :param include_all: use False for the default minimal representation of case, it will be faster
+        :type include_all: bool
         :type params: dict
         :rtype: list | pd.DataFrame
         """
@@ -31,33 +36,16 @@ class CasesClient(cva_client.CvaClient):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
-            return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, max=max, **params)
-
-    class _OutputEntities(Enum):
-        variants = 'variants'
-        genes = 'genes'
-
-    @staticmethod
-    def _by_gene_id(assembly, gene_id):
-        return ["genes", assembly, gene_id]
-
-    @staticmethod
-    def _by_transcript_id(assembly, transcript_id):
-        return ["transcripts", assembly, transcript_id]
-
-    @staticmethod
-    def _by_panel(panel_name):
-        return ["panels", panel_name]
-
-    @staticmethod
-    def _by_genomic_coordinates(assembly, chromosome, start, end):
-        return ["genomic-regions", assembly, chromosome, start, end]
+            if include_all:
+                params['include'] = [self._INCLUDE_ALL]
+            return self._paginate(
+                endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, max_results=max_results, **params)
 
     def get_summary(self, as_data_frame=False, params_list=[], **params):
         """
         :type as_data_frame: bool
         :type params_list: list
-        :return:
+        :rtype: dict | pd.DataFrame
         """
         if params_list:
             self._params_sanity_checks(params)
@@ -86,97 +74,40 @@ class CasesClient(cva_client.CvaClient):
                 if len(set(p.keys()).difference(keys)) > 0:
                     raise ValueError("Cannot accept a list of 'params' with different lists of filters")
 
-    def get_case(self, identifier, version, as_data_frame=False):
+    def get_case(self, identifier, version, as_data_frame=False, include_all=True, **params):
         """
-        :param as_data_frame: bool
+        :type as_data_frame: bool
         :type identifier: str
         :type version: str
-        :return:
+        :type include_all: bool
+        :rtype: dict | pd.DataFrame
         """
+        if include_all:
+            params['include'] = [self._INCLUDE_ALL]
         results, _ = self._get("{endpoint}/{identifier}/{version}".format(
-            endpoint=self._BASE_ENDPOINT, identifier=identifier, version=version))
+            endpoint=self._BASE_ENDPOINT, identifier=identifier, version=version), **params)
         if not results:
             logging.warning("No case found with id-version {}-{}".format(identifier, version))
             return None
         assert len(results) == 1, "Unexpected number of cases returned when searching by identifier"
         return self._render_single_result(results, as_data_frame=as_data_frame)
 
-    def get_case_by_identifiers(self, identifiers, as_data_frame=False):
+    def get_case_by_identifiers(self, identifiers, as_data_frame=False, include_all=True, **params):
         """
-        :param as_data_frame: bool
+        :type as_data_frame: bool
         :type identifiers: list
-        :return:
+        :type include_all: bool
+        :rtype: list | pd.DataFrame
         """
+        if include_all:
+            params['include'] = [self._INCLUDE_ALL]
         results, _ = self._get("{endpoint}/{identifiers}".format(
-            endpoint=self._BASE_ENDPOINT, identifiers=",".join(identifiers)))
+            endpoint=self._BASE_ENDPOINT, identifiers=",".join(identifiers)), **params)
         return self._render(results, as_data_frame=as_data_frame)
 
     def search(self, query):
         results, _ = self._get("{endpoint}/search/{query}".format(endpoint=self._BASE_ENDPOINT, query=query))
         return self._render(results, as_data_frame=False)
-
-    def get_variants_by_gene_id(self, program, assembly, gene_id, **params):
-        """
-        :type program: Program
-        :type assembly: Assembly
-        :type gene_id: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_gene_id(assembly, gene_id) +\
-               [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_variants_by_transcript_id(self, assembly, transcript_id, **params):
-        """
-        :type assembly: Assembly
-        :type transcript_id: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_transcript_id(assembly, transcript_id) + \
-               [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_variants_by_panel(self, panel_name, **params):
-        """
-        :type panel_name: str
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_panel(panel_name) + [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_variants_by_genomic_region(self, assembly, chromosome, start, end, **params):
-        """
-        :type assembly: Assembly
-        :type chromosome: str
-        :type start: int
-        :type end: int
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
-               [self._OutputEntities.variants.value]
-        results, _ = self._get(path, **params)
-        return results
-
-    def get_genes_by_genomic_region(self, assembly, chromosome, start, end, **params):
-        """
-        :type assembly: Assembly
-        :type chromosome: str
-        :type start: int
-        :type end: int
-        :type params: dict
-        :return:
-        """
-        path = [self._BASE_ENDPOINT] + CasesClient._by_genomic_coordinates(assembly, chromosome, start, end) + \
-               [self._OutputEntities.genes.value]
-        results, _ = self._get(path, **params)
-        return results
 
     def get_similar_cases_by_case(self, case_id, case_version, as_data_frame=False, **params):
         """
@@ -184,7 +115,7 @@ class CasesClient(cva_client.CvaClient):
         :type case_id: str
         :type case_version: int
         :type params: dict
-        :return:
+        :rtype: list | pd.DataFrame
         """
         results, _ = self._get([self._BASE_ENDPOINT, case_id, case_version, "similar-cases"], **params)
         if not results:
@@ -197,7 +128,7 @@ class CasesClient(cva_client.CvaClient):
         :type as_data_frame: bool
         :type phenotypes: list
         :type params: dict
-        :return:
+        :rtype: list | pd.DataFrame
         """
         params['hpoIds'] = phenotypes
         results, _ = self._get([self._BASE_ENDPOINT, "phenotypes", "similar-cases"], **params)
@@ -213,7 +144,7 @@ class CasesClient(cva_client.CvaClient):
         :type report_event_type: ReportEventType
         :type limit: int
         :type params: dict
-        :return:
+        :rtype: list
         """
         assert report_event_type in REPORT_EVENT_TYPES, \
             "Invalid report event type provided '{}'. Valid values: {}".format(report_event_type, REPORT_EVENT_TYPES)
@@ -232,7 +163,7 @@ class CasesClient(cva_client.CvaClient):
         :type case_version: int
         :type report_event_type: ReportEventType
         :type params: dict
-        :return:
+        :rtype: list
         """
         assert report_event_type in REPORT_EVENT_TYPES, \
             "Invalid report event type provided '{}'. Valid values: {}".format(report_event_type, REPORT_EVENT_TYPES)
@@ -249,7 +180,7 @@ class CasesClient(cva_client.CvaClient):
         """
         :type variant_ids: list
         :type params: dict
-        :return:
+        :rtype: list
         """
         variant_coordinates = [v.toJsonDict() for v in self.variants().variant_ids_to_coordinates(variant_ids)]
         if params is None:
@@ -260,7 +191,7 @@ class CasesClient(cva_client.CvaClient):
     def get_phenosim_matrix(self, as_data_frame=False, **params):
         """
         :type as_data_frame: bool
-        :return:
+        :rtype: list | pd.DataFrame
         """
         results, _ = self._get("{endpoint}/similarity-matrix".format(endpoint=self._BASE_ENDPOINT), **params)
         if not results:
