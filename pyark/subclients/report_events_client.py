@@ -1,5 +1,5 @@
 from enum import Enum
-from protocols.protocol_7_2.cva import ReportEventEntry, Assembly
+from protocols.protocol_7_2.cva import ReportEventEntry, Assembly, VariantCoordinates
 
 import pyark.cva_client as cva_client
 from pyark.models.wrappers import ReportEventEntryWrapper
@@ -21,7 +21,7 @@ class ReportEventsClient(cva_client.CvaClient):
         :type max_results: bool
         :type include_all: bool
         :type params: dict
-        :rtype: int | ReportEventEntryWrapper
+        :rtype: generator
         """
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
@@ -36,19 +36,15 @@ class ReportEventsClient(cva_client.CvaClient):
     def get_variant_summary_by_ids(self, variant_ids, **params):
         """
         :type variant_ids: list
-        :rtyoe: list
+        :rtype: list
         """
-        if params is None:
-            params = {}
         results, _ = self._post([self._BASE_ENDPOINT, "variant-summary-by-ids"], variant_ids, **params)
         return results
 
     def get_variant_summary_by_coordinates(self, variant_coordinates, **params):
         """
         :type variant_coordinates: list
-        :rtyoe: list
+        :rtype: list
         """
-        if params is None:
-            params = {}
         results, _ = self._post([self._BASE_ENDPOINT, "variant-summary-by-coordinates"], variant_coordinates, **params)
         return results

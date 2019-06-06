@@ -21,6 +21,10 @@ class VariantsClient(cva_client.CvaClient):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
     def count(self, **params):
+        """
+        :type params: dict
+        :rtype: int
+        """
         return self.get_variants(count=True, **params)
 
     def get_variant_by_id(self, identifier, include_all=True, **params):
@@ -49,6 +53,13 @@ class VariantsClient(cva_client.CvaClient):
         return VariantsClient.run_parallel_requests(_get_variant_by_id, identifiers)
 
     def get_variants(self, as_data_frame=False, max_results=None, include_all=True, **params):
+        """
+        :type as_data_frame: bool
+        :type max_results: int
+        :type include_all: bool
+        :type params: dict
+        :rtype: generator
+        """
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
@@ -60,6 +71,11 @@ class VariantsClient(cva_client.CvaClient):
                 transformer=lambda x: VariantWrapper.fromJsonDict(x), **params)
 
     def variant_ids_to_coordinates(self, variant_ids, fail_on_structural=False):
+        """
+        :type variant_ids: list
+        :type fail_on_structural: bool
+        :rtype: list
+        """
         return list(filter(lambda x: x is not None,
                            [self.variant_id_to_coordinates(v, fail_on_structural) for v in variant_ids]))
 
@@ -90,6 +106,14 @@ class VariantsClient(cva_client.CvaClient):
                 else:
                     return None
         return variant_coordinates
+
+    def variant_coordinates_to_ids(self, variant_coordinates):
+        """
+        :type variant_coordinates: list
+        :rtype: list
+        """
+        results, _ = self._post([self._BASE_ENDPOINT, "identifiers-from-small-variant-coordinates"], variant_coordinates)
+        return results
 
     def _set_singleton(self):
         global _singleton_instance

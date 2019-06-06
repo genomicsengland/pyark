@@ -23,6 +23,18 @@ class CasesClient(cva_client.CvaClient):
         params['count'] = True
         return self.get_cases(**params)
 
+    def get_cases_ids(self, as_data_frame=False, max_results=None, **params):
+        """
+        :type as_data_frame: bool
+        :type max_results: int
+        :type params: dict
+        :rtype: generator
+        """
+        params['include'] = ["identifier", "version"]
+        return self._paginate(
+            endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, max_results=max_results,
+            transformer=lambda x: "{}-{}".format(x["identifier"], x["version"]), **params)
+
     def get_cases(self, as_data_frame=False, max_results=None, include_all=True, **params):
         """
         :type as_data_frame: bool
@@ -30,7 +42,7 @@ class CasesClient(cva_client.CvaClient):
         :param include_all: use False for the default minimal representation of case, it will be faster
         :type include_all: bool
         :type params: dict
-        :rtype: list | pd.DataFrame
+        :rtype: generator
         """
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
@@ -48,7 +60,7 @@ class CasesClient(cva_client.CvaClient):
         :rtype: dict | pd.DataFrame
         """
         if params_list:
-            self._params_sanity_checks(params)
+            self._params_sanity_checks(params_list)
             for p in params_list:
                 p.update(params)
             results_list = [self.get_summary(as_data_frame=as_data_frame, **p) for p in params_list]
@@ -62,12 +74,12 @@ class CasesClient(cva_client.CvaClient):
             return self._render_single_result(results, as_data_frame=as_data_frame, indexes=params)
 
     @staticmethod
-    def _params_sanity_checks(params):
-        if not all(isinstance(p, dict) for p in params):
+    def _params_sanity_checks(params_list):
+        if not all(isinstance(p, dict) for p in params_list):
             raise ValueError("Cannot accept a list of 'params' combined with other parameters. " +
                              "Include all parameters in the list")
         keys = None
-        for p in params:
+        for p in params_list:
             if keys is None:
                 keys = set(p.keys())
             else:
@@ -148,8 +160,6 @@ class CasesClient(cva_client.CvaClient):
         """
         assert report_event_type in REPORT_EVENT_TYPES, \
             "Invalid report event type provided '{}'. Valid values: {}".format(report_event_type, REPORT_EVENT_TYPES)
-        if params is None:
-            params = {}
         params['type'] = report_event_type
         results, _ = self._get([self._BASE_ENDPOINT, case_id, case_version, "shared-variants"], **params)
         if not results:
@@ -167,8 +177,6 @@ class CasesClient(cva_client.CvaClient):
         """
         assert report_event_type in REPORT_EVENT_TYPES, \
             "Invalid report event type provided '{}'. Valid values: {}".format(report_event_type, REPORT_EVENT_TYPES)
-        if params is None:
-            params = {}
         params['type'] = report_event_type
         results, _ = self._get([self._BASE_ENDPOINT, case_id, case_version, "shared-genes"], **params)
         if not results:
@@ -183,8 +191,6 @@ class CasesClient(cva_client.CvaClient):
         :rtype: list
         """
         variant_coordinates = [v.toJsonDict() for v in self.variants().variant_ids_to_coordinates(variant_ids)]
-        if params is None:
-            params = {}
         results, _ = self._post([self._BASE_ENDPOINT, "shared-variants-counts"], variant_coordinates, **params)
         return results
 

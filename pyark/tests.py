@@ -29,7 +29,7 @@ class TestPyArk (TestCase):
 
     @classmethod
     def setUpClass(cls):
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.DEBUG)
         if cls.GEL_PASSWORD is None:
             cls.GEL_PASSWORD = ""
         if not cls.CVA_URL_BASE or not cls.GEL_USER:
@@ -192,6 +192,18 @@ class TestCases(TestPyArk):
             cases_count += cases_data_frame.shape[0]
         self.assertEqual(cases_count, maximum)
 
+    def test_get_cases_ids(self):
+
+        page_size = 2
+        maximum = 5
+        cases_iterator = self.cases.get_cases_ids(as_data_frame=False, limit=page_size, max_results=maximum)
+        cases_count = 0
+        for c in cases_iterator:
+            self.assertIsNotNone(c)
+            self.assertIsInstance(c, str)
+            cases_count += 1
+        self.assertEqual(cases_count, maximum)
+
     def test_count_cases(self):
 
         count = self.cases.count()
@@ -224,21 +236,7 @@ class TestCases(TestPyArk):
         self.assertTrue(len(results) == 5)
 
 
-class TestOthers(TestPyArk):
-
-    def test_get_pedigree(self):
-
-        case_id, case_version = self._get_random_case_id_and_version()
-
-        # gets pedigree
-        result = self.pedigrees.get_pedigree(case_id, case_version)
-        self.assertTrue(result is not None)
-        self.assertTrue(isinstance(result, dict))
-
-        # gets pedigree
-        result = self.pedigrees.get_pedigree(case_id, case_version, as_data_frame=True)
-        self.assertTrue(result is not None)
-        self.assertTrue(isinstance(result, pd.DataFrame))
+class TestVariants(TestPyArk):
 
     def test_count_variants(self):
 
@@ -256,6 +254,54 @@ class TestOthers(TestPyArk):
             self.assertTrue(type(v) == VariantWrapper)
             re_count += 1
         self.assertEqual(re_count, maximum)
+
+    def test_get_variant_by_id(self):
+
+        variant = self.variants.get_variant_by_id(identifier=self._get_random_variant_ids()[0])
+        self.assertIsNotNone(variant)
+        self.assertIsInstance(variant, VariantWrapper)
+
+    def test_unexisting_variant_by_id(self):
+        with self.assertRaises(CvaClientError):
+            self.variants.get_variant_by_id(identifier='whatever')
+
+    def test_get_variants_by_id(self):
+
+        identifiers = self._get_random_variant_ids()
+        variants = self.variants.get_variants_by_id(identifiers=identifiers)
+        self.assertIsNotNone(variants)
+        self.assertIsInstance(variants, list)
+        for v in variants:
+            self.assertIsInstance(v, VariantWrapper)
+        self.assertTrue(len(variants) == len(identifiers))
+
+    def test_dont_get_variants_by_id(self):
+        non_existing_identifiers = ['whatever', 'this', 'that']
+        self.assertRaises(CvaClientError,
+                          lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
+
+    def test_variant_coordinates_to_ids(self):
+        expected = self._get_random_variant_ids(n=10)
+        variant_coordinates = [c.toJsonDict() for c in self.variants.variant_ids_to_coordinates(expected)]
+        observed = self.variants.variant_coordinates_to_ids(variant_coordinates=variant_coordinates)
+        self.assertTrue(len(observed) == len(set(observed).intersection(set(expected))))
+
+
+class TestOthers(TestPyArk):
+
+    def test_get_pedigree(self):
+
+        case_id, case_version = self._get_random_case_id_and_version()
+
+        # gets pedigree
+        result = self.pedigrees.get_pedigree(case_id, case_version)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, dict))
+
+        # gets pedigree
+        result = self.pedigrees.get_pedigree(case_id, case_version, as_data_frame=True)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, pd.DataFrame))
 
     def test_get_all_panels(self):
         panels = self.entities.get_all_panels()
@@ -354,31 +400,6 @@ class TestOthers(TestPyArk):
         for r in results:
             self.assertTrue(r['variantId'] in all_variants)
             self.assertTrue(r['countCases'] >= 1)
-
-    def test_get_variant_by_id(self):
-
-        variant = self.variants.get_variant_by_id(identifier=self._get_random_variant_ids()[0])
-        self.assertIsNotNone(variant)
-        self.assertIsInstance(variant, VariantWrapper)
-
-    def test_unexisting_variant_by_id(self):
-        with self.assertRaises(CvaClientError):
-            self.variants.get_variant_by_id(identifier='whatever')
-
-    def test_get_variants_by_id(self):
-
-        identifiers = self._get_random_variant_ids()
-        variants = self.variants.get_variants_by_id(identifiers=identifiers)
-        self.assertIsNotNone(variants)
-        self.assertIsInstance(variants, list)
-        for v in variants:
-            self.assertIsInstance(v, VariantWrapper)
-        self.assertTrue(len(variants) == len(identifiers))
-
-    def test_dont_get_variants_by_id(self):
-        non_existing_identifiers = ['whatever', 'this', 'that']
-        self.assertRaises(CvaClientError,
-                          lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
 
     def test_post_pedigree(self):
         transaction = self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
