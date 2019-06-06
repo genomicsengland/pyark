@@ -46,35 +46,27 @@ class TestPyArk (TestCase):
         # fetch 50 cases to run tests on
         cls.random_cases = list(cls.cases.get_cases(
             max_results=50, program=Program.rare_disease, assembly=Assembly.GRCh38,
-            filter='countInterpretationServices.exomiser gt 0', hasClinicalData=True))
+            filter='countInterpretationServices.exomiser gt 0 and countTiered gt 100',
+            hasClinicalData=True))
 
-    def test_get_case(self):
+    def _get_random_case_id_and_version(self):
+        case = self._get_random_case()
+        return case['identifier'], case['version']
 
-        case_id, case_version = self._get_random_case_id_and_version()
+    def _get_random_case(self):
+        return random.choice(self.random_cases)
 
-        # gets case
-        result = self.cases.get_case(case_id, case_version)
-        self.assertTrue(result is not None)
-        self.assertTrue(isinstance(result, dict))
+    def _get_random_panel(self):
+        return random.choice(self._get_random_case()['reportEventsAnalysisPanels'])['panelName']
 
-        # gets pedigree
-        result = self.cases.get_case(case_id, case_version, as_data_frame=True)
-        self.assertTrue(result is not None)
-        self.assertTrue(isinstance(result, pd.DataFrame))
+    def _get_random_gene(self):
+        return random.choice(self._get_random_case()['genes'])
 
-    def test_get_pedigree(self):
+    def _get_random_variant_ids(self, n=1):
+        return random.sample(self._get_random_case()['allVariants'], n)
 
-        case_id, case_version = self._get_random_case_id_and_version()
 
-        # gets pedigree
-        result = self.pedigrees.get_pedigree(case_id, case_version)
-        self.assertTrue(result is not None)
-        self.assertTrue(isinstance(result, dict))
-
-        # gets pedigree
-        result = self.pedigrees.get_pedigree(case_id, case_version, as_data_frame=True)
-        self.assertTrue(result is not None)
-        self.assertTrue(isinstance(result, pd.DataFrame))
+class TestReportEvents(TestPyArk):
 
     def test_get_report_events(self):
         random_case = self._get_random_case()
@@ -94,27 +86,60 @@ class TestPyArk (TestCase):
         count = self.report_events.count(caseId=random_case['identifier'], caseVersion=random_case['version'])
         self.assertIsInstance(count, int)
 
-    def test_count_variants(self):
+    def test_variant_summary_by_ids(self):
+        variant_ids = self._get_random_variant_ids(n=10)
+        results = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids)
+        self.assertIsInstance(results, list)
+        self.assertTrue(len(results) == 10)
+        for r in results:
+            self.assertTrue(r['countCases'] > 0)
+            self.assertTrue(r['countCasesClassifiedByAcmg'] is not None)
+            self.assertTrue(r['variantId'] in variant_ids)
+            self.assertTrue(r['variantCoordinatesGRCh38'] is not None)
+            self.assertTrue(r.get('countCasesRareDisease', None) is None)
 
-        count = self.variants.count()
-        self.assertIsInstance(count, int)
+        results2 = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids, minimal=True)
+        for r in results2:
+            self.assertTrue(r['countCases'] > 0)
+            self.assertTrue(r['countCasesClassifiedByAcmg'] is not None)
+            self.assertTrue(r['variantId'] in variant_ids)
+            self.assertTrue(r['variantCoordinatesGRCh38'] is not None)
+            self.assertTrue(r.get('countCasesRareDisease', None) is None)
 
-    def test_get_variants(self):
-        page_size = 2
-        maximum = 5
-        variants_iterator = self.variants.get_variants(
-            limit=page_size, max_results=maximum, genes=[self._get_random_gene()])
-        re_count = 0
-        for v in variants_iterator:
-            self.assertIsNotNone(v)
-            self.assertTrue(type(v) == VariantWrapper)
-            re_count += 1
-        self.assertEqual(re_count, maximum)
+        results3 = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids, minimal=False)
+        for r in results3:
+            self.assertTrue(r['countCases'] > 0)
+            self.assertTrue(r['countCasesClassifiedByAcmg'] is not None)
+            self.assertTrue(r['variantId'] in variant_ids)
+            self.assertTrue(r['variantCoordinatesGRCh38'] is not None)
+            self.assertTrue(r['countCasesRareDisease'] > 0)
 
-    def test_get_all_panels(self):
-        panels = self.entities.get_all_panels()
-        self.assertIsNotNone(panels)
-        self.assertIsInstance(panels, pd.Series)
+    def test_variant_summary_by_coordinates(self):
+        variant_ids = self._get_random_variant_ids(n=10)
+        results_by_ids = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids)
+        variant_coordinates = [c.toJsonDict() for c in self.variants.variant_ids_to_coordinates(variant_ids)]
+        results_by_coordinates = self.report_events.get_variant_summary_by_coordinates(
+            variant_coordinates=variant_coordinates)
+        variant_ids_1 = set([r['variantId'] for r in results_by_ids])
+        variant_ids_2 = set([r['variantId'] for r in results_by_coordinates])
+        self.assertEqual(len(variant_ids_1), len(variant_ids_1.intersection(variant_ids_2)))
+
+
+class TestCases(TestPyArk):
+
+    def test_get_case(self):
+
+        case_id, case_version = self._get_random_case_id_and_version()
+
+        # gets case
+        result = self.cases.get_case(case_id, case_version)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, dict))
+
+        # gets pedigree
+        result = self.cases.get_case(case_id, case_version, as_data_frame=True)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, pd.DataFrame))
 
     def test_get_cases_summary(self):
 
@@ -142,57 +167,6 @@ class TestPyArk (TestCase):
             self.assertTrue(False)
         except:
             self.assertTrue(True)
-
-    def test_get_similarity_matrix(self):
-
-        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut')
-        self.assertIsNotNone(matrix)
-        self.assertIsInstance(matrix, list)
-
-        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut',
-                                                   as_data_frame=True)
-        self.assertIsNotNone(matrix)
-        self.assertIsInstance(matrix, pd.DataFrame)
-
-    def test_get_panel_summary(self):
-
-        panels = self.entities.get_panels_summary(program=Program.rare_disease)
-        self.assertIsNotNone(panels)
-        self.assertIsInstance(panels, list)
-
-        panels = self.entities.get_panels_summary(program=Program.cancer, as_data_frame=True)
-        self.assertIsNotNone(panels)
-        self.assertIsInstance(panels, pd.DataFrame)
-
-    def test_get_disorder_summary(self):
-
-        disorders = self.entities.get_disorders_summary(program=Program.rare_disease)
-        self.assertIsNotNone(disorders)
-        self.assertIsInstance(disorders, list)
-
-        disorders = self.entities.get_disorders_summary(program=Program.cancer, as_data_frame=True)
-        self.assertIsNotNone(disorders)
-        self.assertIsInstance(disorders, pd.DataFrame)
-
-    def test_get_gene_summary(self):
-
-        genes = self.entities.get_genes_summary(program=Program.rare_disease)
-        self.assertIsNotNone(genes)
-        self.assertIsInstance(genes, list)
-
-        genes = self.entities.get_genes_summary(program=Program.cancer, as_data_frame=True)
-        self.assertIsNotNone(genes)
-        self.assertIsInstance(genes, pd.DataFrame)
-
-    def test_get_phenotypes_summary(self):
-
-        phenotypes = self.entities.get_phenotypes(program=Program.rare_disease)
-        self.assertIsNotNone(phenotypes)
-        self.assertIsInstance(phenotypes, list)
-
-        phenotypes = self.entities.get_phenotypes(program=Program.cancer, as_data_frame=True)
-        self.assertIsNotNone(phenotypes)
-        self.assertIsInstance(phenotypes, pd.DataFrame)
 
     def test_get_cases(self):
 
@@ -249,6 +223,96 @@ class TestPyArk (TestCase):
         self.assertIsInstance(results, list)
         self.assertTrue(len(results) == 5)
 
+
+class TestOthers(TestPyArk):
+
+    def test_get_pedigree(self):
+
+        case_id, case_version = self._get_random_case_id_and_version()
+
+        # gets pedigree
+        result = self.pedigrees.get_pedigree(case_id, case_version)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, dict))
+
+        # gets pedigree
+        result = self.pedigrees.get_pedigree(case_id, case_version, as_data_frame=True)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, pd.DataFrame))
+
+    def test_count_variants(self):
+
+        count = self.variants.count()
+        self.assertIsInstance(count, int)
+
+    def test_get_variants(self):
+        page_size = 2
+        maximum = 5
+        variants_iterator = self.variants.get_variants(
+            limit=page_size, max_results=maximum, genes=[self._get_random_gene()])
+        re_count = 0
+        for v in variants_iterator:
+            self.assertIsNotNone(v)
+            self.assertTrue(type(v) == VariantWrapper)
+            re_count += 1
+        self.assertEqual(re_count, maximum)
+
+    def test_get_all_panels(self):
+        panels = self.entities.get_all_panels()
+        self.assertIsNotNone(panels)
+        self.assertIsInstance(panels, pd.Series)
+
+    def test_get_similarity_matrix(self):
+
+        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut')
+        self.assertIsNotNone(matrix)
+        self.assertIsInstance(matrix, list)
+
+        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut',
+                                                   as_data_frame=True)
+        self.assertIsNotNone(matrix)
+        self.assertIsInstance(matrix, pd.DataFrame)
+
+    def test_get_panel_summary(self):
+
+        panels = self.entities.get_panels_summary(program=Program.rare_disease)
+        self.assertIsNotNone(panels)
+        self.assertIsInstance(panels, list)
+
+        panels = self.entities.get_panels_summary(program=Program.cancer, as_data_frame=True)
+        self.assertIsNotNone(panels)
+        self.assertIsInstance(panels, pd.DataFrame)
+
+    def test_get_disorder_summary(self):
+
+        disorders = self.entities.get_disorders_summary(program=Program.rare_disease)
+        self.assertIsNotNone(disorders)
+        self.assertIsInstance(disorders, list)
+
+        disorders = self.entities.get_disorders_summary(program=Program.cancer, as_data_frame=True)
+        self.assertIsNotNone(disorders)
+        self.assertIsInstance(disorders, pd.DataFrame)
+
+    def test_get_gene_summary(self):
+
+        genes = self.entities.get_genes_summary(program=Program.rare_disease)
+        self.assertIsNotNone(genes)
+        self.assertIsInstance(genes, list)
+
+        genes = self.entities.get_genes_summary(program=Program.cancer, as_data_frame=True)
+        self.assertIsNotNone(genes)
+        self.assertIsInstance(genes, pd.DataFrame)
+
+    def test_get_phenotypes_summary(self):
+
+        phenotypes = self.entities.get_phenotypes(program=Program.rare_disease)
+        self.assertIsNotNone(phenotypes)
+        self.assertIsInstance(phenotypes, list)
+
+        phenotypes = self.entities.get_phenotypes(program=Program.cancer, as_data_frame=True)
+        self.assertIsNotNone(phenotypes)
+        self.assertIsInstance(phenotypes, pd.DataFrame)
+
     # def test_get_shared_variants_cases(self):
     #     case_id, case_version = self._get_random_case_id_and_version()
     #
@@ -293,7 +357,7 @@ class TestPyArk (TestCase):
 
     def test_get_variant_by_id(self):
 
-        variant = self.variants.get_variant_by_id(identifier=self._get_random_variant_id())
+        variant = self.variants.get_variant_by_id(identifier=self._get_random_variant_ids()[0])
         self.assertIsNotNone(variant)
         self.assertIsInstance(variant, VariantWrapper)
 
@@ -303,7 +367,7 @@ class TestPyArk (TestCase):
 
     def test_get_variants_by_id(self):
 
-        identifiers = [self._get_random_variant_id()]
+        identifiers = self._get_random_variant_ids()
         variants = self.variants.get_variants_by_id(identifiers=identifiers)
         self.assertIsNotNone(variants)
         self.assertIsInstance(variants, list)
@@ -406,22 +470,6 @@ class TestPyArk (TestCase):
         # this is stronger than it looks because post checks for errors
         self.assertIsNotNone(response)
         return response
-
-    def _get_random_case_id_and_version(self):
-        case = self._get_random_case()
-        return case['identifier'], case['version']
-
-    def _get_random_case(self):
-        return random.choice(self.random_cases)
-
-    def _get_random_panel(self):
-        return random.choice(self._get_random_case()['reportEventsAnalysisPanels'])['panelName']
-
-    def _get_random_gene(self):
-        return random.choice(self._get_random_case()['genes'])
-
-    def _get_random_variant_id(self):
-        return random.choice(self._get_random_case()['allVariants'])
 
 
 class MockResponse:
