@@ -1,11 +1,12 @@
 import logging
 import os
-from unittest import TestCase
 import random
+import uuid
+from unittest import TestCase
 
 import pandas as pd
 from mock import patch
-from protocols.protocol_7_2.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject, \
+from protocols.protocol_7_2.cva import Assembly, PedigreeInjectRD, CancerParticipantInject, \
     EvidenceEntryAndVariants, EvidenceEntry, Property, EvidenceSource, Actions, Therapy, DrugResponse, GenomicFeature, \
     FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification, Transaction, \
     TransactionStatus
@@ -17,8 +18,6 @@ from requests import ConnectionError
 from pyark.cva_client import CvaClient
 from pyark.errors import CvaClientError, CvaServerError
 from pyark.models.wrappers import ReportEventEntryWrapper, VariantWrapper
-
-import uuid
 
 
 class TestPyArk (TestCase):
@@ -472,6 +471,13 @@ class TestOthers(TestPyArk):
             self.assertEquals(EvidenceEntryAndVariants, type(item))
             # test random field that has no normalisation against it.
             self.assertEquals(item.evidenceEntry.ethnicity, model.evidenceEntry.ethnicity)
+
+    def test_deleting_case(self):
+        transaction = self.cases.delete("somecaseid")
+        self.assertTrue(isinstance(transaction, Transaction))
+        self.assertTrue(transaction.id is not None)
+        self.assertTrue(transaction.status == TransactionStatus.PENDING)
+        self.assertTrue(transaction.compressedData is None)
 
     @staticmethod
     def _mock_panels_to_return(get, post, status_code):

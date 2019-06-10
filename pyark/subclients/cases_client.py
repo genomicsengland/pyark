@@ -73,6 +73,10 @@ class CasesClient(cva_client.CvaClient):
             assert len(results) == 1, "Unexpected number of summaries"
             return self._render_single_result(results, as_data_frame=as_data_frame, indexes=params)
 
+    def delete(self, case_id):
+        results, _ = self._delete("{endpoint}/{case_id}".format(endpoint=self._BASE_ENDPOINT, case_id=case_id))
+        return self._render_single_result(results)
+
     @staticmethod
     def _params_sanity_checks(params_list):
         if not all(isinstance(p, dict) for p in params_list):
