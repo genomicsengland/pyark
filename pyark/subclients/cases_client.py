@@ -193,14 +193,3 @@ class CasesClient(cva_client.CvaClient):
         variant_coordinates = [v.toJsonDict() for v in self.variants().variant_ids_to_coordinates(variant_ids)]
         results, _ = self._post([self._BASE_ENDPOINT, "shared-variants-counts"], variant_coordinates, **params)
         return results
-
-    def get_phenosim_matrix(self, as_data_frame=False, **params):
-        """
-        :type as_data_frame: bool
-        :rtype: list | pd.DataFrame
-        """
-        results, _ = self._get("{endpoint}/similarity-matrix".format(endpoint=self._BASE_ENDPOINT), **params)
-        if not results:
-            logging.warning("No similarity matrix found")
-            return None
-        return self._render(results, as_data_frame=as_data_frame)

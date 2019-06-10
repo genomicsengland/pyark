@@ -308,17 +308,6 @@ class TestOthers(TestPyArk):
         self.assertIsNotNone(panels)
         self.assertIsInstance(panels, pd.Series)
 
-    def test_get_similarity_matrix(self):
-
-        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut')
-        self.assertIsNotNone(matrix)
-        self.assertIsInstance(matrix, list)
-
-        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut',
-                                                   as_data_frame=True)
-        self.assertIsNotNone(matrix)
-        self.assertIsInstance(matrix, pd.DataFrame)
-
     def test_get_panel_summary(self):
 
         panels = self.entities.get_panels_summary(program=Program.rare_disease)
