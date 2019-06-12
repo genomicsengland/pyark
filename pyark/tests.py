@@ -473,7 +473,7 @@ class TestOthers(TestPyArk):
             self.assertEquals(item.evidenceEntry.ethnicity, model.evidenceEntry.ethnicity)
 
     def test_deleting_case(self):
-        transaction = self.cases.delete("somecaseid")
+        transaction = self.cases.delete("somecaseid", 1)
         self.assertTrue(isinstance(transaction, Transaction))
         self.assertTrue(transaction.id is not None)
         self.assertTrue(transaction.status == TransactionStatus.PENDING)
