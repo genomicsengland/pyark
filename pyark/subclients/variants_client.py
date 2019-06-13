@@ -10,7 +10,7 @@ _singleton_instance = None
 
 # NOTE: this method needs to be out of any class as it needs to be pickled (ie: serialised) by multiprocessing library
 def _get_variant_by_id(identifier):
-    return identifier, _singleton_instance.get_variant_by_id(identifier)
+    return _singleton_instance.get_variant_by_id(identifier)
 
 
 class VariantsClient(cva_client.CvaClient):
@@ -21,15 +21,22 @@ class VariantsClient(cva_client.CvaClient):
         cva_client.CvaClient.__init__(self, url_base, token=token)
 
     def count(self, **params):
+        """
+        :type params: dict
+        :rtype: int
+        """
         return self.get_variants(count=True, **params)
 
-    def get_variant_by_id(self, identifier):
+    def get_variant_by_id(self, identifier, include_all=True, **params):
         """
         :type identifier: str
+        :type include_all: bool
         :rtype: VariantWrapper
         """
+        if include_all:
+            params['include'] = [self._INCLUDE_ALL]
         results, _ = self._get("{endpoint}/{identifier}".format(
-            endpoint=self._BASE_ENDPOINT, identifier=identifier))
+            endpoint=self._BASE_ENDPOINT, identifier=identifier), **params)
         if not results:
             logging.warning("No variant found with id {}".format(identifier))
             return None
@@ -40,19 +47,35 @@ class VariantsClient(cva_client.CvaClient):
     def get_variants_by_id(self, identifiers):
         """
         :type identifiers: list
-        :rtype: dict
+        :rtype: list
         """
         self._set_singleton()
         return VariantsClient.run_parallel_requests(_get_variant_by_id, identifiers)
 
-    def get_variants(self, as_data_frame=False, **params):
+    def get_variants(self, as_data_frame=False, max_results=None, include_all=True, **params):
+        """
+        :type as_data_frame: bool
+        :type max_results: int
+        :type include_all: bool
+        :type params: dict
+        :rtype: generator
+        """
         if params.get('count', False):
             results, next_page_params = self._get(self._BASE_ENDPOINT, **params)
             return results[0]
         else:
-            return self._paginate(endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, **params)
+            if include_all:
+                params['include'] = [self._INCLUDE_ALL]
+            return self._paginate(
+                endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, max_results=max_results,
+                transformer=lambda x: VariantWrapper.fromJsonDict(x), **params)
 
     def variant_ids_to_coordinates(self, variant_ids, fail_on_structural=False):
+        """
+        :type variant_ids: list
+        :type fail_on_structural: bool
+        :rtype: list
+        """
         return list(filter(lambda x: x is not None,
                            [self.variant_id_to_coordinates(v, fail_on_structural) for v in variant_ids]))
 
@@ -83,6 +106,14 @@ class VariantsClient(cva_client.CvaClient):
                 else:
                     return None
         return variant_coordinates
+
+    def variant_coordinates_to_ids(self, variant_coordinates):
+        """
+        :type variant_coordinates: list
+        :rtype: list
+        """
+        results, _ = self._post([self._BASE_ENDPOINT, "identifiers-from-small-variant-coordinates"], variant_coordinates)
+        return results
 
     def _set_singleton(self):
         global _singleton_instance

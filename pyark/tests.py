@@ -1,12 +1,12 @@
 import logging
 import os
-from unittest import TestCase
 import random
-import itertools
+import uuid
+from unittest import TestCase
 
 import pandas as pd
 from mock import patch
-from protocols.protocol_7_2.cva import ReportEventType, Assembly, PedigreeInjectRD, CancerParticipantInject, \
+from protocols.protocol_7_2.cva import Assembly, PedigreeInjectRD, CancerParticipantInject, \
     EvidenceEntryAndVariants, EvidenceEntry, Property, EvidenceSource, Actions, Therapy, DrugResponse, GenomicFeature, \
     FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification, Transaction, \
     TransactionStatus
@@ -17,8 +17,7 @@ from requests import ConnectionError
 
 from pyark.cva_client import CvaClient
 from pyark.errors import CvaClientError, CvaServerError
-
-import uuid
+from pyark.models.wrappers import ReportEventEntryWrapper, VariantWrapper
 
 
 class TestPyArk (TestCase):
@@ -29,7 +28,7 @@ class TestPyArk (TestCase):
 
     @classmethod
     def setUpClass(cls):
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.DEBUG)
         if cls.GEL_PASSWORD is None:
             cls.GEL_PASSWORD = ""
         if not cls.CVA_URL_BASE or not cls.GEL_USER:
@@ -43,10 +42,93 @@ class TestPyArk (TestCase):
         cls.pedigrees = cls.cva.pedigrees()
         cls.variants = cls.cva.variants()
         cls.data_intake = cls.cva.data_intake()
+        # fetch 50 cases to run tests on
+        cls.random_cases = list(cls.cases.get_cases(
+            max_results=50, program=Program.rare_disease, assembly=Assembly.GRCh38,
+            filter='countInterpretationServices.exomiser gt 0 and countTiered gt 100',
+            hasClinicalData=True))
+
+    def _get_random_case_id_and_version(self):
+        case = self._get_random_case()
+        return case['identifier'], case['version']
+
+    def _get_random_case(self):
+        return random.choice(self.random_cases)
+
+    def _get_random_panel(self):
+        return random.choice(self._get_random_case()['reportEventsAnalysisPanels'])['panelName']
+
+    def _get_random_gene(self):
+        return random.choice(self._get_random_case()['genes'])
+
+    def _get_random_variant_ids(self, n=1):
+        return random.sample(self._get_random_case()['allVariants'], n)
+
+
+class TestReportEvents(TestPyArk):
+
+    def test_get_report_events(self):
+        random_case = self._get_random_case()
+        page_size = 2
+        maximum = 5
+        report_events_iterator = self.report_events.get_report_events(
+            limit=page_size, max_results=maximum, caseId=random_case['identifier'], caseVersion=random_case['version'])
+        re_count = 0
+        for re in report_events_iterator:
+            self.assertIsNotNone(re)
+            self.assertTrue(type(re) == ReportEventEntryWrapper)
+            re_count += 1
+        self.assertEqual(re_count, maximum)
+
+    def test_count_report_events(self):
+        random_case = self._get_random_case()
+        count = self.report_events.count(caseId=random_case['identifier'], caseVersion=random_case['version'])
+        self.assertIsInstance(count, int)
+
+    def test_variant_summary_by_ids(self):
+        variant_ids = self._get_random_variant_ids(n=10)
+        results = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids)
+        self.assertIsInstance(results, list)
+        self.assertTrue(len(results) == 10)
+        for r in results:
+            self.assertTrue(r['countCases'] > 0)
+            self.assertTrue(r['countCasesClassifiedByAcmg'] is not None)
+            self.assertTrue(r['variantId'] in variant_ids)
+            self.assertTrue(r['variantCoordinatesGRCh38'] is not None)
+            self.assertTrue(r.get('countCasesRareDisease', None) is None)
+
+        results2 = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids, minimal=True)
+        for r in results2:
+            self.assertTrue(r['countCases'] > 0)
+            self.assertTrue(r['countCasesClassifiedByAcmg'] is not None)
+            self.assertTrue(r['variantId'] in variant_ids)
+            self.assertTrue(r['variantCoordinatesGRCh38'] is not None)
+            self.assertTrue(r.get('countCasesRareDisease', None) is None)
+
+        results3 = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids, minimal=False)
+        for r in results3:
+            self.assertTrue(r['countCases'] > 0)
+            self.assertTrue(r['countCasesClassifiedByAcmg'] is not None)
+            self.assertTrue(r['variantId'] in variant_ids)
+            self.assertTrue(r['variantCoordinatesGRCh38'] is not None)
+            self.assertTrue(r['countCasesRareDisease'] > 0)
+
+    def test_variant_summary_by_coordinates(self):
+        variant_ids = self._get_random_variant_ids(n=10)
+        results_by_ids = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids)
+        variant_coordinates = [c.toJsonDict() for c in self.variants.variant_ids_to_coordinates(variant_ids)]
+        results_by_coordinates = self.report_events.get_variant_summary_by_coordinates(
+            variant_coordinates=variant_coordinates)
+        variant_ids_1 = set([r['variantId'] for r in results_by_ids])
+        variant_ids_2 = set([r['variantId'] for r in results_by_coordinates])
+        self.assertEqual(len(variant_ids_1), len(variant_ids_1.intersection(variant_ids_2)))
+
+
+class TestCases(TestPyArk):
 
     def test_get_case(self):
 
-        case_id, case_version = self._get_random_case()
+        case_id, case_version = self._get_random_case_id_and_version()
 
         # gets case
         result = self.cases.get_case(case_id, case_version)
@@ -57,107 +139,6 @@ class TestPyArk (TestCase):
         result = self.cases.get_case(case_id, case_version, as_data_frame=True)
         self.assertTrue(result is not None)
         self.assertTrue(isinstance(result, pd.DataFrame))
-
-    def test_get_pedigree(self):
-
-        case_id, case_version = self._get_random_case()
-
-        # gets pedigree
-        result = self.pedigrees.get_pedigree(case_id, case_version)
-        self.assertTrue(result is not None)
-        self.assertTrue(isinstance(result, dict))
-
-        # gets pedigree
-        result = self.pedigrees.get_pedigree(case_id, case_version, as_data_frame=True)
-        self.assertTrue(result is not None)
-        self.assertTrue(isinstance(result, pd.DataFrame))
-
-    def test_get_report_events(self):
-
-        all_report_events = self.report_events.get_report_events(limit=2)
-        re_count = 0
-        for batch_report_events in all_report_events:
-            self.assertIsNotNone(batch_report_events)
-            re_count += 1
-            if re_count == 5:
-                break
-        self.assertEqual(re_count, 5)
-
-    def test_count_report_events(self):
-
-        count = self.report_events.count()
-        self.assertIsInstance(count, int)
-
-    def test_count_variants(self):
-
-        count = self.variants.count()
-        self.assertIsInstance(count, int)
-
-    def test_get_variants(self):
-
-        all_variants = self.variants.get_variants(limit=2)
-        re_count = 0
-        for batch_variants in all_variants:
-            self.assertIsNotNone(batch_variants)
-            re_count += 1
-            if re_count == 5:
-                break
-        self.assertEqual(re_count, 5)
-
-    def test_get_by_gene_id(self):
-
-        gene_id = self._get_random_gene()
-
-        # gets variants
-        results = self.report_events.get_variants_by_gene_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_id=gene_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_variants_by_gene_id(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=Assembly.GRCh38, gene_id=gene_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-    def test_get_variants_by_genomic_region(self):
-
-        assembly = Assembly.GRCh38
-        chromosome = 7
-        start = 1000000
-        end = 1010000
-
-        # gets variants
-        results = self.report_events.get_variants_by_genomic_region(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=assembly, chromosome=chromosome, start=start, end=end, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_variants_by_genomic_region(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=assembly, chromosome=chromosome, start=start, end=end, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        # gets genes
-        results = self.report_events.get_genes_by_genomic_region(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=assembly, chromosome=chromosome, start=start, end=end, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.report_events.get_genes_by_genomic_region(
-            program=Program.rare_disease, type=ReportEventType.genomics_england_tiering,
-            assembly=assembly, chromosome=chromosome, start=start, end=end, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-    def test_get_all_panels(self):
-        panels = self.entities.get_all_panels()
-        self.assertIsNotNone(panels)
-        self.assertIsInstance(panels, pd.Series)
 
     def test_get_cases_summary(self):
 
@@ -185,6 +166,146 @@ class TestPyArk (TestCase):
             self.assertTrue(False)
         except:
             self.assertTrue(True)
+
+    def test_get_cases(self):
+
+        page_size = 2
+        maximum = 5
+        cases_iterator = self.cases.get_cases(as_data_frame=False, limit=page_size, max_results=maximum)
+        cases_count = 0
+        for c in cases_iterator:
+            self.assertIsNotNone(c)
+            self.assertIsInstance(c, dict)
+            cases_count += 1
+        self.assertEqual(cases_count, maximum)
+
+    def test_get_cases_as_dataframes(self):
+
+        page_size = 2
+        maximum = 5
+        cases_iterator = self.cases.get_cases(as_data_frame=True, limit=page_size, max_results=maximum)
+        cases_count = 0
+        for cases_data_frame in cases_iterator:
+            self.assertIsNotNone(cases_data_frame)
+            self.assertIsInstance(cases_data_frame, pd.DataFrame)
+            cases_count += cases_data_frame.shape[0]
+        self.assertEqual(cases_count, maximum)
+
+    def test_get_cases_ids(self):
+
+        page_size = 2
+        maximum = 5
+        cases_iterator = self.cases.get_cases_ids(as_data_frame=False, limit=page_size, max_results=maximum)
+        cases_count = 0
+        for c in cases_iterator:
+            self.assertIsNotNone(c)
+            self.assertIsInstance(c, str)
+            cases_count += 1
+        self.assertEqual(cases_count, maximum)
+
+    def test_count_cases(self):
+
+        count = self.cases.count()
+        self.assertIsInstance(count, int)
+
+    def test_get_similar_cases_by_case(self):
+
+        case_id, case_version = self._get_random_case_id_and_version()
+
+        results = self.cases.get_similar_cases_by_case(case_id=case_id, case_version=case_version)
+        if results:
+            self.assertIsInstance(results, list)
+
+        results = self.cases.get_similar_cases_by_case(case_id=case_id, case_version=case_version, limit=5)
+        if results:
+            self.assertIsInstance(results, list)
+            self.assertTrue(len(results) <= 5)
+
+    def test_get_similar_cases_by_phenotypes(self):
+
+        phenotypes = ["HP:0000006", "HP:0003186", "HP:0002365"]
+
+        results = self.cases.get_similar_cases_by_phenotypes(phenotypes=phenotypes)
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
+
+        results = self.cases.get_similar_cases_by_phenotypes(phenotypes=phenotypes, limit=5)
+        self.assertIsNotNone(results)
+        self.assertIsInstance(results, list)
+        self.assertTrue(len(results) == 5)
+
+
+class TestVariants(TestPyArk):
+
+    def test_count_variants(self):
+
+        count = self.variants.count()
+        self.assertIsInstance(count, int)
+
+    def test_get_variants(self):
+        page_size = 2
+        maximum = 5
+        variants_iterator = self.variants.get_variants(
+            limit=page_size, max_results=maximum, genes=[self._get_random_gene()])
+        re_count = 0
+        for v in variants_iterator:
+            self.assertIsNotNone(v)
+            self.assertTrue(type(v) == VariantWrapper)
+            re_count += 1
+        self.assertEqual(re_count, maximum)
+
+    def test_get_variant_by_id(self):
+
+        variant = self.variants.get_variant_by_id(identifier=self._get_random_variant_ids()[0])
+        self.assertIsNotNone(variant)
+        self.assertIsInstance(variant, VariantWrapper)
+
+    def test_unexisting_variant_by_id(self):
+        with self.assertRaises(CvaClientError):
+            self.variants.get_variant_by_id(identifier='whatever')
+
+    def test_get_variants_by_id(self):
+
+        identifiers = self._get_random_variant_ids()
+        variants = self.variants.get_variants_by_id(identifiers=identifiers)
+        self.assertIsNotNone(variants)
+        self.assertIsInstance(variants, list)
+        for v in variants:
+            self.assertIsInstance(v, VariantWrapper)
+        self.assertTrue(len(variants) == len(identifiers))
+
+    def test_dont_get_variants_by_id(self):
+        non_existing_identifiers = ['whatever', 'this', 'that']
+        self.assertRaises(CvaClientError,
+                          lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
+
+    def test_variant_coordinates_to_ids(self):
+        expected = self._get_random_variant_ids(n=10)
+        variant_coordinates = [c.toJsonDict() for c in self.variants.variant_ids_to_coordinates(expected)]
+        observed = self.variants.variant_coordinates_to_ids(variant_coordinates=variant_coordinates)
+        self.assertTrue(len(observed) == len(set(observed).intersection(set(expected))))
+
+
+class TestOthers(TestPyArk):
+
+    def test_get_pedigree(self):
+
+        case_id, case_version = self._get_random_case_id_and_version()
+
+        # gets pedigree
+        result = self.pedigrees.get_pedigree(case_id, case_version)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, dict))
+
+        # gets pedigree
+        result = self.pedigrees.get_pedigree(case_id, case_version, as_data_frame=True)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, pd.DataFrame))
+
+    def test_get_all_panels(self):
+        panels = self.entities.get_all_panels()
+        self.assertIsNotNone(panels)
+        self.assertIsInstance(panels, pd.Series)
 
     def test_get_similarity_matrix(self):
 
@@ -237,183 +358,47 @@ class TestPyArk (TestCase):
         self.assertIsNotNone(phenotypes)
         self.assertIsInstance(phenotypes, pd.DataFrame)
 
-    def test_cases_get_by_gene_id(self):
+    # def test_get_shared_variants_cases(self):
+    #     case_id, case_version = self._get_random_case_id_and_version()
+    #
+    #     results1 = self.cases.get_shared_variants_cases_by_case(
+    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
+    #
+    #     results2 = self.cases.get_shared_variants_cases_by_case(
+    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.reported)
+    #
+    #     results3 = self.cases.get_shared_variants_cases_by_case(
+    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.questionnaire)
+    #
+    #     non_null = (r for r in (results1, results2, results3) if r)
+    #     self.assertIsNotNone([s for r in non_null for s in r])
 
-        gene_id = self._get_random_gene()
-
-        # gets variants
-        results = self.cases.get_variants_by_gene_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38,
-            gene_id=gene_id, includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_variants_by_gene_id(
-            program=Program.rare_disease, assembly=Assembly.GRCh38,
-            gene_id=gene_id, includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-    def test_get_cases_one_by_one(self):
-
-        all_cases = self.cases.get_cases(as_data_frame=False, limit=2)
-        case_count = 0
-        for c in all_cases:
-            self.assertIsNotNone(c)
-            self.assertIsInstance(c, dict)
-            case_count += 1
-            if case_count == 5:
-                break
-        self.assertEqual(case_count, 5)
-
-    def test_get_cases_as_dataframes(self):
-
-        all_cases = self.cases.get_cases(as_data_frame=True, limit=2)
-        batch_count = 0
-        for batch in all_cases:
-            self.assertIsNotNone(batch)
-            self.assertIsInstance(batch, pd.DataFrame)
-            self.assertTrue(batch.shape[0] == 2)
-            batch_count += 1
-            if batch_count == 3:
-                break
-        self.assertEqual(batch_count, 3)
-
-    def test_count_cases(self):
-
-        count = self.cases.count()
-        self.assertIsInstance(count, int)
-
-    def test_get_cases_variants_by_genomic_region(self):
-
-        assembly = Assembly.GRCh38
-        chromosome = 7
-        start = 1000000
-        end = 2000000
-
-        # gets variants
-        results = self.cases.get_variants_by_genomic_region(
-            program=Program.rare_disease, assembly=assembly, chromosome=chromosome, start=start, end=end,
-            includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_variants_by_genomic_region(
-            program=Program.rare_disease, assembly=assembly, chromosome=chromosome, start=start, end=end,
-            includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        # gets genes
-        results = self.cases.get_genes_by_genomic_region(
-            program=Program.rare_disease, assembly=assembly, chromosome=chromosome, start=start, end=end,
-            includeAggregations=False)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_genes_by_genomic_region(
-            program=Program.rare_disease, assembly=assembly, chromosome=chromosome, start=start, end=end,
-            includeAggregations=True)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-    def test_get_similar_cases_by_case(self):
-
-        case_id, case_version = self._get_random_case()
-
-        results = self.cases.get_similar_cases_by_case(case_id=case_id, case_version=case_version)
-        if results:
-            self.assertIsInstance(results, list)
-
-        results = self.cases.get_similar_cases_by_case(case_id=case_id, case_version=case_version, limit=5)
-        if results:
-            self.assertIsInstance(results, list)
-            self.assertTrue(len(results) <= 5)
-
-    def test_get_similar_cases_by_phenotypes(self):
-
-        phenotypes = ["HP:0000006", "HP:0003186", "HP:0002365"]
-
-        results = self.cases.get_similar_cases_by_phenotypes(phenotypes=phenotypes)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_similar_cases_by_phenotypes(phenotypes=phenotypes, limit=5)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-        self.assertTrue(len(results) == 5)
-
-    def test_get_shared_variants_cases(self):
-        case_id, case_version = self._get_random_case()
-
-        results1 = self.cases.get_shared_variants_cases_by_case(
-            case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
-
-        results2 = self.cases.get_shared_variants_cases_by_case(
-            case_id=case_id, case_version=case_version, report_event_type=ReportEventType.reported)
-
-        results3 = self.cases.get_shared_variants_cases_by_case(
-            case_id=case_id, case_version=case_version, report_event_type=ReportEventType.questionnaire)
-
-        non_null = (r for r in (results1, results2, results3) if r)
-        self.assertIsNotNone([s for r in non_null for s in r])
-
-    def test_get_shared_gene_cases(self):
-        case_id, case_version = self._get_random_case()
-
-        results = self.cases.get_shared_genes_cases_by_case(
-            case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_shared_genes_cases_by_case(
-            case_id=case_id, case_version=case_version, report_event_type=ReportEventType.reported)
-        self.assertIsNotNone(results)
-        self.assertIsInstance(results, list)
-
-        results = self.cases.get_shared_genes_cases_by_case(
-            case_id=case_id, case_version=case_version, report_event_type=ReportEventType.questionnaire)
-        # NOTE: there are no values
-        # self.assertIsNotNone(results)
-        # self.assertIsInstance(results, list)
+    # def test_get_shared_gene_cases(self):
+    #     case_id, case_version = self._get_random_case_id_and_version()
+    #
+    #     results = self.cases.get_shared_genes_cases_by_case(
+    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
+    #     self.assertIsNotNone(results)
+    #     self.assertIsInstance(results, list)
+    #
+    #     results = self.cases.get_shared_genes_cases_by_case(
+    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.reported)
+    #     self.assertIsNotNone(results)
+    #     self.assertIsInstance(results, list)
+    #
+    #     results = self.cases.get_shared_genes_cases_by_case(
+    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.questionnaire)
+    #     # NOTE: there are no values
+    #     # self.assertIsNotNone(results)
+    #     # self.assertIsInstance(results, list)
 
     def test_get_shared_variants_counts(self):
-        # case = self._random_case()
-        case = self.cases.get_cases(
-            limit=10, program=Program.rare_disease, assembly='GRCh38',
-            filter='countInterpretationServices.exomiser gt 0', hasClinicalData=True).next()[7]
+        case = self._get_random_case()
         all_variants = case['allVariants']
         results = self.cases.get_shared_variants_counts(all_variants)
         for r in results:
             self.assertTrue(r['variantId'] in all_variants)
             self.assertTrue(r['countCases'] >= 1)
-
-    def test_get_variant_by_id(self):
-
-        identifier = self._get_random_variant()
-
-        # gets variant
-        variant = self.variants.get_variant_by_id(identifier=identifier)
-        # self.assertIsNotNone(variant)
-        # self.assertIsInstance(variant, Variant)
-
-        # non existing variant
-        # variant = self.variants.get_variant_by_id(identifier='whatever')
-        # self.assertFalse(variant)
-
-    def test_get_variants_by_id(self):
-
-        identifiers = [self._get_random_variant()]
-        variants = self.variants.get_variants_by_id(identifiers=identifiers)
-        self.assertIsNotNone(variants)
-        self.assertIsInstance(variants, dict)
-        self.assertTrue(len(variants) == len(identifiers))
-        # [self.assertIsNotNone(variants[v]) for v in identifiers]
-
-    def test_dont_get_variants_by_id(self):
-        non_existing_identifiers = ['whatever', 'this', 'that']
-        self.assertRaises(CvaClientError,
-                          lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
 
     def test_post_pedigree(self):
         transaction = self._test_post(PedigreeInjectRD, self.data_intake.post_pedigree)
@@ -428,27 +413,6 @@ class TestPyArk (TestCase):
         self.assertTrue(transaction.id is not None)
         self.assertTrue(transaction.status == TransactionStatus.PENDING)
         self.assertTrue(transaction.compressedData is None)
-
-    def test_get_transactions(self):
-        client = self.cva.transactions()
-        tx = client.get_transactions(params={'limit': 1}).next()
-        tx2 = client.get_transaction(tx.id)
-        self.assertIsNotNone(tx2)
-        self.assertTrue(isinstance(tx2, Transaction))
-        self.assertIsNone(tx2.compressedData)
-        try:
-            tx3 = client.retry_transaction(tx.id)
-            self.assertIsNotNone(tx3)
-            self.assertTrue(isinstance(tx3, Transaction))
-            self.assertIsNone(tx3.compressedData)
-        except CvaServerError as e:
-            # this should be a Done transaction so you can't retry it
-            self.assertTrue("cannot be retried" in e.message)
-
-    def test_count_transactions(self):
-
-        count = self.cva.transactions().count()
-        self.assertIsInstance(count, int)
 
     def test_get_transaction_fails_if_no_results(self):
         # NOTE: this will work when backend returns 404 on this one
@@ -508,6 +472,18 @@ class TestPyArk (TestCase):
             # test random field that has no normalisation against it.
             self.assertEquals(item.evidenceEntry.ethnicity, model.evidenceEntry.ethnicity)
 
+    def test_deleting_case(self):
+        transaction = self._test_post(CancerParticipantInject, self.data_intake.post_participant)
+        metadata = transaction.transactionDetails.metadata
+        caseId = metadata.caseId
+        caseVersion = metadata.caseVersion
+
+        transaction = self.cases.delete(caseId, caseVersion)
+        self.assertTrue(isinstance(transaction, Transaction))
+        self.assertTrue(transaction.id is not None)
+        self.assertTrue(transaction.status == TransactionStatus.PENDING)
+        self.assertTrue(transaction.compressedData is None)
+
     @staticmethod
     def _mock_panels_to_return(get, post, status_code):
         auth_response = MockResponse(status_code, {'response': [{'result': [{'token': 'xyz'}]}]})
@@ -526,24 +502,6 @@ class TestPyArk (TestCase):
         # this is stronger than it looks because post checks for errors
         self.assertIsNotNone(response)
         return response
-
-    def _get_random_case(self):
-        case = self._random_case()
-        return case['identifier'], case['version']
-
-    def _random_case(self):
-        return random.choice(self.cases.get_cases(
-            limit=50, program=Program.rare_disease,
-            filter='countInterpretationServices.exomiser gt 0', hasClinicalData=True).next())
-
-    def _get_random_panel(self):
-        return self._random_case()['reportEventsAnalysisPanels'][0]['panelName']
-
-    def _get_random_gene(self):
-        return self._random_case()['genes'][0]
-
-    def _get_random_variant(self):
-        return self._random_case()['allVariants'][0]
 
 
 class MockResponse:

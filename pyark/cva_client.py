@@ -20,6 +20,8 @@ class CvaClient(RestClient):
     # authentication endpoint
     _AUTHENTICATION_ENDPOINT = "authentication"
 
+    _INCLUDE_ALL = "__all"
+
     def __init__(self, url_base, token=None, user=None, password=None,
                  disable_validation=True, disable_annotation=False, retries=10):
 
@@ -74,7 +76,7 @@ class CvaClient(RestClient):
         :rtype: object
         """
         pool = multiprocessing.Pool(processes=10)
-        results = dict(pool.map(method, parameters))
+        results = list(pool.map(method, parameters))
         pool.close()
         pool.join()
         return results
@@ -252,20 +254,30 @@ class CvaClient(RestClient):
         else:
             return results
 
-    def _paginate(self, endpoint, as_data_frame=False, **params):
+    def _paginate(self, endpoint, as_data_frame=False, max_results=None, transformer=None, **params):
         more_results = True
+        count_returned = 0
         while more_results:
             results, next_page_params = self._get(endpoint, **params)
             results = list(results)
+            if transformer:
+                results = list(map(transformer, results))
             if next_page_params:
                 params[CvaClient._LIMIT_PARAM] = next_page_params[CvaClient._LIMIT_PARAM]
                 params[CvaClient._MARKER_PARAM] = next_page_params[CvaClient._MARKER_PARAM]
             else:
                 more_results = False
+            if max_results and count_returned >= max_results:
+                return
+            if max_results and len(results) > max_results - count_returned:
+                # removes those elements in the page that overflow the maximum parameter
+                results = results[0:max_results-count_returned]
             # NOTE: when returning a data frame we want all results in a batch in the
             # same data frame, otherwise we want to iterate through them one by one
             if as_data_frame:
+                count_returned += len(results)
                 yield self._render(results, as_data_frame=as_data_frame)
             else:
                 for r in results:
+                    count_returned += 1
                     yield r
