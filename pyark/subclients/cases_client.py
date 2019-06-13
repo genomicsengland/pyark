@@ -1,5 +1,5 @@
 import pyark.cva_client as cva_client
-from protocols.protocol_7_2.cva import ReportEventType
+from protocols.protocol_7_2.cva import ReportEventType, Transaction
 import logging
 import pandas as pd
 
@@ -78,7 +78,8 @@ class CasesClient(cva_client.CvaClient):
             endpoint=self._BASE_ENDPOINT, case_id=case_id, case_version=case_version
         )
         results, _ = self._delete(path)
-        return self._render_single_result(results)
+        result = self._render_single_result(results)
+        return Transaction.fromJsonDict(result) if result else None
 
     @staticmethod
     def _params_sanity_checks(params_list):

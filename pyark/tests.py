@@ -473,7 +473,12 @@ class TestOthers(TestPyArk):
             self.assertEquals(item.evidenceEntry.ethnicity, model.evidenceEntry.ethnicity)
 
     def test_deleting_case(self):
-        transaction = self.cases.delete("somecaseid", 1)
+        transaction = self._test_post(CancerParticipantInject, self.data_intake.post_participant)
+        metadata = transaction.transactionDetails.metadata
+        caseId = metadata.caseId
+        caseVersion = metadata.caseVersion
+
+        transaction = self.cases.delete(caseId, caseVersion)
         self.assertTrue(isinstance(transaction, Transaction))
         self.assertTrue(transaction.id is not None)
         self.assertTrue(transaction.status == TransactionStatus.PENDING)

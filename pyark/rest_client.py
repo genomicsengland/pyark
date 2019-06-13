@@ -96,9 +96,9 @@ class RestClient(object):
         if endpoint is None:
             raise ValueError("Must define endpoint before get")
         url = self._build_url(endpoint)
-        response = self._session.delete(url, params=params)
+        response = self._session.delete(url, params=params, headers=self._headers)
         logging.info("{method} {url}".format(
-            method="GET",
+            method="DELETE",
             url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
         ))
         self._verify_response(response)
