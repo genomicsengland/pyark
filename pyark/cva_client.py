@@ -258,6 +258,8 @@ class CvaClient(RestClient):
         more_results = True
         count_returned = 0
         while more_results:
+            if max_results and count_returned >= max_results:
+                return
             results, next_page_params = self._get(endpoint, **params)
             results = list(results)
             if transformer:
@@ -267,8 +269,6 @@ class CvaClient(RestClient):
                 params[CvaClient._MARKER_PARAM] = next_page_params[CvaClient._MARKER_PARAM]
             else:
                 more_results = False
-            if max_results and count_returned >= max_results:
-                return
             if max_results and len(results) > max_results - count_returned:
                 # removes those elements in the page that overflow the maximum parameter
                 results = results[0:max_results-count_returned]
