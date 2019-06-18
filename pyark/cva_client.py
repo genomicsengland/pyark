@@ -275,8 +275,10 @@ class CvaClient(RestClient):
             # NOTE: when returning a data frame we want all results in a batch in the
             # same data frame, otherwise we want to iterate through them one by one
             if as_data_frame:
+                df = self._render(results, as_data_frame=as_data_frame)
+                df.set_index(list(range(count_returned, count_returned + df.shape[0])))
                 count_returned += len(results)
-                yield self._render(results, as_data_frame=as_data_frame)
+                yield df
             else:
                 for r in results:
                     count_returned += 1
