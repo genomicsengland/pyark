@@ -276,7 +276,8 @@ class CvaClient(RestClient):
             # same data frame, otherwise we want to iterate through them one by one
             if as_data_frame:
                 df = self._render(results, as_data_frame=as_data_frame)
-                df.set_index(list(range(count_returned, count_returned + df.shape[0])))
+                df['_index'] = list(range(count_returned, count_returned + len(results)))
+                df.set_index('_index', drop=True, inplace=True)
                 count_returned += len(results)
                 yield df
             else:
