@@ -30,10 +30,13 @@ class ReportEventsClient(cva_client.CvaClient):
         else:
             if include_all:
                 params['include'] = [self._INCLUDE_ALL]
+            if not as_data_frame:
+                def transformer(x): ReportEventEntryWrapper.fromJsonDict(x)
+            else:
+                transformer = None
             return self._paginate(
                 endpoint=self._BASE_ENDPOINT, max_results=max_results, as_data_frame=as_data_frame,
-                transformer=lambda x: ReportEventEntryWrapper.fromJsonDict(x) if not as_data_frame else None,
-                **params)
+                transformer=transformer, **params)
 
     def get_variant_summary_by_ids(self, variant_ids, **params):
         """
