@@ -16,8 +16,9 @@ class ReportEventsClient(cva_client.CvaClient):
         params['count'] = True
         return self.get_report_events(**params)
 
-    def get_report_events(self, max_results=None, include_all=True, **params):
+    def get_report_events(self, max_results=None, include_all=True, as_data_frame=False, **params):
         """
+        :type as_data_frame: bool
         :type max_results: bool
         :type include_all: bool
         :type params: dict
@@ -29,9 +30,13 @@ class ReportEventsClient(cva_client.CvaClient):
         else:
             if include_all:
                 params['include'] = [self._INCLUDE_ALL]
+            if not as_data_frame:
+                def transformer(x): return ReportEventEntryWrapper.fromJsonDict(x)
+            else:
+                transformer = None
             return self._paginate(
-                endpoint=self._BASE_ENDPOINT, max_results=max_results,
-                transformer=lambda x: ReportEventEntryWrapper.fromJsonDict(x), **params)
+                endpoint=self._BASE_ENDPOINT, max_results=max_results, as_data_frame=as_data_frame,
+                transformer=transformer, **params)
 
     def get_variant_summary_by_ids(self, variant_ids, **params):
         """

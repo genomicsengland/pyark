@@ -66,9 +66,13 @@ class VariantsClient(cva_client.CvaClient):
         else:
             if include_all:
                 params['include'] = [self._INCLUDE_ALL]
+            if not as_data_frame:
+                def transformer(x): return VariantWrapper.fromJsonDict(x)
+            else:
+                transformer = None
             return self._paginate(
                 endpoint=self._BASE_ENDPOINT, as_data_frame=as_data_frame, max_results=max_results,
-                transformer=lambda x: VariantWrapper.fromJsonDict(x), **params)
+                transformer=transformer, **params)
 
     def variant_ids_to_coordinates(self, variant_ids, fail_on_structural=False):
         """
