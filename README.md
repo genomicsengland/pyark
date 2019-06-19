@@ -46,7 +46,7 @@ import pyark
 print("pyark version {}".format(pyark.VERSION))
 ```
 
-See documentation for further usage.
+See the documentation for further usage at [https://genomicsengland.github.io/pyark/](https://genomicsengland.github.io/pyark/).
 
 ## Running the tests
 
