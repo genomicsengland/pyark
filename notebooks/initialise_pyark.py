@@ -37,7 +37,7 @@ cva_url = os.environ.get("CVA_URL_BASE", "http://localhost:8090")
 gel_user = os.environ.get("CVA_USER", None)
 if not gel_user:
     gel_user = getpass.getpass("User:")
-gel_password = os.environ.get("CVA_PASS", None)
+gel_password = os.environ.get("CVA_PASSWORD", None)
 if not gel_password:
     gel_password = getpass.getpass("Password:")
 cva = CvaClient(cva_url, user=gel_user, password=gel_password)
