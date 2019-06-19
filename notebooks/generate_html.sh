@@ -1,1 +1,1 @@
-jupyter nbconvert --to html *.ipynb --output-dir=../html
+jupyter nbconvert --to html *.ipynb --output-dir=../docs
