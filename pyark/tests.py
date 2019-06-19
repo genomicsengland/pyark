@@ -23,8 +23,8 @@ from pyark.models.wrappers import ReportEventEntryWrapper, VariantWrapper
 class TestPyArk (TestCase):
     # credentials
     CVA_URL_BASE = os.getenv("CVA_URL")
-    GEL_USER = os.getenv("GEL_USER")
-    GEL_PASSWORD = os.getenv("GEL_PASSWORD")
+    GEL_USER = os.getenv("CVA_USER")
+    GEL_PASSWORD = os.getenv("CVA_PASSWORD")
 
     @classmethod
     def setUpClass(cls):

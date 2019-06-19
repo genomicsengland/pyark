@@ -4,3 +4,6 @@ build
 dist
 .idea
 pyark.egg-info/
+**/.ipynb_checkpoints*
+nohup.out
+env36
