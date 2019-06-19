@@ -31,7 +31,7 @@ class ReportEventsClient(cva_client.CvaClient):
             if include_all:
                 params['include'] = [self._INCLUDE_ALL]
             if not as_data_frame:
-                def transformer(x): ReportEventEntryWrapper.fromJsonDict(x)
+                def transformer(x): return ReportEventEntryWrapper.fromJsonDict(x)
             else:
                 transformer = None
             return self._paginate(
