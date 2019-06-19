@@ -132,7 +132,8 @@ class RestClient(object):
             if 500 <= response.status_code < 600:
                 raise CvaServerError("{}:{}".format(response.status_code, response.text))
             elif 400 <= response.status_code < 500:
-                raise CvaClientError("{}:{}".format(response.status_code, response.text))
+                if response.status_code != 404:     # we want to hide 404 for empty results to the end user
+                    raise CvaClientError("{}:{}".format(response.status_code, response.text))
             else:
                 raise ValueError("{}:{}".format(response.status_code, response.text))
         else:
