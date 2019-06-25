@@ -13117,7 +13117,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><h1>The Clinical Variant Ark client: pyark<span class="tocSkip"></span></h1></p>
-<div class="toc"><ul class="toc-item"><li><span><a href="#Introduction" data-toc-modified-id="Introduction-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Introduction</a></span></li><li><span><a href="#Context" data-toc-modified-id="Context-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Context</a></span></li><li><span><a href="#The-CVA-client:-pyark" data-toc-modified-id="The-CVA-client:-pyark-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>The CVA client: pyark</a></span><ul class="toc-item"><li><span><a href="#Initialising-the-client" data-toc-modified-id="Initialising-the-client-3.1"><span class="toc-item-num">3.1&nbsp;&nbsp;</span><a href="client_initialisation.html" target="_blank">Initialising the client</a></a></span></li><li><span><a href="#Fetching-primary-entities" data-toc-modified-id="Fetching-primary-entities-3.2"><span class="toc-item-num">3.2&nbsp;&nbsp;</span><a href="fetching_primary_entities.html" target="_blank">Fetching primary entities</a></a></span></li></ul></li></ul></div>
+<div class="toc"><ul class="toc-item"><li><span><a href="#Introduction" data-toc-modified-id="Introduction-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Introduction</a></span></li><li><span><a href="#Context" data-toc-modified-id="Context-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Context</a></span></li><li><span><a href="#The-CVA-client:-pyark" data-toc-modified-id="The-CVA-client:-pyark-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>The CVA client: pyark</a></span><ul class="toc-item"><li><span><a href="#Initialising-the-client" data-toc-modified-id="Initialising-the-client-3.1"><span class="toc-item-num">3.1&nbsp;&nbsp;</span><a href="client_initialisation.html" target="_blank">Initialising the client</a></a></span></li><li><span><a href="#Fetching-primary-entities" data-toc-modified-id="Fetching-primary-entities-3.2"><span class="toc-item-num">3.2&nbsp;&nbsp;</span><a href="fetching_primary_entities.html" target="_blank">Fetching primary entities</a></a></span></li><li><span><a href="#Search-and-filter" data-toc-modified-id="Search-and-filter-3.3"><span class="toc-item-num">3.3&nbsp;&nbsp;</span><a href="search.html" target="_blank">Search and filter</a></a></span></li><li><span><a href="#Cohort-selection" data-toc-modified-id="Cohort-selection-3.4"><span class="toc-item-num">3.4&nbsp;&nbsp;</span><a href="cohort_selection.html" target="_blank">Cohort selection</a></a></span></li></ul></li></ul></div>
 </div>
 </div>
 </div>
@@ -13141,7 +13141,7 @@ div#notebook {
 <li>Being an analytical platform enabling cross cases comparisons and analyses</li>
 </ul>
 <p>The CVA ecosystem is composed of a Java backend, backed by a MongoDB database, exposing a REST API. A user can access CVA in three ways: 1) directly through the REST API, 2) using the CVA portal from a browser or 3) using the Python client, pyark. The rest of this documentation will be focused on accessing CVA using pyark, although it may be a good documentation to understand what can be done using the REST API.</p>
-<p><img src="cva_ecosystem.png" alt="CVA&#39;s ecosystem" title="CVA&#39;s ecosystem"></p>
+<p><img src="figures/cva_ecosystem.png" alt="CVA&#39;s ecosystem"></p>
 <h2 id="Context">Context<a class="anchor-link" href="#Context">&#182;</a></h2><p>CVA is a component in Genomics England interpretation platform. The components within this interpretation platform share a lingua franca described in the Genomics England data models, <a href="https://gelreportmodels.genomicsengland.co.uk/">https://gelreportmodels.genomicsengland.co.uk/</a>. This will be a useful reference manual for the data that is served by CVA.</p>
 <p>CVA relies on three external systems:</p>
 <ul>
@@ -13149,7 +13149,7 @@ div#notebook {
 <li>Cellbase as a knowledge base of biological information, variant and gene annotations are obtained from Cellbase</li>
 <li>An authentication mechanism which can be either LDAP or Active Directory</li>
 </ul>
-<p><img src="interpretation_platform.png" alt="Interpretation Platform" title="The Interpretation Platform and a case life cycle"></p>
+<p><img src="figures/interpretation_platform.png" alt="Interpretation Platform"></p>
 <p>The interpretation API sends to CVA 4 pieces of data:</p>
 <ul>
 <li>The clinical data (pedigree, phenotypes, clinical indications, etc.). This data is pseudoanonymised.</li>
@@ -13159,9 +13159,22 @@ div#notebook {
 </ul>
 <h2 id="The-CVA-client:-pyark">The CVA client: pyark<a class="anchor-link" href="#The-CVA-client:-pyark">&#182;</a></h2><p>Pyark is a python client to the Clinical Variant Ark (CVA) REST API. The aim of pyark is to provide easy and flexible access to the CVA dataset and enable an analytical framework. While the CVA portal aims to cover a particular use case which is helping solve cases by using existing knowledge in CVA, the aim of pyark is less precise and as such this guide will not cover everything that could be done using pyark.</p>
 <p>For a complete guide of CVA REST API please refer to the swagger documentation available in <a href="http://your.cva.server/cva/docs">http://your.cva.server/cva/docs</a>.</p>
-<h3 id="Initialising-the-client"><a href="client_initialisation.html">Initialising the client</a><a class="anchor-link" href="#Initialising-the-client">&#182;</a></h3><h3 id="Fetching-primary-entities"><a href="fetching_primary_entities.html">Fetching primary entities</a><a class="anchor-link" href="#Fetching-primary-entities">&#182;</a></h3>
+<h3 id="Initialising-the-client"><a href="client_initialisation.html">Initialising the client</a><a class="anchor-link" href="#Initialising-the-client">&#182;</a></h3><h3 id="Fetching-primary-entities"><a href="fetching_primary_entities.html">Fetching primary entities</a><a class="anchor-link" href="#Fetching-primary-entities">&#182;</a></h3><h3 id="Search-and-filter"><a href="search.html">Search and filter</a><a class="anchor-link" href="#Search-and-filter">&#182;</a></h3><h3 id="Cohort-selection"><a href="cohort_selection.html">Cohort selection</a><a class="anchor-link" href="#Cohort-selection">&#182;</a></h3>
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
 </div>
     </div>
   </div>
