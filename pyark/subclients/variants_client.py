@@ -50,7 +50,7 @@ class VariantsClient(cva_client.CvaClient):
         :rtype: list
         """
         self._set_singleton()
-        return VariantsClient.run_parallel_requests(_get_variant_by_id, identifiers)
+        return VariantsClient.run_parallel_requests(_get_variant_by_id, identifiers, threads=self._threads)
 
     def get_variants(self, as_data_frame=False, max_results=None, include_all=True, **params):
         """

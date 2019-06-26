@@ -23,7 +23,7 @@ class CvaClient(RestClient):
     _INCLUDE_ALL = "__all"
 
     def __init__(self, url_base, token=None, user=None, password=None,
-                 disable_validation=True, disable_annotation=False, retries=10):
+                 disable_validation=True, disable_annotation=False, retries=10, threads=4):
 
         if not (token or (user and password is not None)):
             logging.error("Credentials are required. Either token or user/password.")
@@ -36,6 +36,7 @@ class CvaClient(RestClient):
         self._token = "Bearer {}".format(token.replace("Bearer ", "")) if token else None
         self._user = user
         self._password = password
+        self._threads = threads
         if self._token or (self._user is not None and self._password is not None):
             self._set_authenticated_header()
         # initialise subclients
@@ -68,13 +69,14 @@ class CvaClient(RestClient):
         return CvaClient._parse_result(response), CvaClient._build_next_page_params(headers)
 
     @staticmethod
-    def run_parallel_requests(method, parameters):
+    def run_parallel_requests(method, parameters, threads):
         """
         :type method: function
         :type parameters: list
+        :type threads: int
         :rtype: object
         """
-        pool = multiprocessing.Pool(processes=10)
+        pool = multiprocessing.Pool(processes=threads)
         results = list(pool.map(method, parameters))
         pool.close()
         pool.join()
