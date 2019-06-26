@@ -120,20 +120,24 @@ class RestClient(object):
             status=response.status_code)
         )
         if response.status_code != 200:
-            logging.error(response.content)
             # first 403 renews the token, second 403 in a row fails
             if response.status_code in (403, 401) and not self._renewed_token:
                 # renews the token if unauthorised
                 self._set_authenticated_header(renew_token=True)
                 self._renewed_token = True
                 # RequestException will trigger a retry and with the renewed token it may work
+                logging.error(response.content)
                 raise requests.exceptions.RequestException(response=response)
             # ValueError will not
             if 500 <= response.status_code < 600:
+                logging.error(response.content)
                 raise CvaServerError("{}:{}".format(response.status_code, response.text))
             elif 400 <= response.status_code < 500:
-                raise CvaClientError("{}:{}".format(response.status_code, response.text))
+                if response.status_code != 404:     # we want to hide 404 for empty results to the end user
+                    logging.error(response.content)
+                    raise CvaClientError("{}:{}".format(response.status_code, response.text))
             else:
+                logging.error(response.content)
                 raise ValueError("{}:{}".format(response.status_code, response.text))
         else:
             # once a 200 response token is not anymore just renewed, it can be renewed again if a 403 arrives
