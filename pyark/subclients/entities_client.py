@@ -18,13 +18,16 @@ class EntitiesClient(cva_client.CvaClient):
         # some additional flattening
         return self._render(results, as_data_frame=as_data_frame)
 
-    def get_panels_by_regex(self, as_data_frame=False, **params):
+    def get_panels_by_regex(self, regex, as_data_frame=False, **params):
         """
+        :param regex: the regex query to perform a search
+        :type regex: str
         :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
         :type as_data_frame: bool
         :return: returns observed panels matching the regex.
         :rtype: list or pd.DataFrame
         """
+        params['regex'] = regex
         results, _ = self._get("panels/search", **params)
         return self._render(results, as_data_frame=as_data_frame)
 

@@ -212,3 +212,39 @@ class CasesClient(cva_client.CvaClient):
             logging.warning("No similarity matrix found")
             return None
         return self._render(results, as_data_frame=as_data_frame)
+
+    def get_pedigree(self, identifier, version, as_data_frame=False):
+        results, _ = self._get("{endpoint}/{identifier}/{version}".format(
+            endpoint="pedigrees", identifier=identifier, version=version))
+        if not results:
+            logging.warning("No pedigree found with id-version {}-{}".format(identifier, version))
+            return None
+        assert len(results) == 1, "Unexpected number of pedigrees returned when searching by identifier"
+        return self._render_single_result(results, as_data_frame=as_data_frame)
+
+    def get_clinical_report(self, identifier, version, as_data_frame=False):
+        results, _ = self._get("{endpoint}/{identifier}/{version}".format(
+            endpoint="clinical-reports", identifier=identifier, version=version))
+        if not results:
+            logging.warning("No clinical report found with id-version {}-{}".format(identifier, version))
+            return None
+        assert len(results) == 1, "Unexpected number of clinical reports returned when searching by identifier"
+        return self._render_single_result(results, as_data_frame=as_data_frame)
+
+    def get_rd_exit_questionnaire(self, identifier, version, as_data_frame=False):
+        results, _ = self._get("{endpoint}/{identifier}/{version}".format(
+            endpoint="rare-disease-exit-questionnaires", identifier=identifier, version=version))
+        if not results:
+            logging.warning("No questionnaire found with id-version {}-{}".format(identifier, version))
+            return None
+        assert len(results) == 1, "Unexpected number of questionnaires returned when searching by identifier"
+        return self._render_single_result(results, as_data_frame=as_data_frame)
+
+    def get_cancer_participant(self, identifier, version, as_data_frame=False):
+        results, _ = self._get("{endpoint}/{identifier}/{version}".format(
+            endpoint="participants", identifier=identifier, version=version))
+        if not results:
+            logging.warning("No cancer participant found with id-version {}-{}".format(identifier, version))
+            return None
+        assert len(results) == 1, "Unexpected number of cancer participants returned when searching by identifier"
+        return self._render_single_result(results, as_data_frame=as_data_frame)
