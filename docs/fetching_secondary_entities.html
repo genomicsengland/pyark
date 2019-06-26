@@ -13117,18 +13117,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><h1>Fetching secondary entities<span class="tocSkip"></span></h1></p>
-<div class="toc"><ul class="toc-item"><li><span><a href="#Fetching-the-pedigree-of-a-case" data-toc-modified-id="Fetching-the-pedigree-of-a-case-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Fetching the pedigree of a case</a></span></li><li><span><a href="#Fetching-the-clinical-report-of-a-case" data-toc-modified-id="Fetching-the-clinical-report-of-a-case-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Fetching the clinical report of a case</a></span></li><li><span><a href="#Fetching-the-exit-questionnaires-of-a-case" data-toc-modified-id="Fetching-the-exit-questionnaires-of-a-case-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>Fetching the exit questionnaires of a case</a></span></li><li><span><a href="#Secondary-entities" data-toc-modified-id="Secondary-entities-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Secondary entities</a></span></li><li><span><a href="#Get-all-data-about-a-given-case" data-toc-modified-id="Get-all-data-about-a-given-case-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>Get all data about a given case</a></span></li></ul></div>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>There are _ secondary entities in CVA:</p>
-<ul>
-<li><strong>bla</strong> - blabla</li>
-</ul>
-
+<div class="toc"><ul class="toc-item"><li><span><a href="#Fetching-the-pedigree-of-a-case" data-toc-modified-id="Fetching-the-pedigree-of-a-case-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Fetching the pedigree of a case</a></span></li><li><span><a href="#Fetching-the-clinical-report-of-a-case" data-toc-modified-id="Fetching-the-clinical-report-of-a-case-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Fetching the clinical report of a case</a></span></li><li><span><a href="#Fetching-the-exit-questionnaires-of-a-case" data-toc-modified-id="Fetching-the-exit-questionnaires-of-a-case-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>Fetching the exit questionnaires of a case</a></span></li><li><span><a href="#Other-secondary-entities" data-toc-modified-id="Other-secondary-entities-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Other secondary entities</a></span><ul class="toc-item"><li><span><a href="#Panels" data-toc-modified-id="Panels-4.1"><span class="toc-item-num">4.1&nbsp;&nbsp;</span>Panels</a></span></li><li><span><a href="#Clinical-indications" data-toc-modified-id="Clinical-indications-4.2"><span class="toc-item-num">4.2&nbsp;&nbsp;</span>Clinical indications</a></span></li><li><span><a href="#Organisations" data-toc-modified-id="Organisations-4.3"><span class="toc-item-num">4.3&nbsp;&nbsp;</span>Organisations</a></span></li><li><span><a href="#Genes" data-toc-modified-id="Genes-4.4"><span class="toc-item-num">4.4&nbsp;&nbsp;</span>Genes</a></span></li><li><span><a href="#Phenotypes" data-toc-modified-id="Phenotypes-4.5"><span class="toc-item-num">4.5&nbsp;&nbsp;</span>Phenotypes</a></span></li></ul></li><li><span><a href="#Get-all-data-about-a-given-case" data-toc-modified-id="Get-all-data-about-a-given-case-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>Get all data about a given case</a></span></li></ul></div>
 </div>
 </div>
 </div>
@@ -13185,7 +13174,7 @@ div#notebook {
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>POST https://bio-test-cva.gel.zone/cva/api/0/authentication?
-Response time : 22 ms
+Response time : 30 ms
 </pre>
 </div>
 </div>
@@ -13196,7 +13185,7 @@ Response time : 22 ms
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>pyark version 4.0.4
+<pre>pyark version 4.1.2
 </pre>
 </div>
 </div>
@@ -13207,50 +13196,82 @@ Response time : 22 ms
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">run</span> initialise_pyark.py
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># fetch a case</span>
+<span class="n">case</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">cases_client</span><span class="o">.</span><span class="n">get_cases</span><span class="p">(</span><span class="n">program</span><span class="o">=</span><span class="n">Program</span><span class="o">.</span><span class="n">rare_disease</span><span class="p">,</span> <span class="n">max_results</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?program=rare_disease&amp;include=__all
+Response time : 194 ms
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Fetching-the-pedigree-of-a-case">Fetching the pedigree of a case<a class="anchor-link" href="#Fetching-the-pedigree-of-a-case">&#182;</a></h2><p>blabla</p>
+<h2 id="Fetching-the-pedigree-of-a-case">Fetching the pedigree of a case<a class="anchor-link" href="#Fetching-the-pedigree-of-a-case">&#182;</a></h2><p>The pedigrees for rare disease cases can be fetched using the case identifier and version. All relevant information in the pedigree is reshaped into the case entity.</p>
 
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Fetching-the-clinical-report-of-a-case">Fetching the clinical report of a case<a class="anchor-link" href="#Fetching-the-clinical-report-of-a-case">&#182;</a></h2><p>blabla</p>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ped</span> <span class="o">=</span> <span class="n">cases_client</span><span class="o">.</span><span class="n">get_pedigree</span><span class="p">(</span>
+    <span class="n">identifier</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;identifier&#39;</span><span class="p">),</span> <span class="n">version</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">),</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/pedigrees/2168/2?
+Response time : 4 ms
+</pre>
+</div>
+</div>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Fetching-the-exit-questionnaires-of-a-case">Fetching the exit questionnaires of a case<a class="anchor-link" href="#Fetching-the-exit-questionnaires-of-a-case">&#182;</a></h2><p>blaba</p>
 
 </div>
-</div>
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Secondary-entities">Secondary entities<a class="anchor-link" href="#Secondary-entities">&#182;</a></h2><p>There are secondary entities that are usually used to filter the main entities. Some of these are:</p>
-<ul>
-<li><strong>Panel of genes</strong>. A gene panel is a list of genes that is of specific interest for a given condition. Although each family may be analysed against multiple panels, our family analysis are panel-centric.</li>
-<li><strong>Genes</strong>. The mapping between Ensembl identifiers and HGNC gene symbols (TODO)</li>
-<li><strong>Phenotypes</strong>. The HPO terms including identifier, name and synonyms (TODO)</li>
-</ul>
+<h2 id="Fetching-the-clinical-report-of-a-case">Fetching the clinical report of a case<a class="anchor-link" href="#Fetching-the-clinical-report-of-a-case">&#182;</a></h2><p>The clinical reports for any case can be fetched using the case identifier and version. All relevant information in the clinical report is reshaped into the case entity and in the report events.</p>
 
 </div>
 </div>
@@ -13260,7 +13281,105 @@ Response time : 22 ms
 <div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># fetch the list of panel names</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cr</span> <span class="o">=</span> <span class="n">cases_client</span><span class="o">.</span><span class="n">get_clinical_report</span><span class="p">(</span>
+    <span class="n">identifier</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;identifier&#39;</span><span class="p">),</span> <span class="n">version</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">),</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/clinical-reports/2168/2?
+Response time : 27 ms
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Fetching-the-exit-questionnaires-of-a-case">Fetching the exit questionnaires of a case<a class="anchor-link" href="#Fetching-the-exit-questionnaires-of-a-case">&#182;</a></h2><p>The rare disease exit questionnaires for any case can be fetched using the case identifier and version. All relevant information in the exit questionnaire is reshaped into the case entity and in the report events.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">eq</span> <span class="o">=</span> <span class="n">cases_client</span><span class="o">.</span><span class="n">get_rd_exit_questionnaire</span><span class="p">(</span>
+    <span class="n">identifier</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;identifier&#39;</span><span class="p">),</span> <span class="n">version</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">),</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/rare-disease-exit-questionnaires/2168/2?
+Response time : 17 ms
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Other-secondary-entities">Other secondary entities<a class="anchor-link" href="#Other-secondary-entities">&#182;</a></h2><p>There are secondary entities that are usually used to filter the main entities. CVA provide endpoints to support autocomplete features and to provide some basic summary related to the distrution of these entities across different cohorts of cases.</p>
+<p>Some of these are:</p>
+<ul>
+<li><strong>Panel of genes</strong>. A gene panel is a list of genes that is of specific interest for a given condition. Although each family may be analysed against multiple panels, our family analysis are panel-centric.</li>
+<li><strong>Disorders</strong>. The clinical indication reported with the clinical data.</li>
+<li><strong>Organisations</strong>. The owner of a given case.</li>
+<li><strong>Genes</strong>. The mapping between Ensembl identifiers and HGNC gene symbols</li>
+<li><strong>Phenotypes</strong>. The HPO terms including identifier, name and synonyms (TODO)</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Panels">Panels<a class="anchor-link" href="#Panels">&#182;</a></h3><p>Our panels data source is PanelApp. That being said CVA does not query PanelApp or receive data directly from PanelApp, all information it has about panels is aggregated from the data it receives.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># fetch the list of unique panel names</span>
 <span class="n">all_panels</span> <span class="o">=</span> <span class="n">entities_client</span><span class="o">.</span><span class="n">get_all_panels</span><span class="p">()</span>
 <span class="n">all_panels</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
 </pre></div>
@@ -13280,14 +13399,14 @@ Response time : 22 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/panels?consider_versions=False
-Response time : 6892 ms
+Response time : 664 ms
 </pre>
 </div>
 </div>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[4]:</div>
+    <div class="prompt output_prompt">Out[6]:</div>
 
 
 
@@ -13307,16 +13426,123 @@ dtype: object</pre>
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can fetch a summary of panels which gives the count of cases where each panel was applied.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># fetch the list of panel names and versions and the number of cases</span>
-<span class="n">panels_client</span><span class="o">.</span><span class="n">get_panels_summary</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># fetch a summary of panels across cases</span>
+<span class="n">entities_client</span><span class="o">.</span><span class="n">get_panels_summary</span><span class="p">(</span><span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/panels?
+Response time : 636 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[7]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>countCases</th>
+      <th>panel.panelIdentifier</th>
+      <th>panel.panelName</th>
+      <th>panel.panelVersion</th>
+      <th>panel.source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>9779</td>
+      <td>None</td>
+      <td>intellectual disability</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>5999</td>
+      <td>None</td>
+      <td>mitochondrial disorders</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>4963</td>
+      <td>None</td>
+      <td>undiagnosed metabolic disorders</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2411</td>
+      <td>None</td>
+      <td>epileptic encephalopathy</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2192</td>
+      <td>None</td>
+      <td>hereditary ataxia</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -13324,52 +13550,1785 @@ dtype: object</pre>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Get-all-data-about-a-given-case">Get all data about a given case<a class="anchor-link" href="#Get-all-data-about-a-given-case">&#182;</a></h2><p>The information about any given case is distributed across: the cases, the report events, the variants and the pedigree.
-Given that we have the case id and version we will be able to fetch all data relative to that case.</p>
-<ul>
-<li><strong>Cases</strong>. Contain the basic information about a given case, including lists of relevant variants and case status (open/closed, solved/unsolved).</li>
-<li><strong>Report events</strong>. Contain the full information about the segregation of a variant within a family and why this was selected in each condition. The same variant may have multiple report events, because it was selected in multiple steps of the interpretation or because it was relevant in more than one panel (ie: the same case may be analysed against multiple panels)</li>
-<li><strong>Variants</strong>. Contain the coordinates of any given variant in two assemblies GRCh37 and GRCh38 and the Cellbase annotations in those.</li>
-<li><strong>Pedigree</strong>. Contain the detailed information about a family and its members. Each case will have only one pedigree.</li>
-</ul>
+<p>We can fetch the summary of panels on a given cohort of cases. All filters for case cohort selection apply here.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># get a case</span>
-<span class="n">case</span> <span class="o">=</span> <span class="n">cases_client</span><span class="o">.</span><span class="n">get_case</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="s2">&quot;132&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span> <span class="s2">&quot;There are </span><span class="si">{}</span><span class="s2"> attributes for a case&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-
-<span class="c1"># get a pedigree for a case</span>
-<span class="n">ped</span> <span class="o">=</span> <span class="n">pedigrees_client</span><span class="o">.</span><span class="n">get_pedigree</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="s2">&quot;132&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">ped</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-<span class="c1"># get the details about the members of a pedigree</span>
-<span class="n">members</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">ped</span><span class="p">[</span><span class="s1">&#39;pedigree.members&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-    <span class="n">members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;attribute&#39;</span><span class="p">,</span> <span class="n">member</span><span class="p">[</span><span class="s1">&#39;participantId&#39;</span><span class="p">]]))</span>
-<span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span> <span class="s1">&#39;attribute&#39;</span><span class="p">),</span> <span class="n">members</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_panels_summary</span><span class="p">(</span><span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hasPositiveDx</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/panels?hasPositiveDx=True
+Response time : 184 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[8]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>countCases</th>
+      <th>panel.panelIdentifier</th>
+      <th>panel.panelName</th>
+      <th>panel.panelVersion</th>
+      <th>panel.source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>517</td>
+      <td>None</td>
+      <td>intellectual disability</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>259</td>
+      <td>None</td>
+      <td>mitochondrial disorders</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>199</td>
+      <td>None</td>
+      <td>undiagnosed metabolic disorders</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>179</td>
+      <td>None</td>
+      <td>posterior segment abnormalities</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>137</td>
+      <td>None</td>
+      <td>cystic kidney disease</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can disaggregate this information by panel version using the parameter <code>considerVersions=True</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_panels_summary</span><span class="p">(</span><span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hasPositiveDx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">considerVersions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/panels?hasPositiveDx=True&amp;considerVersions=True
+Response time : 200 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[9]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>countCases</th>
+      <th>panel.panelIdentifier</th>
+      <th>panel.panelName</th>
+      <th>panel.panelVersion</th>
+      <th>panel.source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>82</td>
+      <td>None</td>
+      <td>intellectual disability</td>
+      <td>1.436</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>69</td>
+      <td>None</td>
+      <td>intellectual disability</td>
+      <td>1.158</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>65</td>
+      <td>None</td>
+      <td>mitochondrial disorders</td>
+      <td>1.66</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>58</td>
+      <td>None</td>
+      <td>intellectual disability</td>
+      <td>1.2</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>54</td>
+      <td>None</td>
+      <td>undiagnosed metabolic disorders</td>
+      <td>1.72</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can search panels by regex.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_panels_by_regex</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="s2">&quot;dystrophy&quot;</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/panels/search?regex=dystrophy
+Response time : 422 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[15]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>panelIdentifier</th>
+      <th>panelName</th>
+      <th>panelVersion</th>
+      <th>source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>55b7a65322c1fc05fc7a1869</td>
+      <td>limb girdle muscular dystrophy</td>
+      <td>1.0</td>
+      <td>panelapp</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>None</td>
+      <td>limb girdle muscular dystrophy</td>
+      <td>1.0</td>
+      <td>panelapp</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>55b2109c22c1fc7dd7ce411f</td>
+      <td>insulin resistance (including lipodystrophy)</td>
+      <td>1.9</td>
+      <td>panelapp</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>5811a8738f620323c5766a2b</td>
+      <td>xeroderma pigmentosum, trichothiodystrophy or ...</td>
+      <td>1.6</td>
+      <td>panelApp</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>None</td>
+      <td>limb girdle muscular dystrophy</td>
+      <td>1.2</td>
+      <td>PanelApp</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Clinical-indications">Clinical indications<a class="anchor-link" href="#Clinical-indications">&#182;</a></h3><p>The clinical indications are defined in a hierarchy of three levels: disease group, disease subgroup and specific disease. CVA holds the clinical indications provided with the clinical data of each case. It is slightly different for cancer as the hierarchy only has two levels but they are stored in the same data structure.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can fetch all disease groups.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_all_disease_groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/disorders?
+Response time : 455 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[32]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>infantile enterocolitis monogenic inflammatory bowel disease                  infantile enterocolitis monogenic inflammatory...
+congenital hypothyroidism or thyroid agenesis dilated cardiomyopathy (dcm)    congenital hypothyroidism or thyroid agenesis ...
+intellectual disability                                                                                 intellectual disability
+familial cerebral small vessel disease                                                   familial cerebral small vessel disease
+familial breast cancer multiple endocrine tumours                             familial breast cancer multiple endocrine tumours
+dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can get the above over any selected cohort of cases.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_all_disease_groups</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="s2">&quot;countParticipants gt 3&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/disorders?filter=countParticipants gt 3
+Response time : 186 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[38]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>cakut                                                                                        cakut
+na                                                                                              na
+intellectual disability                                                    intellectual disability
+congenital hearing impairment (profound/severe)    congenital hearing impairment (profound/severe)
+familial thoracic aortic aneurysm disease                familial thoracic aortic aneurysm disease
+dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also fetch disease subgroups.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_all_disease_subgroups</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="s2">&quot;countParticipants gt 3&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/disorders?filter=countParticipants gt 3
+Response time : 183 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[40]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>motor disorders of the cns      motor disorders of the cns
+intellectual disability            intellectual disability
+fetal disorders                            fetal disorders
+dysmorphic disorders                  dysmorphic disorders
+lysosomal storage disorders    lysosomal storage disorders
+dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And specific diseases.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_all_specific_diseases</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="s2">&quot;countParticipants gt 3&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/disorders?filter=countParticipants gt 3
+Response time : 182 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[39]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>familial hemifacial microsomia                                                     familial hemifacial microsomia
+unexplained monogenic fetal disorders                                       unexplained monogenic fetal disorders
+infantile enterocolitis monogenic inflammatory bowel disease    infantile enterocolitis monogenic inflammatory...
+non syndromic hypotrichosis                                                           non syndromic hypotrichosis
+classical beckwith wiedemann syndrome                                       classical beckwith wiedemann syndrome
+dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also fetch summaries of disorders across a given cohort of cases.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_disorders_summary</span><span class="p">(</span><span class="n">hasPositiveDx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/disorders?hasPositiveDx=True
+Response time : 197 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[42]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>countCases</th>
+      <th>disorder.ageOfOnset</th>
+      <th>disorder.diseaseGroup</th>
+      <th>disorder.diseaseSubGroup</th>
+      <th>disorder.specificDisease</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>265</td>
+      <td>None</td>
+      <td>neurology and neurodevelopmental disorders</td>
+      <td>neurodevelopmental disorders</td>
+      <td>intellectual disability</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>121</td>
+      <td>None</td>
+      <td>renal and urinary tract disorders</td>
+      <td>structural renal and urinary tract disease</td>
+      <td>cystic kidney disease</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>83</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>intellectual disability</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>45</td>
+      <td>None</td>
+      <td>ophthalmological disorders</td>
+      <td>posterior segment abnormalities</td>
+      <td>rod cone dystrophy</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>43</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>rod cone dystrophy</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To support autocomplete we also support search by regular expressions.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[46]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_disorders_by_regex</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="s2">&quot;intellect&quot;</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/disorders/search?regex=intellect
+Response time : 414 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[46]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ageOfOnset</th>
+      <th>diseaseGroup</th>
+      <th>diseaseSubGroup</th>
+      <th>specificDisease</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.000</td>
+      <td>endocrine disorders</td>
+      <td>rare subtypes of diabetes</td>
+      <td>intellectual disability</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.000</td>
+      <td>gastroenterological disorders</td>
+      <td>liver disease</td>
+      <td>intellectual disability</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.000</td>
+      <td>gastroenterological disorders</td>
+      <td>gastrointestinal disorders</td>
+      <td>intellectual disability</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1.600</td>
+      <td>neurology and neurodevelopmental disorders</td>
+      <td>neurodevelopmental disorders</td>
+      <td>intellectual disability</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1.200</td>
+      <td>neurology and neurodevelopmental disorders</td>
+      <td>neurodevelopmental disorders</td>
+      <td>intellectual disability</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Organisations">Organisations<a class="anchor-link" href="#Organisations">&#182;</a></h3><p>The organisations are the owners of cases. In the 100K Genomes Project these are the different Genomic Medicine Centers (GMCs).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can obtain a summary of organisations across a cohort of cases.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[55]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">next</span><span class="p">(</span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_organisations</span><span class="p">(</span><span class="n">hasPositiveDx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/organisations?hasPositiveDx=True
+Response time : 195 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[55]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>countCases</th>
+      <th>organisation.gmc</th>
+      <th>organisation.ods</th>
+      <th>organisation.site</th>
+    </tr>
+    <tr>
+      <th>_index</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>183</td>
+      <td>North Thames</td>
+      <td>RP4</td>
+      <td>Great Ormond Hospital for Children NHS FT</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>109</td>
+      <td>Northeast and North Cumbria</td>
+      <td>NCL</td>
+      <td>Pilot: Newcastle</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>89</td>
+      <td>Greater Manchester</td>
+      <td>RW3</td>
+      <td>Central Manchester Uni Hospital NHS FT</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>86</td>
+      <td>Greater Manchester</td>
+      <td>MAN</td>
+      <td>Pilot: Manchester</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>74</td>
+      <td>Southwest Peninsula</td>
+      <td>RH8</td>
+      <td>Royal Devon and Exeter NHS FT</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Genes">Genes<a class="anchor-link" href="#Genes">&#182;</a></h3><p>We store the Cellbase annotations for every gene reported in any case in CVA. Within the Cellbase annotations we have the Ensembl gene identifier, the HGNC gene symbold and a number of cross references from several resources (eg: UniProt, InterPro, Gene Ontology, etc.).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can fetch the distribution of genes affected by a potential LoF variant across cases in any given cohort.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_genes_summary</span><span class="p">(</span><span class="n">hasPositiveDx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/genes?hasPositiveDx=True
+Response time : 192 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[18]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>countCases</th>
+      <th>ensemblId</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>48</td>
+      <td>ENSG00000008710</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>13</td>
+      <td>ENSG00000197912</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>9</td>
+      <td>ENSG00000123066</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>9</td>
+      <td>ENSG00000273079</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>9</td>
+      <td>ENSG00000108821</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can perform search on genes by gene symbol, cross reference or any regex of both. This endpoint may be useful for autocomplete purposes.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_genes</span><span class="p">(</span><span class="n">geneSymbols</span><span class="o">=</span><span class="s2">&quot;BRCA2&quot;</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/genes/search?geneSymbols=BRCA2
+Response time : 6 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[24]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ensemblId</th>
+      <th>geneSymbol</th>
+      <th>otherIds</th>
+      <th>type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ENSG00000139618</td>
+      <td>BRCA2</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
 </div>
 </div>
 
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_genes</span><span class="p">(</span><span class="n">geneSymbolRegex</span><span class="o">=</span><span class="s2">&quot;^BRC&quot;</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/genes/search?geneSymbolRegex=^BRC&amp;hasPositiveDx=True
+Response time : 8 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[20]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ensemblId</th>
+      <th>geneSymbol</th>
+      <th>otherIds</th>
+      <th>type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ENSG00000012048</td>
+      <td>BRCA1</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ENSG00000139618</td>
+      <td>BRCA2</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ENSG00000185515</td>
+      <td>BRCC3</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>ENSG00000251667</td>
+      <td>BRCC3P1</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_genes</span><span class="p">(</span><span class="n">xrefs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GO:0006351&quot;</span><span class="p">,</span> <span class="s2">&quot;GO:0003700&quot;</span><span class="p">],</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/genes/search?xrefs=GO:0006351&amp;xrefs=GO:0003700
+Response time : 3679 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[26]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ensemblId</th>
+      <th>geneSymbol</th>
+      <th>otherIds</th>
+      <th>type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ENSG00000174306</td>
+      <td>ZHX3</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ENSG00000184492</td>
+      <td>FOXD4L1</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ENSG00000148513</td>
+      <td>ANKRD30A</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>ENSG00000102974</td>
+      <td>CTCF</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>ENSG00000157554</td>
+      <td>ERG</td>
+      <td>[]</td>
+      <td>gene</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Phenotypes">Phenotypes<a class="anchor-link" href="#Phenotypes">&#182;</a></h3><p>Phenotypes for rare disease cases are represented in the Human Phenotype Ontology (HPO) terms. The whole HPO dataset is integrated into CVA providing normalisation of terms from older versions and allowing searching of terms by a different set of criteria. HPO terms are enriched with the annotations of their information content, according to the disease annotation provided by HPO.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can fetch a single phenotype by identifier.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[48]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_hpo</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="s2">&quot;HP:0012345&quot;</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/hpos/HP:0012345?
+Response time : 2 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[48]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>alternativeIdentifiers</th>
+      <th>definition</th>
+      <th>diseases</th>
+      <th>hpoBottomUpAccumulatedInformationContent</th>
+      <th>hpoInformationContent</th>
+      <th>hpoTopDownAccumulatedInformationContent</th>
+      <th>identifier</th>
+      <th>internalInformationContent</th>
+      <th>isA</th>
+      <th>isObsolete</th>
+      <th>mainIdentifier</th>
+      <th>name</th>
+      <th>synonyms</th>
+      <th>xrefs</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[]</td>
+      <td>An anomaly of a glycosylation process, i.e., a...</td>
+      <td>[PMID:26833332, ORPHA:370921, ORPHA:370924]</td>
+      <td>8.456</td>
+      <td>10.791</td>
+      <td>6.153</td>
+      <td>HP:0012345</td>
+      <td>None</td>
+      <td>[HP:0011013]</td>
+      <td>False</td>
+      <td>HP:0012345</td>
+      <td>Abnormal glycosylation</td>
+      <td>[]</td>
+      <td>[UMLS:C4022946]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can do a semantic search over phenotype names and synonyms.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">next</span><span class="p">(</span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_hpos</span><span class="p">(</span><span class="n">search</span><span class="o">=</span><span class="s2">&quot;color blind&quot;</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/hpos/search?search=color blind
+Response time : 22 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[51]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>alternativeIdentifiers</th>
+      <th>definition</th>
+      <th>diseases</th>
+      <th>hpoBottomUpAccumulatedInformationContent</th>
+      <th>hpoInformationContent</th>
+      <th>hpoTopDownAccumulatedInformationContent</th>
+      <th>identifier</th>
+      <th>internalInformationContent</th>
+      <th>isA</th>
+      <th>isObsolete</th>
+      <th>mainIdentifier</th>
+      <th>name</th>
+      <th>synonyms</th>
+      <th>xrefs</th>
+    </tr>
+    <tr>
+      <th>_index</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[]</td>
+      <td>Difficulty distinguishing between yellow and b...</td>
+      <td>[OMIM:190900, OMIM:611131, OMIM:125250, OMIM:6...</td>
+      <td>10.098</td>
+      <td>10.098</td>
+      <td>6.703</td>
+      <td>HP:0000552</td>
+      <td>None</td>
+      <td>[HP:0011519]</td>
+      <td>False</td>
+      <td>HP:0000552</td>
+      <td>Tritanomaly</td>
+      <td>[Blue yellow color blindness, Blue-yellow dysc...</td>
+      <td>[MSH:D003117, SNOMEDCT_US:51886007, SNOMEDCT_U...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[]</td>
+      <td>An abnormality of the pigmentation of the muco...</td>
+      <td>[ORPHA:2869, ORPHA:2907]</td>
+      <td>10.504</td>
+      <td>11.197</td>
+      <td>6.731</td>
+      <td>HP:0100669</td>
+      <td>None</td>
+      <td>[HP:0011830]</td>
+      <td>False</td>
+      <td>HP:0100669</td>
+      <td>Abnormal pigmentation of the oral mucosa</td>
+      <td>[Abnormal color of the oral mucosa, Abnormal p...</td>
+      <td>[UMLS:C4020959]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>Infinity</td>
+      <td>Infinity</td>
+      <td>6.802</td>
+      <td>HP:0030584</td>
+      <td>None</td>
+      <td>[HP:0000551]</td>
+      <td>False</td>
+      <td>HP:0030584</td>
+      <td>Color vision test abnormality</td>
+      <td>[]</td>
+      <td>[UMLS:C4073057]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[]</td>
+      <td>An anomolous earwax color. Earwax (cerumen) is...</td>
+      <td>[]</td>
+      <td>Infinity</td>
+      <td>Infinity</td>
+      <td>7.521</td>
+      <td>HP:0030790</td>
+      <td>None</td>
+      <td>[HP:0030787]</td>
+      <td>False</td>
+      <td>HP:0030790</td>
+      <td>Abnormal cerumen color</td>
+      <td>[Abnormal cerumen colour, Abnormal cerumen pig...</td>
+      <td>[UMLS:C4280768]</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>[HP:0002214, HP:0002294]</td>
+      <td>A lesser degree of hair pigmentation than woul...</td>
+      <td>[OMIM:601375, OMIM:269000, ORPHA:280651, OMIM:...</td>
+      <td>9.000</td>
+      <td>9.000</td>
+      <td>6.809</td>
+      <td>HP:0002286</td>
+      <td>None</td>
+      <td>[HP:0011358]</td>
+      <td>False</td>
+      <td>HP:0002286</td>
+      <td>Fair hair</td>
+      <td>[Blond hair, Fair hair, Fair hair color, Flaxe...</td>
+      <td>[SNOMEDCT_US:297995004, UMLS:C0239801, UMLS:C1...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Finally,  we can also search for phenotypes by cross references.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">next</span><span class="p">(</span><span class="n">entities_client</span><span class="o">.</span><span class="n">get_hpos</span><span class="p">(</span><span class="n">xrefs</span><span class="o">=</span><span class="s2">&quot;SNOMEDCT_US:51886007&quot;</span><span class="p">,</span> <span class="n">as_data_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>GET https://bio-test-cva.gel.zone/cva/api/0/hpos/search?xrefs=SNOMEDCT_US:51886007
+Response time : 49 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[52]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>alternativeIdentifiers</th>
+      <th>definition</th>
+      <th>diseases</th>
+      <th>hpoBottomUpAccumulatedInformationContent</th>
+      <th>hpoInformationContent</th>
+      <th>hpoTopDownAccumulatedInformationContent</th>
+      <th>identifier</th>
+      <th>internalInformationContent</th>
+      <th>isA</th>
+      <th>isObsolete</th>
+      <th>mainIdentifier</th>
+      <th>name</th>
+      <th>synonyms</th>
+      <th>xrefs</th>
+    </tr>
+    <tr>
+      <th>_index</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[]</td>
+      <td>Difficulty distinguishing between yellow and b...</td>
+      <td>[OMIM:190900, OMIM:611131, OMIM:125250, OMIM:6...</td>
+      <td>10.098</td>
+      <td>10.098</td>
+      <td>6.703</td>
+      <td>HP:0000552</td>
+      <td>None</td>
+      <td>[HP:0011519]</td>
+      <td>False</td>
+      <td>HP:0000552</td>
+      <td>Tritanomaly</td>
+      <td>[Blue yellow color blindness, Blue-yellow dysc...</td>
+      <td>[MSH:D003117, SNOMEDCT_US:51886007, SNOMEDCT_U...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
 </div>
 </div>
 
