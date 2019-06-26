@@ -13136,7 +13136,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">run</span> initialise_cva_client.py
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">run</span> initialise_pyark.py
 </pre></div>
 
     </div>
@@ -13184,7 +13184,7 @@ div#notebook {
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>POST https://bio-test-cva.gel.zone/cva/api/0/authentication?
-Response time : 15 ms
+Response time : 21 ms
 </pre>
 </div>
 </div>
@@ -13254,7 +13254,7 @@ Some fields are normalised in the database and every query is normalised to achi
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?program=rare_disease&amp;assembly=GRCh38&amp;specificDiseases=intellectual disability&amp;include=__all
-Response time : 267 ms
+Response time : 230 ms
 </pre>
 </div>
 </div>
@@ -13290,7 +13290,7 @@ Response time : 267 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?program=rare_disease&amp;assembly=GRCh37&amp;specificDiseases=intellectual disability&amp;count=True
-Response time : 68 ms
+Response time : 55 ms
 </pre>
 </div>
 </div>
@@ -13348,7 +13348,7 @@ Response time : 68 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?specificDiseases=intellectual disability&amp;count=True
-Response time : 246 ms
+Response time : 218 ms
 </pre>
 </div>
 </div>
@@ -13393,7 +13393,7 @@ Response time : 246 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?specificDiseases=INTELLECTUAL DISABILITY&amp;count=True
-Response time : 251 ms
+Response time : 220 ms
 </pre>
 </div>
 </div>
@@ -13503,7 +13503,7 @@ Response time : 10 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?genesXrefs=LDLR&amp;count=True
-Response time : 57 ms
+Response time : 55 ms
 </pre>
 </div>
 </div>
@@ -13549,7 +13549,7 @@ Response time : 57 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?genesXrefs=LDLCQ2&amp;count=True
-Response time : 66 ms
+Response time : 65 ms
 </pre>
 </div>
 </div>
@@ -13595,7 +13595,7 @@ Response time : 66 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?genesXrefs=P01130&amp;count=True
-Response time : 52 ms
+Response time : 49 ms
 </pre>
 </div>
 </div>
@@ -13641,7 +13641,7 @@ Response time : 52 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?genesXrefs=CCDS12254.1&amp;count=True
-Response time : 56 ms
+Response time : 59 ms
 </pre>
 </div>
 </div>
@@ -13687,7 +13687,7 @@ Response time : 56 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?genesXrefs=LRG_274&amp;count=True
-Response time : 51 ms
+Response time : 72 ms
 </pre>
 </div>
 </div>
@@ -13742,7 +13742,7 @@ Response time : 51 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?phenotypes=HP:0003701&amp;count=True
-Response time : 13 ms
+Response time : 12 ms
 </pre>
 </div>
 </div>
@@ -13788,7 +13788,7 @@ Response time : 13 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?phenotypesXrefs=UMLS:C0221629&amp;count=True
-Response time : 32 ms
+Response time : 69 ms
 </pre>
 </div>
 </div>
@@ -13834,7 +13834,7 @@ Response time : 32 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?phenotypesXrefs=SNOMEDCT_US:249939004&amp;count=True
-Response time : 27 ms
+Response time : 38 ms
 </pre>
 </div>
 </div>
@@ -13880,7 +13880,7 @@ Response time : 27 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?phenotypesXrefs=HP:0008961&amp;count=True
-Response time : 29 ms
+Response time : 28 ms
 </pre>
 </div>
 </div>
@@ -13949,7 +13949,7 @@ Response time : 29 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?filter=pedigreeAnalysisPanels.specificDisease eq &#39;intellectual disability&#39; and probandDisorders.specificDisease eq &#39;intellectual disability&#39;&amp;count=True
-Response time : 283 ms
+Response time : 259 ms
 </pre>
 </div>
 </div>
@@ -13997,7 +13997,7 @@ Response time : 283 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?filter=pedigreeAnalysisPanels.specificDisease eq &#39;intellectual disability&#39; or probandDisorders.specificDisease eq &#39;intellectual disability&#39;&amp;count=True
-Response time : 287 ms
+Response time : 257 ms
 </pre>
 </div>
 </div>
@@ -14045,7 +14045,7 @@ Response time : 287 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?filter=pedigreeAnalysisPanels.specificDisease eq &#39;intellectual disability&#39; and probandDisorders.specificDisease ne &#39;intellectual disability&#39;&amp;count=True
-Response time : 274 ms
+Response time : 247 ms
 </pre>
 </div>
 </div>
@@ -14093,7 +14093,7 @@ Response time : 274 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?filter=pedigreeAnalysisPanels.specificDisease eq &#39;INTELLECTUAL DISABILITY&#39; and probandDisorders.specificDisease ne &#39;intellectual disability&#39;&amp;count=True
-Response time : 255 ms
+Response time : 246 ms
 </pre>
 </div>
 </div>
@@ -14147,7 +14147,7 @@ Response time : 255 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?phenotypes=HP:0005338&amp;phenotypes=HP:0002000&amp;count=True
-Response time : 15 ms
+Response time : 11 ms
 </pre>
 </div>
 </div>
@@ -14193,7 +14193,7 @@ Response time : 15 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?phenotypes=HP:0005338&amp;phenotypes=HP:0002000&amp;anyOrAllPhenotypes=ANY&amp;count=True
-Response time : 9 ms
+Response time : 12 ms
 </pre>
 </div>
 </div>
@@ -14239,7 +14239,7 @@ Response time : 9 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?phenotypes=HP:0005338&amp;phenotypes=HP:0002000&amp;anyOrAllPhenotypes=ALL&amp;count=True
-Response time : 10 ms
+Response time : 16 ms
 </pre>
 </div>
 </div>
@@ -14285,7 +14285,7 @@ Response time : 10 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?phenotypesXrefs=HP:0005338&amp;phenotypesXrefs=UMLS:C1857479&amp;anyOrAllPhenotypes=ALL&amp;count=True
-Response time : 26 ms
+Response time : 28 ms
 </pre>
 </div>
 </div>
@@ -14340,7 +14340,7 @@ Response time : 26 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?filter=countSamples ge 3 and probandYearOfBirth gt 2016&amp;count=True
-Response time : 115 ms
+Response time : 161 ms
 </pre>
 </div>
 </div>
@@ -14387,7 +14387,7 @@ Response time : 115 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?filter=pedigreeAnalysisPanels.specificDisease eq &#39;intellectual disability&#39; and countTiers.TIER1 eq 0 and countTiers.TIER2 eq 0&amp;count=True
-Response time : 217 ms
+Response time : 205 ms
 </pre>
 </div>
 </div>
@@ -14506,7 +14506,7 @@ Response time : 217 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=metabolic&amp;count=True
-Response time : 59 ms
+Response time : 70 ms
 </pre>
 </div>
 </div>
@@ -14552,7 +14552,7 @@ Response time : 59 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=metabolism&amp;count=True
-Response time : 77 ms
+Response time : 73 ms
 </pre>
 </div>
 </div>
@@ -14598,7 +14598,7 @@ Response time : 77 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=metabolism of this and that&amp;count=True
-Response time : 52 ms
+Response time : 56 ms
 </pre>
 </div>
 </div>
@@ -14644,7 +14644,7 @@ Response time : 52 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=metabolic undiagnosed&amp;count=True
-Response time : 67 ms
+Response time : 69 ms
 </pre>
 </div>
 </div>
@@ -14690,7 +14690,7 @@ Response time : 67 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=&#34;metabolic&#34; &#34;undiagnosed&#34;&amp;count=True
-Response time : 303 ms
+Response time : 268 ms
 </pre>
 </div>
 </div>
@@ -14736,7 +14736,7 @@ Response time : 303 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=&#34;undiagnosed metabolic disorders&#34;&amp;count=True
-Response time : 411 ms
+Response time : 376 ms
 </pre>
 </div>
 </div>
@@ -14782,7 +14782,7 @@ Response time : 411 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=10000-1&amp;count=True
-Response time : 6 ms
+Response time : 8 ms
 </pre>
 </div>
 </div>
@@ -14828,7 +14828,7 @@ Response time : 6 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=8:8377111:A:T&amp;count=True
-Response time : 15 ms
+Response time : 22 ms
 </pre>
 </div>
 </div>
@@ -14874,7 +14874,7 @@ Response time : 15 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=ENSG00000213516&amp;count=True
-Response time : 11 ms
+Response time : 15 ms
 </pre>
 </div>
 </div>
@@ -14920,7 +14920,7 @@ Response time : 11 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases?search=BRCA1&amp;count=True
-Response time : 1025 ms
+Response time : 1262 ms
 </pre>
 </div>
 </div>
@@ -14973,7 +14973,7 @@ Response time : 1025 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/hpos/search?max=None&amp;search=&#34;color blind&#34;
-Response time : 5 ms
+Response time : 4 ms
 </pre>
 </div>
 </div>
@@ -15103,7 +15103,7 @@ The response contains scored matches of different categories which will potentia
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/cases/search/metabol?
-Response time : 762 ms
+Response time : 749 ms
 </pre>
 </div>
 </div>
@@ -15168,7 +15168,7 @@ Response time : 762 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/genes/search?xrefRegex=^BRCA
-Response time : 11 ms
+Response time : 30 ms
 </pre>
 </div>
 </div>
@@ -15219,7 +15219,7 @@ Name: geneSymbol, dtype: object</pre>
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/genes/search?geneSymbolRegex=^BRCA
-Response time : 4 ms
+Response time : 7 ms
 </pre>
 </div>
 </div>
@@ -15274,7 +15274,7 @@ Name: geneSymbol, dtype: object</pre>
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/panels/search?regex=intellect
-Response time : 603 ms
+Response time : 555 ms
 </pre>
 </div>
 </div>
@@ -15388,7 +15388,7 @@ Response time : 603 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/disorders/search?regex=intellect
-Response time : 446 ms
+Response time : 442 ms
 </pre>
 </div>
 </div>
@@ -15502,7 +15502,7 @@ Response time : 446 ms
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/hpos/search?max=None&amp;xrefRegex=HP:000001
-Response time : 27 ms
+Response time : 26 ms
 </pre>
 </div>
 </div>
@@ -15558,7 +15558,7 @@ Name: identifier, dtype: object</pre>
 
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>GET https://bio-test-cva.gel.zone/cva/api/0/hpos/search?max=None&amp;xrefRegex=SNOMED.*123
-Response time : 32 ms
+Response time : 31 ms
 </pre>
 </div>
 </div>
