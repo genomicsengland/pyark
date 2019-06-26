@@ -124,10 +124,20 @@ class EntitiesClient(cva_client.CvaClient):
         results, _ = self._get("hpos/{id}".format(id=identifier))
         return self._render(results, as_data_frame=as_data_frame)
 
-    def get_hpos(self, as_data_frame=False, max=None, **params):
+    def get_hpos(self, as_data_frame=False, max_results=None, **params):
         """
         :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
         :type as_data_frame: bool
+        :type max_results: int
         :return:
         """
-        return self._paginate(endpoint="hpos/search", as_data_frame=as_data_frame, max=max, **params)
+        return self._paginate(endpoint="hpos/search", as_data_frame=as_data_frame, max_results=max_results, **params)
+
+    def get_organisations(self, as_data_frame=False, max_results=None, **params):
+        """
+        :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
+        :type as_data_frame: bool
+        :type max_results: int
+        :return:
+        """
+        return self._paginate(endpoint="organisations", as_data_frame=as_data_frame, max_results=max_results, **params)
