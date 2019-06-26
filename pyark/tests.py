@@ -39,7 +39,6 @@ class TestPyArk (TestCase):
         cls.report_events = cls.cva.report_events()
         cls.entities = cls.cva.entities()
         cls.cases = cls.cva.cases()
-        cls.pedigrees = cls.cva.pedigrees()
         cls.variants = cls.cva.variants()
         cls.data_intake = cls.cva.data_intake()
         # fetch 50 cases to run tests on
@@ -47,13 +46,17 @@ class TestPyArk (TestCase):
             max_results=50, program=Program.rare_disease, assembly=Assembly.GRCh38,
             filter='countInterpretationServices.exomiser gt 0 and countTiered gt 100',
             hasClinicalData=True))
+        cls.random_closed_cases = list(cls.cases.get_cases(
+            max_results=50, program=Program.rare_disease, assembly=Assembly.GRCh38,
+            filter='countInterpretationServices.exomiser gt 0 and countTiered gt 100',
+            hasClinicalData=True, hasPositiveDx=True))
 
-    def _get_random_case_id_and_version(self):
-        case = self._get_random_case()
+    def _get_random_case_id_and_version(self, closed=False):
+        case = self._get_random_case(closed=closed)
         return case['identifier'], case['version']
 
-    def _get_random_case(self):
-        return random.choice(self.random_cases)
+    def _get_random_case(self, closed=False):
+        return random.choice(self.random_closed_cases if closed else self.random_cases)
 
     def _get_random_panel(self):
         return random.choice(self._get_random_case()['reportEventsAnalysisPanels'])['panelName']
@@ -293,12 +296,40 @@ class TestOthers(TestPyArk):
         case_id, case_version = self._get_random_case_id_and_version()
 
         # gets pedigree
-        result = self.pedigrees.get_pedigree(case_id, case_version)
+        result = self.cases.get_pedigree(case_id, case_version)
         self.assertTrue(result is not None)
         self.assertTrue(isinstance(result, dict))
 
         # gets pedigree
-        result = self.pedigrees.get_pedigree(case_id, case_version, as_data_frame=True)
+        result = self.cases.get_pedigree(case_id, case_version, as_data_frame=True)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, pd.DataFrame))
+
+    def test_get_clinical_report(self):
+
+        case_id, case_version = self._get_random_case_id_and_version(closed=True)
+
+        # gets pedigree
+        result = self.cases.get_clinical_report(case_id, case_version)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, dict))
+
+        # gets pedigree
+        result = self.cases.get_clinical_report(case_id, case_version, as_data_frame=True)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, pd.DataFrame))
+
+    def test_get_rd_exit_questionnaire(self):
+
+        case_id, case_version = self._get_random_case_id_and_version(closed=True)
+
+        # gets pedigree
+        result = self.cases.get_rd_exit_questionnaire(case_id, case_version)
+        self.assertTrue(result is not None)
+        self.assertTrue(isinstance(result, dict))
+
+        # gets pedigree
+        result = self.cases.get_rd_exit_questionnaire(case_id, case_version, as_data_frame=True)
         self.assertTrue(result is not None)
         self.assertTrue(isinstance(result, pd.DataFrame))
 
