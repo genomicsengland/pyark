@@ -1,7 +1,9 @@
 import re
 import logging
+import time
 import pyark.cva_client as cva_client
 from pyark.models.wrappers import VariantWrapper
+from pyark.errors import CvaServerError
 from protocols.protocol_7_2.cva import VariantCoordinates
 
 
@@ -27,16 +29,29 @@ class VariantsClient(cva_client.CvaClient):
         """
         return self.get_variants(count=True, **params)
 
-    def get_variant_by_id(self, identifier, include_all=True, **params):
+    def get_variant_by_id(self, identifier, include_all=True, retries=3, **params):
         """
         :type identifier: str
         :type include_all: bool
+        :type retries: int
         :rtype: VariantWrapper
         """
         if include_all:
             params['include'] = [self._INCLUDE_ALL]
-        results, _ = self._get("{endpoint}/{identifier}".format(
-            endpoint=self._BASE_ENDPOINT, identifier=identifier), **params)
+        url = "{endpoint}/{identifier}".format(endpoint=self._BASE_ENDPOINT, identifier=identifier)
+        count_retries = 0
+        while True:
+            try:
+                results, _ = self._get(url, **params)
+                break
+            except CvaServerError as ex:
+                # retries for a second time as it fails erratically
+                count_retries += 1
+                if count_retries <= retries:
+                    time.sleep(1)
+                else:
+                    raise ex
+
         if not results:
             logging.warning("No variant found with id {}".format(identifier))
             return None
@@ -50,7 +65,7 @@ class VariantsClient(cva_client.CvaClient):
         :rtype: list
         """
         self._set_singleton()
-        return VariantsClient.run_parallel_requests(_get_variant_by_id, identifiers)
+        return VariantsClient.run_parallel_requests(_get_variant_by_id, identifiers, threads=self._threads)
 
     def get_variants(self, as_data_frame=False, max_results=None, include_all=True, **params):
         """
@@ -104,7 +119,7 @@ class VariantsClient(cva_client.CvaClient):
                 raise ValueError("The variant id {} could not be mapped".format(variant_id))
             variant_representation = variant.get_default_variant_representation()
             variant_coordinates = variant_representation.smallVariantCoordinates
-            if variant_coordinates is None:
+            if not variant_coordinates:
                 if fail_on_structural:
                     raise ValueError("The variant id {} does not correspond to a small variant".format(variant_id))
                 else:
