@@ -55,11 +55,10 @@ class RestClient(object):
             response = self._session.post(url, json=payload, params=params, headers=self._headers)
         else:
             response = requests.post(url, json=payload, params=params, headers=self._headers)
-        logging.info("{method} {url}".format(
-            method="POST",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
-        ))
-        self._verify_response(response)
+        request = "{method} {url}".format(
+            method="POST", url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))))
+        logging.info(request)
+        self._verify_response(response, request)
         return response.json(), dict(response.headers)
 
     def _get(self, endpoint, session=True, **params):
@@ -70,11 +69,10 @@ class RestClient(object):
             response = self._session.get(url, params=params, headers=self._headers)
         else:
             response = requests.get(url, params=params, headers=self._headers)
-        logging.info("{method} {url}".format(
-            method="GET",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
-        ))
-        self._verify_response(response)
+        request = "{method} {url}".format(
+            method="GET", url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))))
+        logging.info(request)
+        self._verify_response(response, request)
         return response.json(), dict(response.headers)
 
     def _patch(self, endpoint, session=True, **params):
@@ -85,11 +83,10 @@ class RestClient(object):
             response = self._session.patch(url, params=params, headers=self._headers)
         else:
             response = requests.patch(url, params=params, headers=self._headers)
-        logging.info("{method} {url}".format(
-            method="GET",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
-        ))
-        self._verify_response(response)
+        request = "{method} {url}".format(
+            method="PATCH", url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))))
+        logging.info(request)
+        self._verify_response(response, request)
         return response.json(), dict(response.headers)
 
     def _delete(self, endpoint, **params):
@@ -97,11 +94,10 @@ class RestClient(object):
             raise ValueError("Must define endpoint before get")
         url = self._build_url(endpoint)
         response = self._session.delete(url, params=params, headers=self._headers)
-        logging.info("{method} {url}".format(
-            method="DELETE",
-            url="{}?{}".format(url, "&".join(RestClient._build_parameters(params)))
-        ))
-        self._verify_response(response)
+        request = "{method} {url}".format(
+            method="DELETE", url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))))
+        logging.info(request)
+        self._verify_response(response, request)
         return response.json(), dict(response.headers)
 
     @staticmethod
@@ -114,7 +110,7 @@ class RestClient(object):
                 parsed_params.append("{}={}".format(k, v))
         return parsed_params
 
-    def _verify_response(self, response):
+    def _verify_response(self, response, request):
         logging.debug("{date} response status code {status}".format(
             date=datetime.datetime.now(),
             status=response.status_code)
@@ -126,22 +122,23 @@ class RestClient(object):
                 self._set_authenticated_header(renew_token=True)
                 self._renewed_token = True
                 # RequestException will trigger a retry and with the renewed token it may work
-                self.log_error(response)
+                self.log_error(response, request)
                 raise requests.exceptions.RequestException(response=response)
             # ValueError will not
             if 500 <= response.status_code < 600:
-                self.log_error(response)
+                self.log_error(response, request)
                 raise CvaServerError("{}:{}".format(response.status_code, response.text))
             elif 400 <= response.status_code < 500:
                 if response.status_code != 404:     # we want to hide 404 for empty results to the end user
-                    self.log_error(response)
+                    self.log_error(response, request)
                     raise CvaClientError("{}:{}".format(response.status_code, response.text))
             else:
-                self.log_error(response)
+                self.log_error(response, request)
                 raise ValueError("{}:{}".format(response.status_code, response.text))
         else:
             # once a 200 response token is not anymore just renewed, it can be renewed again if a 403 arrives
             self._renewed_token = False
 
-    def log_error(self, response):
+    def log_error(self, response, request):
+        logging.error(request)
         logging.error("{} - {}".format(response.status_code, response.text))
