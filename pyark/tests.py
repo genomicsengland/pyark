@@ -249,7 +249,7 @@ class TestVariants(TestPyArk):
         page_size = 2
         maximum = 5
         variants_iterator = self.variants.get_variants(
-            limit=page_size, max_results=maximum, genes=[self._get_random_gene()])
+            limit=page_size, max_results=maximum, genes=['ENSG00000012048'])
         re_count = 0
         for v in variants_iterator:
             self.assertIsNotNone(v)
@@ -264,7 +264,7 @@ class TestVariants(TestPyArk):
         self.assertIsInstance(variant, VariantWrapper)
 
     def test_unexisting_variant_by_id(self):
-        with self.assertRaises(CvaClientError):
+        with self.assertRaises(ValueError):
             self.variants.get_variant_by_id(identifier='whatever')
 
     def test_get_variants_by_id(self):
@@ -279,7 +279,7 @@ class TestVariants(TestPyArk):
 
     def test_dont_get_variants_by_id(self):
         non_existing_identifiers = ['whatever', 'this', 'that']
-        self.assertRaises(CvaClientError,
+        self.assertRaises(ValueError,
                           lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
 
     def test_variant_coordinates_to_ids(self):
@@ -338,17 +338,6 @@ class TestOthers(TestPyArk):
         self.assertIsNotNone(panels)
         self.assertIsInstance(panels, pd.Series)
 
-    def test_get_similarity_matrix(self):
-
-        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut')
-        self.assertIsNotNone(matrix)
-        self.assertIsInstance(matrix, list)
-
-        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut',
-                                                   as_data_frame=True)
-        self.assertIsNotNone(matrix)
-        self.assertIsInstance(matrix, pd.DataFrame)
-
     def test_get_panel_summary(self):
 
         panels = self.entities.get_panels_summary(program=Program.rare_disease)
@@ -389,40 +378,6 @@ class TestOthers(TestPyArk):
         self.assertIsNotNone(phenotypes)
         self.assertIsInstance(phenotypes, pd.DataFrame)
 
-    # def test_get_shared_variants_cases(self):
-    #     case_id, case_version = self._get_random_case_id_and_version()
-    #
-    #     results1 = self.cases.get_shared_variants_cases_by_case(
-    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
-    #
-    #     results2 = self.cases.get_shared_variants_cases_by_case(
-    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.reported)
-    #
-    #     results3 = self.cases.get_shared_variants_cases_by_case(
-    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.questionnaire)
-    #
-    #     non_null = (r for r in (results1, results2, results3) if r)
-    #     self.assertIsNotNone([s for r in non_null for s in r])
-
-    # def test_get_shared_gene_cases(self):
-    #     case_id, case_version = self._get_random_case_id_and_version()
-    #
-    #     results = self.cases.get_shared_genes_cases_by_case(
-    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.genomics_england_tiering)
-    #     self.assertIsNotNone(results)
-    #     self.assertIsInstance(results, list)
-    #
-    #     results = self.cases.get_shared_genes_cases_by_case(
-    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.reported)
-    #     self.assertIsNotNone(results)
-    #     self.assertIsInstance(results, list)
-    #
-    #     results = self.cases.get_shared_genes_cases_by_case(
-    #         case_id=case_id, case_version=case_version, report_event_type=ReportEventType.questionnaire)
-    #     # NOTE: there are no values
-    #     # self.assertIsNotNone(results)
-    #     # self.assertIsInstance(results, list)
-
     def test_get_shared_variants_counts(self):
         case = self._get_random_case()
         all_variants = case['allVariants']
@@ -448,10 +403,7 @@ class TestOthers(TestPyArk):
     def test_get_transaction_fails_if_no_results(self):
         # NOTE: this will work when backend returns 404 on this one
         client = self.cva.transactions()
-        self.assertRaises(
-            CvaClientError,
-            lambda: client.get_transaction("notreal")
-        )
+        self.assertIsNone(client.get_transaction("notreal"))
 
     def test_errors_if_cva_down(self):
         self.assertRaises(
