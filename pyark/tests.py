@@ -249,7 +249,7 @@ class TestVariants(TestPyArk):
         page_size = 2
         maximum = 5
         variants_iterator = self.variants.get_variants(
-            limit=page_size, max_results=maximum, genes=[self._get_random_gene()])
+            limit=page_size, max_results=maximum)
         re_count = 0
         for v in variants_iterator:
             self.assertIsNotNone(v)
@@ -403,7 +403,7 @@ class TestOthers(TestPyArk):
     def test_get_transaction_fails_if_no_results(self):
         # NOTE: this will work when backend returns 404 on this one
         client = self.cva.transactions()
-        self.assertRaises(ValueError, lambda: client.get_transaction("notreal"))
+        self.assertIsNone(client.get_transaction("notreal"))
 
     def test_errors_if_cva_down(self):
         self.assertRaises(
