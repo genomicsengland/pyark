@@ -264,7 +264,7 @@ class TestVariants(TestPyArk):
         self.assertIsInstance(variant, VariantWrapper)
 
     def test_unexisting_variant_by_id(self):
-        with self.assertRaises(CvaClientError):
+        with self.assertRaises(ValueError):
             self.variants.get_variant_by_id(identifier='whatever')
 
     def test_get_variants_by_id(self):
@@ -279,7 +279,7 @@ class TestVariants(TestPyArk):
 
     def test_dont_get_variants_by_id(self):
         non_existing_identifiers = ['whatever', 'this', 'that']
-        self.assertRaises(CvaClientError,
+        self.assertRaises(ValueError,
                           lambda: self.variants.get_variants_by_id(identifiers=non_existing_identifiers))
 
     def test_variant_coordinates_to_ids(self):
@@ -337,17 +337,6 @@ class TestOthers(TestPyArk):
         panels = self.entities.get_all_panels()
         self.assertIsNotNone(panels)
         self.assertIsInstance(panels, pd.Series)
-
-    def test_get_similarity_matrix(self):
-
-        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut')
-        self.assertIsNotNone(matrix)
-        self.assertIsInstance(matrix, list)
-
-        matrix = self.cases.get_phenosim_matrix(program=Program.rare_disease, specificDiseases='cakut',
-                                                   as_data_frame=True)
-        self.assertIsNotNone(matrix)
-        self.assertIsInstance(matrix, pd.DataFrame)
 
     def test_get_panel_summary(self):
 
@@ -448,10 +437,7 @@ class TestOthers(TestPyArk):
     def test_get_transaction_fails_if_no_results(self):
         # NOTE: this will work when backend returns 404 on this one
         client = self.cva.transactions()
-        self.assertRaises(
-            CvaClientError,
-            lambda: client.get_transaction("notreal")
-        )
+        assert client.get_transaction("notreal")
 
     def test_errors_if_cva_down(self):
         self.assertRaises(

@@ -7,3 +7,4 @@ pyark.egg-info/
 **/.ipynb_checkpoints*
 nohup.out
 env36
+results.xml

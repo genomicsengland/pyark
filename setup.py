@@ -4,19 +4,15 @@ from setuptools import find_packages
 import pyark
 
 
-test_deps = ['mock']
+test_deps = ['mock==3.0.5', 'pytest==4.6.4']
 
 # read the contents of your README file
 this_directory = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
 
 setup(
     name='clinical-variant-ark',
     version=pyark.VERSION,
     description='A Python client for the Clinical Variant Ark',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
     packages=find_packages(),
     scripts=[],
     url='https://github.com/genomicsengland/pyark',
@@ -25,14 +21,12 @@ setup(
     author=['Pablo Riesgo Ferreiro', 'Kevin Savage', 'William Bellamy'],
     author_email='pablo.riesgo-ferreiro@genomicsengland.co.uk',
     install_requires=[
-        'requests',
+        'requests==2.22.0',
         'furl==1.0.1',
         'gelreportmodels==7.2.10',
-        'enum34',
-        'pandas',
-        'mock',
-        'future',
-        'pytest'
+        'enum34==1.1.6',
+        'pandas==0.24.2',
+        'future==0.17.1'
     ],
     tests_require=test_deps,
     extras_require={'test': test_deps},
