@@ -249,7 +249,7 @@ class TestVariants(TestPyArk):
         page_size = 2
         maximum = 5
         variants_iterator = self.variants.get_variants(
-            limit=page_size, max_results=maximum)
+            limit=page_size, max_results=maximum, genes=['ENSG00000012048'])
         re_count = 0
         for v in variants_iterator:
             self.assertIsNotNone(v)
