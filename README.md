@@ -27,7 +27,6 @@ from pyark.cva_client import CvaClient
 
 cva = CvaClient(url_base="https://your.cva", user="you", password="your_secret")
 cases_client = cva.cases()
-pedigrees_client = cva.pedigrees()
 entities_client = cva.entities()
 variants_client = cva.variants()
 report_events_client = cva.report_events()
