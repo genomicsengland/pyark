@@ -50,6 +50,7 @@ class CvaClient(RestClient):
         self._evidences_client = None
 
     def _get_token(self):
+        logging.info("attemping to get a token for user {}".format(self._user))
         results, _ = self._post(self._AUTHENTICATION_ENDPOINT, payload={
             'username': self._user,
             'password': self._password
