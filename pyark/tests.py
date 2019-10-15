@@ -94,27 +94,18 @@ class TestReportEvents(TestPyArk):
         self.assertIsInstance(results, list)
         self.assertTrue(len(results) == 10)
         for r in results:
-            self.assertTrue(r['countCases'] > 0)
             self.assertTrue(r['countCasesClassifiedByAcmg'] is not None)
             self.assertTrue(r['variantId'] in variant_ids)
-            self.assertTrue(r['variantCoordinatesGRCh38'] is not None)
-            self.assertTrue(r.get('countCasesRareDisease', None) is None)
 
         results2 = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids, minimal=True)
         for r in results2:
-            self.assertTrue(r['countCases'] > 0)
             self.assertTrue(r['countCasesClassifiedByAcmg'] is not None)
             self.assertTrue(r['variantId'] in variant_ids)
-            self.assertTrue(r['variantCoordinatesGRCh38'] is not None)
-            self.assertTrue(r.get('countCasesRareDisease', None) is None)
 
         results3 = self.report_events.get_variant_summary_by_ids(variant_ids=variant_ids, minimal=False)
         for r in results3:
-            self.assertTrue(r['countCases'] > 0)
             self.assertTrue(r['countCasesClassifiedByAcmg'] is not None)
             self.assertTrue(r['variantId'] in variant_ids)
-            self.assertTrue(r['variantCoordinatesGRCh38'] is not None)
-            self.assertTrue(r['countCasesRareDisease'] > 0)
 
     def test_variant_summary_by_coordinates(self):
         variant_ids = self._get_random_variant_ids(n=10)
