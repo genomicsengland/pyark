@@ -6,8 +6,8 @@ class EvidencesClient(cva_client.CvaClient):
 
     _BASE_ENDPOINT = "evidences"
 
-    def __init__(self, url_base, token):
-        cva_client.CvaClient.__init__(self, url_base, token=token)
+    def __init__(self, **params):
+        cva_client.CvaClient.__init__(self, **params)
 
     def get_evidences(self, source, max=None, **params):
         url = "{endpoint}/sources/{source}".format(endpoint=self._BASE_ENDPOINT, source=source)

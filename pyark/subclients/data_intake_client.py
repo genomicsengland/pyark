@@ -19,8 +19,8 @@ class DataIntakeClient(cva_client.CvaClient):
     _PEDIGREE_POST = "pedigrees"
     _PARTICIPANT_POST = "participants"
 
-    def __init__(self, url_base, token):
-        cva_client.CvaClient.__init__(self, url_base, token=token)
+    def __init__(self, **params):
+        cva_client.CvaClient.__init__(self, **params)
 
     def post_pedigree(self, pedigree, params={}):
         """

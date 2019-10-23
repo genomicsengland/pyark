@@ -94,7 +94,7 @@ class CvaClient(RestClient):
         if self._report_events_client is None:
             # initialise subclients
             self._report_events_client = pyark.subclients.report_events_client.ReportEventsClient(
-                self._url_base, self._token)
+                url_base=self._url_base, token=self._token, user=self._user, password=self._password)
         return self._report_events_client
 
     def entities(self):
@@ -107,7 +107,8 @@ class CvaClient(RestClient):
         import pyark.subclients.entities_client
         if self._entities_client is None:
             # initialise subclients
-            self._entities_client = pyark.subclients.entities_client.EntitiesClient(self._url_base, self._token)
+            self._entities_client = pyark.subclients.entities_client.EntitiesClient(
+                url_base=self._url_base, token=self._token, user=self._user, password=self._password)
         return self._entities_client
 
     def cases(self):
@@ -121,7 +122,7 @@ class CvaClient(RestClient):
         if self._cases_client is None:
             # initialise subclients
             self._cases_client = pyark.subclients.cases_client.CasesClient(
-                self._url_base, self._token)
+                url_base=self._url_base, token=self._token, user=self._user, password=self._password)
         return self._cases_client
 
     def variants(self):
@@ -135,7 +136,7 @@ class CvaClient(RestClient):
         if self._variants_client is None:
             # initialise subclients
             self._variants_client = pyark.subclients.variants_client.VariantsClient(
-                self._url_base, self._token)
+                url_base=self._url_base, token=self._token, user=self._user, password=self._password)
         return self._variants_client
 
     def transactions(self):
@@ -149,7 +150,7 @@ class CvaClient(RestClient):
         if self._transactions_client is None:
             # initialise subclients
             self._transactions_client = pyark.subclients.transactions_client.TransactionsClient(
-                self._url_base, self._token)
+                url_base=self._url_base, token=self._token, user=self._user, password=self._password)
         return self._transactions_client
 
     def evidences(self):
@@ -157,7 +158,7 @@ class CvaClient(RestClient):
         if self._evidences_client is None:
             # initialise subclients
             self._evidences_client = pyark.subclients.evidences_client.EvidencesClient(
-                self._url_base, self._token)
+                url_base=self._url_base, token=self._token, user=self._user, password=self._password)
         return self._evidences_client
 
     def lift_overs(self):
@@ -171,7 +172,7 @@ class CvaClient(RestClient):
         if self._lift_overs_client is None:
             # initialise subclients
             self._lift_overs_client = pyark.subclients.lift_over_client.LiftOverClient(
-                self._url_base, self._token)
+                url_base=self._url_base, token=self._token, user=self._user, password=self._password)
         return self._lift_overs_client
 
     def data_intake(self):
@@ -185,7 +186,7 @@ class CvaClient(RestClient):
         if self._data_intake_client is None:
             # initialise subclients
             self._data_intake_client = pyark.subclients.data_intake_client.DataIntakeClient(
-                self._url_base, self._token)
+                url_base=self._url_base, token=self._token, user=self._user, password=self._password)
         return self._data_intake_client
 
     @staticmethod
