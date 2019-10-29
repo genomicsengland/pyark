@@ -12,8 +12,8 @@ class CasesClient(cva_client.CvaClient):
 
     _BASE_ENDPOINT = "cases"
 
-    def __init__(self, url_base, token):
-        cva_client.CvaClient.__init__(self, url_base, token=token)
+    def __init__(self, **params):
+        cva_client.CvaClient.__init__(self, **params)
 
     def count(self, **params):
         """
