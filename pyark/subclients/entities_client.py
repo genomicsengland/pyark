@@ -4,8 +4,8 @@ import pandas as pd
 
 class EntitiesClient(cva_client.CvaClient):
 
-    def __init__(self, url_base, token):
-        cva_client.CvaClient.__init__(self, url_base, token=token)
+    def __init__(self, **params):
+        cva_client.CvaClient.__init__(self, **params)
 
     def get_panels_summary(self, as_data_frame=False, **params):
         """

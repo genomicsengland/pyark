@@ -6,8 +6,8 @@ class LiftOverClient(cva_client.CvaClient):
 
     _BASE_ENDPOINT = "lift-overs"
 
-    def __init__(self, url_base, token):
-        cva_client.CvaClient.__init__(self, url_base, token=token)
+    def __init__(self, **params):
+        cva_client.CvaClient.__init__(self, **params)
         self.variants_client = self.variants()
 
     def lift_over_by_identifiers(self, variant_identifiers, **params):
