@@ -18,6 +18,7 @@ class DataIntakeClient(cva_client.CvaClient):
     _EXIT_QUESTIONAIRES_CANCER_POST = "exit-questionnaires-cancer"
     _PEDIGREE_POST = "pedigrees"
     _PARTICIPANT_POST = "participants"
+    _VARIANT_INTERPRETATION_LOG = "interpretation-log"
 
     def __init__(self, **params):
         cva_client.CvaClient.__init__(self, **params)
@@ -79,5 +80,15 @@ class DataIntakeClient(cva_client.CvaClient):
         :rtype: Transaction
         """
         results, _ = self._post(self._EXIT_QUESTIONAIRES_CANCER_POST, exit_questionaire.toJsonDict(), params)
+        result = self._render_single_result(results, as_data_frame=False)
+        return Transaction.fromJsonDict(result) if result else None
+
+    def post_variant_interpretation_log(self, variant_interpretation_log, params={}):
+        """
+        :param variant_interpretation_log:
+        :param params:
+        :rtype: Transaction
+        """
+        results, _ = self._post(self._VARIANT_INTERPRETATION_LOG, variant_interpretation_log.toJsonDict(), params)
         result = self._render_single_result(results, as_data_frame=False)
         return Transaction.fromJsonDict(result) if result else None
