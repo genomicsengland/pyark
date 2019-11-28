@@ -9,7 +9,7 @@ from mock import patch
 from protocols.protocol_7_2.cva import Assembly, PedigreeInjectRD, CancerParticipantInject, \
     EvidenceEntryAndVariants, EvidenceEntry, Property, EvidenceSource, Actions, Therapy, DrugResponse, GenomicFeature, \
     FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification, Transaction, \
-    TransactionStatus
+    TransactionStatus, VariantInterpretationLog
 from protocols.protocol_7_2.reports import Program
 from protocols.util import dependency_manager
 from protocols.util.factories.avro_factory import GenericFactoryAvro
@@ -386,6 +386,13 @@ class TestOthers(TestPyArk):
 
     def test_post_participant(self):
         transaction = self._test_post(CancerParticipantInject, self.data_intake.post_participant)
+        self.assertTrue(isinstance(transaction, Transaction))
+        self.assertTrue(transaction.id is not None)
+        self.assertTrue(transaction.status == TransactionStatus.PENDING)
+        self.assertTrue(transaction.compressedData is None)
+
+    def test_post_variant_interpretation_log(self):
+        transaction = self._test_post(VariantInterpretationLog, self.data_intake.post_variant_interpretation_log)
         self.assertTrue(isinstance(transaction, Transaction))
         self.assertTrue(transaction.id is not None)
         self.assertTrue(transaction.status == TransactionStatus.PENDING)
