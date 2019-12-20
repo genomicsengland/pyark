@@ -23,11 +23,12 @@ setup(
     install_requires=[
         'requests==2.22.0',
         'furl==1.0.1',
-        'gelreportmodels==7.2.10',
+        'gelreportmodels=100.0.0',
         'enum34==1.1.6',
         'pandas==0.24.2',
         'future==0.17.1'
     ],
+    dependency_links=['git+https://github.com/genomicsengland/GelReportModels@develop#egg=gelreportmodels=100.0.0'],
     tests_require=test_deps,
     extras_require={'test': test_deps},
     keywords=['CVA', 'pyark', 'clinical variant ark', 'Genomics England'],
