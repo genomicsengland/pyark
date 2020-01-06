@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'requests==2.22.0',
         'furl==1.0.1',
-        'gelreportmodels==7.2.10',
+        'gelreportmodels==7.3.6',
         'enum34==1.1.6',
         'pandas==0.24.2',
         'future==0.17.1'
