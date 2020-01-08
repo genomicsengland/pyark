@@ -475,7 +475,7 @@ class TestOthers(TestPyArk):
     def _test_post(self, clazz, post_function):
         model = GenericFactoryAvro.get_factory_avro(
             clazz=clazz,
-            version=dependency_manager.VERSION_70,
+            version=dependency_manager.VERSION_73,
             fill_nullables=False,
         ).create()
 
