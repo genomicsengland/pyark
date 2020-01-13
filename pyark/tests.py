@@ -6,11 +6,11 @@ from unittest import TestCase
 
 import pandas as pd
 from mock import patch
-from protocols.protocol_7_2.cva import Assembly, PedigreeInjectRD, CancerParticipantInject, \
+from protocols.protocol_7_3.cva import Assembly, PedigreeInjectRD, CancerParticipantInject, \
     EvidenceEntryAndVariants, EvidenceEntry, Property, EvidenceSource, Actions, Therapy, DrugResponse, GenomicFeature, \
     FeatureTypes, VariantCoordinates, VariantsCoordinates, Penetrance, DrugResponseClassification, Transaction, \
-    TransactionStatus
-from protocols.protocol_7_2.reports import Program
+    TransactionStatus, VariantInterpretationLog
+from protocols.protocol_7_3.reports import Program
 from protocols.util import dependency_manager
 from protocols.util.factories.avro_factory import GenericFactoryAvro
 from requests import ConnectionError
@@ -391,6 +391,13 @@ class TestOthers(TestPyArk):
         self.assertTrue(transaction.status == TransactionStatus.PENDING)
         self.assertTrue(transaction.compressedData is None)
 
+    def test_post_variant_interpretation_log(self):
+        transaction = self._test_post(VariantInterpretationLog, self.data_intake.post_variant_interpretation_log)
+        self.assertTrue(isinstance(transaction, Transaction))
+        self.assertTrue(transaction.id is not None)
+        self.assertTrue(transaction.status == TransactionStatus.PENDING)
+        self.assertTrue(transaction.compressedData is None)
+
     def test_get_transaction_fails_if_no_results(self):
         # NOTE: this will work when backend returns 404 on this one
         client = self.cva.transactions()
@@ -468,7 +475,7 @@ class TestOthers(TestPyArk):
     def _test_post(self, clazz, post_function):
         model = GenericFactoryAvro.get_factory_avro(
             clazz=clazz,
-            version=dependency_manager.VERSION_70,
+            version=dependency_manager.VERSION_73,
             fill_nullables=False,
         ).create()
 

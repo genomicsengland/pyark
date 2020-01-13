@@ -51,9 +51,13 @@ See the documentation for further usage at [https://genomicsengland.github.io/py
 
 Set the following environment variables:
 ```bash
-export CVA_URL_BASE="https://your.cva"
-export CVA_USER="you"
-export CVA_PASSWORD="your_secret"
+export CVA_URL="https://your.cva"
+export GEL_USER="you"
+export GEL_PASSWORD="your_secret"
+```
+You may need to do something like this to install the gel report models:
+```bash
+pip install gelreportmodels==7.2.6 --index-url=https://pypi.gel.zone/genomics/dev
 ```
 
 Then run unit tests:
