@@ -25,11 +25,10 @@ setup(
         'furl==1.0.1',
         'gelreportmodels==7.3.6',
         'enum34==1.1.6',
-        'pandas==0.24.2',
         'future==0.17.1'
     ],
     tests_require=test_deps,
-    extras_require={'test': test_deps},
+    extras_require={'test': test_deps, 'pandas': ['pandas==0.24.2']},
     keywords=['CVA', 'pyark', 'clinical variant ark', 'Genomics England'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
