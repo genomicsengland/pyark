@@ -4,7 +4,7 @@ import time
 import pyark.cva_client as cva_client
 from pyark.models.wrappers import VariantWrapper
 from pyark.errors import CvaServerError
-from protocols.protocol_7_2.cva import VariantCoordinates
+from protocols.protocol_7_3.cva import VariantCoordinates
 
 
 _singleton_instance = None

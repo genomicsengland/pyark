@@ -1,5 +1,5 @@
 import pyark.cva_client as cva_client
-from protocols.protocol_7_2.cva import ReportEventType, Transaction
+from protocols.protocol_7_3.cva import ReportEventType, Transaction
 import logging
 import pandas as pd
 

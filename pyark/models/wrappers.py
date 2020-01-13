@@ -1,5 +1,5 @@
 import re
-from protocols.protocol_7_2.cva import Variant, Assembly, VariantRepresentation, \
+from protocols.protocol_7_3.cva import Variant, Assembly, VariantRepresentation, \
     VariantAnnotation, ReportEventEntry
 
 
