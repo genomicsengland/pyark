@@ -1,10 +1,13 @@
 import re
 import logging
-import pandas as pd
-from pandas.io.json import json_normalize
 from pyark.rest_client import RestClient
 import multiprocessing
 
+try:
+    import pandas as pd
+    from pandas.io.json import json_normalize
+except ImportError:
+    logging.warn("Pandas is not installed which will mean as_data_frame=True will not work. If you want to install this do 'pip install clinical-variant-ark[pandas]'")
 
 class CvaClient(RestClient):
 
