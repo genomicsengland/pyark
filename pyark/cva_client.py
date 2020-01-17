@@ -53,11 +53,17 @@ class CvaClient(RestClient):
         self._evidences_client = None
 
     def _get_token(self):
-        logging.info("attemping to get a token for user {}".format(self._user))
-        results, _ = self._post(self._AUTHENTICATION_ENDPOINT, payload={
-            'username': self._user,
-            'password': self._password
-        })
+        logging.info("attemping to get a tqoken for user {}".format(self._user))
+        results, _ = self._post(
+            self._AUTHENTICATION_ENDPOINT,
+            payload={
+                'username': self._user,
+                'password': self._password
+            },
+            # Using verify when user has supplied invalid credentials 
+            # results in an infinite recursion loop, so set to False
+            verify=False
+        )
         return "Bearer {}".format(results[0]['token'])
 
     def _post(self, endpoint, payload, session=True, **params):
