@@ -18,6 +18,10 @@ Install with pip:
 ```
 pip install clinical-variant-ark
 ```
+or to enable the optional `as_data_frame` methods:
+```
+pip install clinical-variant-ark[pandas]
+```
 
 You will need a CVA server up and running and you will need credentials with the right authorisation permissions.
 
