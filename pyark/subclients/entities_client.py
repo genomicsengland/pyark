@@ -118,7 +118,7 @@ class EntitiesClient(cva_client.CvaClient):
     def get_hpo(self, identifier, as_data_frame=False):
         """
         :param identifier: An HPO identifier as in HP:00012345
-        :type identifier: dict
+        :type identifier: str
         :param as_data_frame: return results in a flattened Pandas data frame or in a list of dictionaries
         :type as_data_frame: bool
         :return:

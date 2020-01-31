@@ -1,5 +1,5 @@
 from enum import Enum
-from protocols.protocol_7_2.cva import ReportEventEntry, Assembly, VariantCoordinates
+from protocols.protocol_7_3.cva import ReportEventEntry, Assembly, VariantCoordinates
 
 import pyark.cva_client as cva_client
 from pyark.models.wrappers import ReportEventEntryWrapper

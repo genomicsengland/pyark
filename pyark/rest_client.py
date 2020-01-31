@@ -47,7 +47,7 @@ class RestClient(object):
     def _get_token(self):
         raise ValueError("Not implemented")
 
-    def _post(self, endpoint, payload, session=True, **params):
+    def _post(self, endpoint, payload, session=True, verify=True, **params):
         if endpoint is None or payload is None:
             raise ValueError("Must define payload and endpoint before post")
         url = self._build_url(endpoint)
@@ -58,7 +58,8 @@ class RestClient(object):
         request = "{method} {url}".format(
             method="POST", url="{}?{}".format(url, "&".join(RestClient._build_parameters(params))))
         logging.info(request)
-        self._verify_response(response, request)
+        if verify:
+            self._verify_response(response, request)
         return response.json(), dict(response.headers)
 
     def _get(self, endpoint, session=True, **params):

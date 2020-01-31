@@ -1,5 +1,5 @@
 import pyark.cva_client as cva_client
-from protocols.protocol_7_2.cva import VariantsCoordinates, VariantCoordinates
+from protocols.protocol_7_3.cva import VariantsCoordinates, VariantCoordinates
 
 
 class LiftOverClient(cva_client.CvaClient):
